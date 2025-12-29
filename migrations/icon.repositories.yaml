@@ -1,0 +1,34 @@
+repos:
+  - owner: "twbs"
+    name: "icons"
+    github_id: 198878888
+  - owner: "atisawd"
+    name: "boxicons"
+    github_id: 137458049
+  - owner: "danklammer"
+    name: "bytesize-icons"
+    github_id: 39126489
+  - owner: "astrit"
+    name: "css.gg"
+    github_id: 212204036
+  - owner: "akveo"
+    name: "eva-icons"
+    github_id: 155437620
+  - owner: "feathericons"
+    name: "feather"
+    github_id: 20270252
+  - owner: "FortAwesome"
+    name: "Font-Awesome"
+    github_id: 3470471
+  - owner: "tailwindlabs"
+    name: "heroicons"
+    github_id: 242754476
+  - owner: "ionic-team"
+    name: "ionicons"
+    github_id: 13473768
+  - owner: "lucide-icons"
+    name: "lucide"
+    github_id: 270722949
+  - owner: "tabler"
+    name: "tabler-icons"
+    github_id: 243546335

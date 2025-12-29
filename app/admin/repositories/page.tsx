@@ -1,0 +1,30 @@
+import { loadRepositories } from './actions';
+import RepoForm from './RepoForm';
+
+export default async function RepositoriesManagementPage() {
+    const repos = await loadRepositories();
+
+    return (
+        <div>
+            <h1>Repositories Management Page</h1>
+            <ul className="space-y-4">
+                {repos.map((repo) => (
+                    <li key={repo.id}>
+                        <RepoForm>
+                            <input
+                                type="hidden"
+                                name="repositoryId"
+                                value={repo.id}
+                            />
+                            <span>
+                                {repo.owner}/{repo.name} (GitHub ID:{' '}
+                                {repo.githubId}) - Created At:{' '}
+                                {repo.createdAt.toLocaleString()}
+                            </span>
+                        </RepoForm>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
