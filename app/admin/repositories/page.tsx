@@ -10,18 +10,7 @@ export default async function RepositoriesManagementPage() {
             <ul className="space-y-4">
                 {repos.map((repo) => (
                     <li key={repo.id}>
-                        <RepoForm>
-                            <input
-                                type="hidden"
-                                name="repositoryId"
-                                value={repo.id}
-                            />
-                            <span>
-                                {repo.owner}/{repo.name} (GitHub ID:{' '}
-                                {repo.githubId}) - Created At:{' '}
-                                {repo.createdAt.toLocaleString()}
-                            </span>
-                        </RepoForm>
+                        <RepoForm initialState={repo} />
                     </li>
                 ))}
             </ul>

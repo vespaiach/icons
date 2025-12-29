@@ -1,5 +1,4 @@
 import { dbClient } from './db.client';
-import type { Repository } from './type';
 
 export async function getRepositories(): Promise<Repository[]> {
     const rows = await dbClient`
@@ -7,27 +6,62 @@ export async function getRepositories(): Promise<Repository[]> {
             id,
             owner,
             name,
+            ref,
             github_id AS "githubId",
-            created_at AS "createdAt"
+            created_at AS "createdAt",
+            last_imported_at AS "lastImportedAt"
         FROM repositories
         ORDER BY name ASC
     `;
     return rows;
 }
 
-export async function getRepositoryById(
+export async function getRepositoryDirectoriesById(
     repositoryId: number
-): Promise<Repository | null> {
+): Promise<RepositoryDirectories | null> {
     const rows = await dbClient`
         SELECT 
+            repositories.id,
+            owner,
+            name,
+            ref,
+            github_id AS "githubId",
+            repositories.created_at AS "createdAt",
+            last_imported_at AS "lastImportedAt",
+            json_agg(
+                json_build_object(
+                    'id', directories.id,
+                    'path', directories.path,
+                    'variant', directories.variant,
+                    'createdAt', directories.created_at
+                )
+            ) AS directories
+        FROM repositories INNER JOIN directories ON repositories.id = directories.repository_id
+        WHERE repositories.id = ${repositoryId}
+        GROUP BY 1, 2, 3, 4, 5, 6, 7
+    `;
+    return rows.length > 0 ? rows[0] : null;
+}
+
+export async function updateRepository(
+    data: Partial<Omit<Repository, 'createdAt' | 'id'>> & { id: number }
+): Promise<Repository | null> {
+    const rows = await dbClient`
+        UPDATE repositories
+        SET owner = COALESCE(${data.owner}, owner),
+            name = COALESCE(${data.name}, name),
+            ref = COALESCE(${data.ref}, ref),
+            github_id = COALESCE(${data.githubId}, github_id),
+            last_imported_at = COALESCE(${data.lastImportedAt}, last_imported_at)
+        WHERE id = ${data.id}
+        RETURNING 
             id,
             owner,
             name,
+            ref,
             github_id AS "githubId",
-            created_at AS "createdAt"
-        FROM repositories
-        WHERE id = ${repositoryId}
-        LIMIT 1
+            created_at AS "createdAt",
+            last_imported_at AS "lastImportedAt"
     `;
-    return rows.length > 0 ? rows[0] : null;
+    return rows[0] ? rows[0] : null;
 }

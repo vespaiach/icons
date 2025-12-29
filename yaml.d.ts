@@ -4,6 +4,10 @@ declare module '*/icon.repositories.yaml' {
         name: string;
         ref: string;
         github_id: number;
+        directories: {
+            variant: string;
+            path: string;
+        }[];
     }
 
     interface IconRepositories {

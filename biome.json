@@ -13,7 +13,8 @@
         "enabled": true,
         "indentStyle": "space",
         "indentWidth": 4,
-        "bracketSameLine": true
+        "bracketSameLine": true,
+        "lineWidth": 110
     },
     "javascript": {
         "formatter": {
