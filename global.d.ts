@@ -27,6 +27,15 @@ declare global {
     interface RepositoryDirectories extends Repository {
         directories: Directory[];
     }
+
+    interface User {
+        id: number;
+        email: string;
+        hashedPassword: string;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }
 }
 
 export {};

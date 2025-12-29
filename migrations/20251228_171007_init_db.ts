@@ -1,10 +1,21 @@
 import type { SQL } from 'bun';
 import repoData from './icon.repositories.yaml';
 
-export const version = '20251228_171007_add_icons_table';
+export const version = '20251228_171007_init_db';
 
 export async function up(sql: SQL): Promise<void> {
     // Write your migration here
+    await sql`
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            hashed_password VARCHAR(255) NOT NULL,
+            deleted_at TIMESTAMPTZ,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    `;
+
     await sql`
         CREATE TABLE IF NOT EXISTS repositories (
             id SERIAL PRIMARY KEY, 
@@ -30,7 +41,7 @@ export async function up(sql: SQL): Promise<void> {
     `;
 
     await sql`
-        CREATE TABLE icons (
+        CREATE TABLE IF NOT EXISTS icons (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
             directory_id INTEGER REFERENCES directories(id) ON DELETE CASCADE,
             name VARCHAR(255) NOT NULL,
@@ -39,7 +50,7 @@ export async function up(sql: SQL): Promise<void> {
         )
     `;
 
-    repoData.repos.forEach(async (repo) => {
+    for (const repo of repoData.repos) {
         const result = await sql`
             INSERT INTO repositories (owner, name, ref, github_id)
             VALUES (${repo.owner}, ${repo.name}, ${repo.ref}, ${repo.github_id})
@@ -49,15 +60,21 @@ export async function up(sql: SQL): Promise<void> {
 
         if (result.length > 0) {
             const repoId = result[0].id;
-            repo.directories.forEach(async (dir) => {
+            for (const dir of repo.directories) {
                 await sql`
                     INSERT INTO directories (repository_id, variant, path)
                     VALUES (${repoId}, ${dir.variant}, ${dir.path})
                     ON CONFLICT (repository_id, path) DO NOTHING;
                 `;
-            });
-        } 
-    });
+            }
+        }
+    }
+
+    const hashedPassword = await Bun.password.hash('LegMeIn1!');
+    await sql`
+        INSERT INTO users (email, hashed_password)
+        VALUES ('nta.toan@gmail.com', ${hashedPassword});
+    `;
 }
 
 export async function down(sql: SQL): Promise<void> {
@@ -66,5 +83,6 @@ export async function down(sql: SQL): Promise<void> {
         DROP TABLE IF EXISTS icons;
         DROP TABLE IF EXISTS directories;
         DROP TABLE IF EXISTS repositories;
+        DROP TABLE IF EXISTS users;
     `;
 }

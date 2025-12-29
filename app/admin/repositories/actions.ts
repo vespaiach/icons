@@ -12,7 +12,7 @@ export async function loadRepositories() {
     return await getRepositories();
 }
 
-export async function importFromRepository(
+export async function importFromRepositoryAction(
     prevState: Repository & { errors: Record<string, string[]> },
     formData: FormData
 ): Promise<Repository & { errors: Record<string, string[]> }> {

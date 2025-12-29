@@ -2,10 +2,10 @@
 
 import { useActionState } from 'react';
 import { assertArray } from '@/db/assert.helpers';
-import { importFromRepository } from './actions';
+import { importFromRepositoryAction } from './actions';
 
 export default function RepoForm({ initialState }: { initialState: Repository }) {
-    const [state, formAction, isPending] = useActionState(importFromRepository, {
+    const [state, formAction, isPending] = useActionState(importFromRepositoryAction, {
         ...initialState,
         errors: {}
     });
@@ -14,15 +14,15 @@ export default function RepoForm({ initialState }: { initialState: Repository })
         <form className="flex items-center gap-4" action={formAction}>
             {assertArray(state.errors.repositoryId) && (
                 <div className="text-red-600">
-                    {state.errors.repositoryId.map((err, idx) => (
-                        <div key={idx}>{err}</div>
+                    {state.errors.repositoryId.map((err) => (
+                        <div key={err}>{err}</div>
                     ))}
                 </div>
             )}
             {assertArray(state.errors.global) && (
                 <div className="text-red-600">
-                    {state.errors.global.map((err, idx) => (
-                        <div key={idx}>{err}</div>
+                    {state.errors.global.map((err) => (
+                        <div key={err}>{err}</div>
                     ))}
                 </div>
             )}
