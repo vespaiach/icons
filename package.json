@@ -12,7 +12,9 @@
         "migrate": "bun run ./utils/migration.service.ts migrate"
     },
     "dependencies": {
+        "daisyui": "^5.5.14",
         "iron-session": "^8.0.4",
+        "lucide-react": "^0.562.0",
         "next": "16.1.1",
         "react": "19.2.3",
         "react-dom": "19.2.3",
@@ -36,5 +38,6 @@
     "trustedDependencies": [
         "sharp",
         "unrs-resolver"
-    ]
+    ],
+    "browserslist": "> 1%"
 }
