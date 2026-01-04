@@ -8,7 +8,8 @@ const signInPayloadSchema = v.object({
         v.email('The email address is badly formatted.')
     ),
     password: v.pipe(v.string('Your password must be a string.'), v.nonEmpty('Please enter your password.')),
-    keepMeSignedIn: v.nullish(v.string())
+    keepMeSignedIn: v.nullish(v.string()),
+    returnTo: v.nullish(v.pipe(v.string(), v.startsWith('/')))
 });
 
 export type SignInPayload = v.InferOutput<typeof signInPayloadSchema>;

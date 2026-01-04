@@ -1,9 +1,12 @@
 'use server';
 
 import { getIronSession } from 'iron-session';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { RedirectType, redirect } from 'next/navigation';
 import { getUserById } from '@/db/users';
+import { log } from './log.helpers';
+
+const SAFE_FALLBACK = '/';
 
 export async function retrieveUserFromSession() {
     const session = await getAuthSession();
@@ -15,19 +18,37 @@ export async function retrieveUserFromSession() {
 
 export async function getAuthSession() {
     try {
-        const session = await getIronSession<{ userId: number }>(await cookies(), {
+        const session = await getIronSession<Session>(await cookies(), {
             password: Bun.env.COOKIE_SECRET,
             cookieName: 'signed-in'
         });
-        if (!session?.userId) throw new Error('No user ID in session');
+        if (!session?.userId || !session?.userName) {
+            throw new Error('No user ID or user name in session');
+        }
         return session;
     } catch {
-        redirect('/admin/sign-in', RedirectType.push);
+        redirect(`/auth/sign-in?rt=${await getSafeReturnToPath()}`, RedirectType.push);
     }
 }
 
-export async function dropAuthCookie(userId: number, maxAge = Number(Bun.env.COOKIE_MAX_AGE)) {
-    const session = await getIronSession<{ userId: number }>(await cookies(), {
+export async function getReturnToPath() {
+    try {
+        const session = await getIronSession<{ returnTo: string }>(await cookies(), {
+            password: Bun.env.COOKIE_SECRET,
+            cookieName: 'rt'
+        });
+        if (!session?.returnTo) {
+            return SAFE_FALLBACK;
+        }
+        return session.returnTo;
+    } catch (err) {
+        log('error', 'Failed to get returnTo path from cookie', err);
+        return SAFE_FALLBACK;
+    }
+}
+
+export async function dropAuthCookie(user: User, maxAge = Number(Bun.env.COOKIE_MAX_AGE)) {
+    const session = await getIronSession<Session>(await cookies(), {
         cookieName: 'signed-in',
         password: Bun.env.COOKIE_SECRET,
         cookieOptions: {
@@ -37,6 +58,57 @@ export async function dropAuthCookie(userId: number, maxAge = Number(Bun.env.COO
             sameSite: 'lax'
         }
     });
-    session.userId = userId;
+    session.userId = user.id;
+    session.userName = user.name;
+    session.userProfilePictureUrl = user.profilePictureUrl;
     await session.save();
+}
+
+export async function clearAuthCookie() {
+    const session = await getIronSession(await cookies(), {
+        cookieName: 'signed-in',
+        password: Bun.env.COOKIE_SECRET
+    });
+    if (session) {
+        session.destroy();
+    }
+}
+
+export async function dropReturnToCookie(returnTo: string) {
+    try {
+        const session = await getIronSession<{ returnTo: string }>(await cookies(), {
+            cookieName: 'rt',
+            password: Bun.env.COOKIE_SECRET,
+            cookieOptions: {
+                secure: true,
+                maxAge: 5 * 60, // 5 minutes
+                httpOnly: true,
+                sameSite: 'lax'
+            }
+        });
+        session.returnTo = returnTo;
+        await session.save();
+    } catch (err) {
+        log('error', 'Failed to drop returnTo path into cookie', err);
+    }
+}
+
+export async function clearReturnToCookie() {
+    const session = await getIronSession<{ returnTo: string }>(await cookies(), {
+        cookieName: 'rt',
+        password: Bun.env.COOKIE_SECRET
+    });
+    if (session) {
+        session.destroy();
+    }
+}
+
+async function getSafeReturnToPath(): Promise<string> {
+    const h = await headers();
+    const currPath = h.get('X-Curr-Path');
+
+    if (!currPath || !currPath.startsWith('/')) {
+        return SAFE_FALLBACK;
+    }
+    return encodeURIComponent(currPath);
 }

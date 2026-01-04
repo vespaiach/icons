@@ -4,12 +4,12 @@ import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { $ } from 'bun';
 import { createIcon, deleteIconsByRepositoryId } from '@/db/icons';
-import { getRepositories, getRepositoryDirectoriesById, updateRepository } from '@/db/repositories';
+import { getRepositoryDirectories, getRepositoryDirectoriesById, updateRepository } from '@/db/repositories';
 import { log } from '@/utils/log.helpers';
 import { parseRepositoryForm } from './validation';
 
-export async function loadRepositories() {
-    return await getRepositories();
+export async function loadRepositoriesAction() {
+    return await getRepositoryDirectories();
 }
 
 export async function importFromRepositoryAction(

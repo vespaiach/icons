@@ -8,8 +8,10 @@ export async function up(sql: SQL): Promise<void> {
     await sql`
         CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
             email VARCHAR(255) NOT NULL UNIQUE,
             hashed_password VARCHAR(255) NOT NULL,
+            profile_picture_url VARCHAR(1024),
             deleted_at TIMESTAMPTZ,
             created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -72,8 +74,8 @@ export async function up(sql: SQL): Promise<void> {
 
     const hashedPassword = await Bun.password.hash('LegMeIn1!');
     await sql`
-        INSERT INTO users (email, hashed_password)
-        VALUES ('nta.toan@gmail.com', ${hashedPassword});
+        INSERT INTO users (email, name, hashed_password)
+        VALUES ('nta.toan@gmail.com', 'Toan Nguyen', ${hashedPassword});
     `;
 }
 

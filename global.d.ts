@@ -30,11 +30,19 @@ declare global {
 
     interface User {
         id: number;
+        name: string;
         email: string;
         hashedPassword: string;
+        profilePictureUrl: string | null;
         deletedAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
+    }
+
+    interface Session {
+        userId: number;
+        userName: string;
+        userProfilePictureUrl: string | null;
     }
 }
 

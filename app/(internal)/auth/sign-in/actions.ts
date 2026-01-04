@@ -2,7 +2,7 @@
 
 import { RedirectType, redirect } from 'next/navigation';
 import { getUserByEmail } from '@/db/users';
-import { dropAuthCookie } from '@/utils/session';
+import { dropAuthCookie, getReturnToPath } from '@/utils/session';
 import { parseSignInForm } from './validation';
 
 interface SignInFormState {
@@ -31,7 +31,7 @@ export async function signInAction(prevState: SignInFormState, formData: FormDat
         };
     }
 
-    await dropAuthCookie(user.id, payload.keepMeSignedIn === 'on' ? 3 * 30 * 24 * 60 * 60 : undefined);
+    await dropAuthCookie(user, payload.keepMeSignedIn === 'on' ? 3 * 30 * 24 * 60 * 60 : undefined);
 
-    redirect('/', RedirectType.push);
+    redirect(payload.returnTo || '/', RedirectType.push);
 }

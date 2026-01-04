@@ -1,17 +1,25 @@
 import { dbClient } from './db.client';
 
-export async function getRepositories(): Promise<Repository[]> {
+export async function getRepositoryDirectories(): Promise<RepositoryDirectories[]> {
     const rows = await dbClient`
         SELECT 
-            id,
+            repositories.id,
             owner,
             name,
             ref,
             github_id AS "githubId",
-            created_at AS "createdAt",
-            last_imported_at AS "lastImportedAt"
-        FROM repositories
-        ORDER BY name ASC
+            repositories.created_at AS "createdAt",
+            last_imported_at AS "lastImportedAt",
+            json_agg(
+                json_build_object(
+                    'id', directories.id,
+                    'path', directories.path,
+                    'variant', directories.variant,
+                    'createdAt', directories.created_at
+                )
+            ) AS directories
+        FROM repositories INNER JOIN directories ON repositories.id = directories.repository_id
+        GROUP BY 1, 2, 3, 4, 5, 6, 7
     `;
     return rows;
 }

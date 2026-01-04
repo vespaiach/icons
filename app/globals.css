@@ -5,7 +5,22 @@
     themes: light --default, dracula --prefersdark;
 }
 
+@layer components {
+    svg {
+        color: var(--color-gray-500);
+    }
+
+    .co-mb-6 {
+        @apply mb-6;
+    }
+
+    .co-p-6 {
+        @apply p-6;
+    }
+}
+
 
 body {
     font-family: var(--font-inclusive-sans);
+    color: var(--color-base-content);
 }
