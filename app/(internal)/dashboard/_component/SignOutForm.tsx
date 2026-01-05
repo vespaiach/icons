@@ -8,15 +8,15 @@ export default function SignOutForm() {
     const [_, formAction, isPending] = useActionState(signOutAction, null);
 
     return (
-        <form action={formAction}>
+        <form action={formAction} className="block">
             {!isPending && (
-                <button type="submit" className="flex gap-2 items-center basis-full">
+                <button type="submit" className="flex gap-2 items-center w-full">
                     <LogOut className="w-4" />
                     Sign Out
                 </button>
             )}
             {isPending && (
-                <span className="flex gap-2 items-center basis-full">
+                <span className="flex gap-2 items-center w-full">
                     <span className="d-loading d-loading-spinner d-loading-sm"></span>
                     Sign Out
                 </span>
