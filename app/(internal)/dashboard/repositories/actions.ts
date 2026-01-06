@@ -129,9 +129,13 @@ async function scanIconDirectories(repo: RepositoryDirectories) {
 async function saveIconsToDatabase(directoryId: number, fileName: string, fullPath: string) {
     try {
         const file = await Bun.file(fullPath);
+        const svgContent = (await file.text()).trim();
+
+        // Extract inner content of SVG tag (remove <svg> wrapper)
+        const innerContent = extractSvgInnerContent(svgContent);
 
         // Insert icon to database
-        await createIcon(directoryId, fileName, (await file.text()).trim());
+        await createIcon(directoryId, fileName, innerContent);
 
         log('info', `Saved icon ${fullPath}, from directory id: ${directoryId}`);
     } catch (error) {
@@ -141,6 +145,18 @@ async function saveIconsToDatabase(directoryId: number, fileName: string, fullPa
             error
         );
     }
+}
+
+function extractSvgInnerContent(svgContent: string): string {
+    // Match the opening <svg...> tag and closing </svg> tag, capturing the content in between
+    const match = svgContent.match(/<svg[^>]*>([\s\S]*?)<\/svg>/i);
+    
+    if (match && match[1]) {
+        return match[1].trim();
+    }
+    
+    // If no match found, return original content (fallback)
+    return svgContent;
 }
 
 async function cleanupTemporaryFiles(repo: Repository) {

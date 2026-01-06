@@ -17,9 +17,21 @@ export async function getRepositories(): Promise<Repository[]> {
 }
 
 export async function getRepositoriesWithIconCount(): Promise<RepositoryWithIconCount[]> {
-    // TODO: Implement this function to return repositories along with their icon counts
     const rows = await dbClient`
-        
+        SELECT 
+            r.id,
+            r.owner,
+            r.name,
+            r.ref,
+            r.github_id AS "githubId",
+            r.created_at AS "createdAt",
+            r.last_imported_at AS "lastImportedAt",
+            COUNT(icons.id)::int AS "iconCount"
+        FROM repositories as r
+        LEFT JOIN directories ON r.id = directories.repository_id
+        LEFT JOIN icons ON directories.id = icons.directory_id
+        GROUP BY r.id, r.owner, r.name, r.ref, r.github_id, r.created_at, r.last_imported_at
+        ORDER BY r.name ASC
     `;
     return rows;
 }

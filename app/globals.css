@@ -21,13 +21,13 @@
     .icons-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+        align-items: stretch;
         gap: 8px;
         width: 100%;
     }
 
     .icon {
-        aspect-ratio: 1 / 1;
-        position: relative;
+        @apply aspect-square rounded-sm bg-base-200 flex items-center justify-between; 
     }
 }
 

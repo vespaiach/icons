@@ -13,19 +13,20 @@ export default async function PageIcons() {
     return (
         <>
             <Navbar />
-            {Object.keys(iconsByRepositoryPromises).map((repoId) => {
-                const repository = repositories.find((repo) => repo.id === Number(repoId));
-                if (!repository) return null;
-                
-                return (
-                    <Suspense key={repoId}>
+            <div className="mt-6">
+                {Object.keys(iconsByRepositoryPromises).map((repoId) => {
+                    const repository = repositories.find((repo) => repo.id === Number(repoId));
+                    if (!repository) return null;
+
+                    return (
                         <IconsContainer
+                            key={repoId}
                             repository={repository}
                             iconsPromise={iconsByRepositoryPromises[repoId]}
                         />
-                    </Suspense>
-                );
-            })}
+                    );
+                })}
+            </div>
             <SearchModal repositories={repositories} />
         </>
     );

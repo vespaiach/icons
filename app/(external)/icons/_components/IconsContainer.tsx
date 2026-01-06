@@ -1,6 +1,7 @@
 'use client';
 
-import { Suspense, use, useEffect, useRef } from 'react';
+import { Suspense, use, useEffect, useRef, useState } from 'react';
+import SkeletonIconsContainer from './SkeletonIconsContainer';
 
 const ICON_SIZE = 56; // in pixels
 
@@ -17,41 +18,57 @@ export default function IconsContainer({
     repository: ShortRepository;
     iconsPromise: Promise<IconWithDirectoryVariant[]>;
 }) {
-    return (
-        <div className="pb-8">
-            <h2 className="font-semibold text-lg mb-3 capitalize">
-                {repository.name} (${repository.iconCount})
-            </h2>
-            <IconsGrid iconsPromise={iconsPromise} repository={repository}/>
-        </div>
-    );
-}
-
-function IconsGrid({
-    iconsPromise,
-    repository
-}: {
-    iconsPromise: Promise<IconWithDirectoryVariant[]>;
-    repository: ShortRepository;
-}) {
     const contentRef = useRef<HTMLDivElement>(null);
     const iconCount = repository.iconCount;
+    const [shouldRender, setShouldRender] = useState(false);
+    const [minHeight, setMinHeight] = useState(0);
 
     useEffect(() => {
         if (contentRef.current) {
             const contentWidth = contentRef.current.getBoundingClientRect().width;
             const iconsPerRow = Math.floor(contentWidth / ICON_SIZE);
             const rows = Math.ceil(iconCount / iconsPerRow);
-            const totalHeight = rows * ICON_SIZE;
-            contentRef.current.style.minHeight = `${totalHeight}px`;
+            setMinHeight(rows * ICON_SIZE);
         }
     }, [iconCount]);
 
+    useEffect(() => {
+        const element = contentRef.current;
+        if (!element) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    setShouldRender(entry.isIntersecting);
+                });
+            },
+            {
+                rootMargin: '200px', // Start loading 200px before the section is visible
+                threshold: 0
+            }
+        );
+
+        observer.observe(element);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
+
     return (
-        <div className="icons-grid" ref={contentRef}>
-            <Suspense>
-                <IconsContent iconsPromise={iconsPromise} />
-            </Suspense>
+        <div className="pb-8 px-4">
+            {minHeight > 0 && (
+                <h2 className="font-semibold text-lg mb-3 capitalize">
+                    {repository.name} ({repository.iconCount})
+                </h2>
+            )}
+            <div className="icons-grid" ref={contentRef} style={{ minHeight }}>
+                {shouldRender && (
+                    <Suspense fallback={<SkeletonIconsContainer iconCount={iconCount} />}>
+                        <IconsContent iconsPromise={iconsPromise} />
+                    </Suspense>
+                )}
+            </div>
         </div>
     );
 }
