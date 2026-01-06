@@ -9,6 +9,10 @@ declare global {
         lastImportedAt: Date | null;
     }
 
+    interface RepositoryWithIconCount extends Repository {
+        iconCount: number;
+    }
+
     interface Directory {
         id: number;
         path: string;
@@ -22,6 +26,11 @@ declare global {
         name: string;
         svgContent: string;
         createdAt: Date;
+    }
+
+    interface IconWithDirectoryVariant extends Icon {
+        directoryId: number;
+        variant: string;
     }
 
     interface RepositoryDirectories extends Repository {

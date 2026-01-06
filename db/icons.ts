@@ -21,3 +21,19 @@ export async function deleteIconsByRepositoryId(repositoryId: number) {
         );
     `;
 }
+
+export async function getIconsByRepositoryId(repositoryId: number) {
+    const rows = await dbClient`
+        SELECT 
+            i.id,
+            d.id AS "directoryId",
+            i.name,
+            i.svg_content AS "svgContent",
+            d.variant,
+            i.created_at AS "createdAt"
+        FROM icons i
+        JOIN directories d ON i.directory_id = d.id
+        WHERE d.repository_id = ${repositoryId};
+    `;
+    return rows as IconWithDirectoryVariant[];
+}
