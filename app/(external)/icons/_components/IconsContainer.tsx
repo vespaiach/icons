@@ -7,7 +7,7 @@ const ICON_SIZE = 56; // in pixels
 interface ShortRepository {
     id: number;
     name: string;
-    iconCount?: number;
+    iconCount: number;
 }
 
 export default function IconsContainer({
@@ -20,18 +20,20 @@ export default function IconsContainer({
     return (
         <div className="pb-8">
             <h2 className="font-semibold text-lg mb-3 capitalize">
-                {repository.name}
-                {repository.iconCount !== undefined && repository.iconCount !== null
-                    ? ` (${repository.iconCount})`
-                    : ''}
+                {repository.name} (${repository.iconCount})
             </h2>
-            <IconsGrid iconsPromise={iconsPromise} />
+            <IconsGrid iconsPromise={iconsPromise} repository={repository}/>
         </div>
     );
 }
 
-function IconsGrid({ iconsPromise }: { iconsPromise: Promise<IconWithDirectoryVariant[]> }) {
-    const icons = use(iconsPromise);
+function IconsGrid({
+    iconsPromise,
+    repository
+}: {
+    iconsPromise: Promise<IconWithDirectoryVariant[]>;
+    repository: ShortRepository;
+}) {
     const contentRef = useRef<HTMLDivElement>(null);
     const iconCount = repository.iconCount;
 
@@ -41,17 +43,15 @@ function IconsGrid({ iconsPromise }: { iconsPromise: Promise<IconWithDirectoryVa
             const iconsPerRow = Math.floor(contentWidth / ICON_SIZE);
             const rows = Math.ceil(iconCount / iconsPerRow);
             const totalHeight = rows * ICON_SIZE;
-            contentRef.current.style['minHeight'] = `${totalHeight}px`;
+            contentRef.current.style.minHeight = `${totalHeight}px`;
         }
     }, [iconCount]);
 
     return (
         <div className="icons-grid" ref={contentRef}>
-            {iconsPromise !== null && (
-                <Suspense>
-                    <IconsContent iconsPromise={iconsPromise} />
-                </Suspense>
-            )}
+            <Suspense>
+                <IconsContent iconsPromise={iconsPromise} />
+            </Suspense>
         </div>
     );
 }

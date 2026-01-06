@@ -16,6 +16,14 @@ export async function getRepositories(): Promise<Repository[]> {
     return rows;
 }
 
+export async function getRepositoriesWithIconCount(): Promise<RepositoryWithIconCount[]> {
+    // TODO: Implement this function to return repositories along with their icon counts
+    const rows = await dbClient`
+        
+    `;
+    return rows;
+}
+
 export async function getRepositoryDirectories(): Promise<RepositoryDirectories[]> {
     const rows = await dbClient`
         SELECT 
