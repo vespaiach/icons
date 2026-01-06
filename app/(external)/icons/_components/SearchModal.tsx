@@ -7,7 +7,7 @@ import { cx } from '@/utils/common-helpers';
 export default function SearchModal({
     repositories
 }: {
-    repositories: Array<{ id: number; name: string; iconCount: number }>;
+    repositories: Array<{ id: number; name: string; iconCount?: number }>;
 }) {
     const [selectedRepo, setSelectedRepo] = useState<Record<number, boolean | undefined>>(
         Object.fromEntries(repositories.map((repo) => [repo.id, false]))
@@ -42,7 +42,8 @@ export default function SearchModal({
                                     [repo.id]: !selectedRepo[repo.id]
                                 });
                             }}>
-                            {repo.name.toLowerCase()} ({repo.iconCount})
+                            {repo.name.toLowerCase()}
+                            {repo.iconCount !== undefined && repo.iconCount !== null ? ` (${repo.iconCount})` : ''}
                         </button>
                     ))}
                 </div>

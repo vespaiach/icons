@@ -1,53 +1,17 @@
 import { dbClient } from './db.client';
 
-export async function getRepositoriesWithIconCount (): Promise<RepositoryWithIconCount[]> {
+export async function getRepositories(): Promise<Repository[]> {
     const rows = await dbClient`
-        WITH dir_icons AS (
-            SELECT 
-                d.repository_id,
-                COUNT(i.id) AS icon_count
-            FROM directories d
-            LEFT JOIN icons i ON d.id = i.directory_id
-            GROUP BY d.repository_id
-        )
         SELECT 
-            r.id,
-            r.owner,
-            r.name,
-            r.ref,
-            r.github_id AS "githubId",
-            r.created_at AS "createdAt",
-            r.last_imported_at AS "lastImportedAt",
-            COALESCE(di.icon_count, 0) AS "iconCount"
-        FROM repositories r
-        LEFT JOIN dir_icons di ON r.id = di.repository_id
-        ORDER BY r.name ASC;
-    `;
-    return rows;
-}
-
-export async function getRepositoriesWithIconCount (): Promise<RepositoryWithIconCount[]> {
-    const rows = await dbClient`
-        WITH dir_icons AS (
-            SELECT 
-                d.repository_id,
-                COUNT(i.id) AS icon_count
-            FROM directories d
-            LEFT JOIN icons i ON d.id = i.directory_id
-            GROUP BY d.repository_id
-        )
-        SELECT 
-            r.id,
-            r.owner,
-            r.name,
-            r.ref,
-            r.github_id AS "githubId",
-            r.created_at AS "createdAt",
-            r.last_imported_at AS "lastImportedAt",
-            COALESCE(di.icon_count, 0) AS "iconCount"
-        FROM repositories r
-        LEFT JOIN dir_icons di ON r.id = di.repository_id
-        ORDER BY r.name ASC;
+            id,
+            owner,
+            name,
+            ref,
+            github_id AS "githubId",
+            created_at AS "createdAt",
+            last_imported_at AS "lastImportedAt"
+        FROM repositories
+        ORDER BY name ASC;
     `;
     return rows;
 }

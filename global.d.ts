@@ -9,10 +9,6 @@ declare global {
         lastImportedAt: Date | null;
     }
 
-    interface RepositoryWithIconCount extends Repository {
-        iconCount: number;
-    }
-
     interface Directory {
         id: number;
         path: string;

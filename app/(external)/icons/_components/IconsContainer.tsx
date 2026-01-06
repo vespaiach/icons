@@ -1,33 +1,37 @@
 'use client';
 
-import { Suspense, use, useEffect, useRef, useState } from 'react';
-import { getIconsByRepositoryIdAction } from '../actions';
+import { Suspense, use, useEffect, useRef } from 'react';
 
 const ICON_SIZE = 56; // in pixels
 
-export default function IconsContainer({
-    repositories
-}: {
-    repositories: Array<{ id: number; name: string; iconCount: number }>;
-}) {
-    const containerRef = useRef<HTMLDivElement>(null);
+interface ShortRepository {
+    id: number;
+    name: string;
+    iconCount?: number;
+}
 
+export default function IconsContainer({
+    repository,
+    iconsPromise
+}: {
+    repository: ShortRepository;
+    iconsPromise: Promise<IconWithDirectoryVariant[]>;
+}) {
     return (
-        <div ref={containerRef}>
-            {repositories.map((repo) => (
-                <div key={repo.id} className="pb-8">
-                    <h2 className="font-semibold text-lg mb-3 capitalize">
-                        {repo.name} ({repo.iconCount})
-                    </h2>
-                    <IconsGrid repository={repo} />
-                </div>
-            ))}
+        <div className="pb-8">
+            <h2 className="font-semibold text-lg mb-3 capitalize">
+                {repository.name}
+                {repository.iconCount !== undefined && repository.iconCount !== null
+                    ? ` (${repository.iconCount})`
+                    : ''}
+            </h2>
+            <IconsGrid iconsPromise={iconsPromise} />
         </div>
     );
 }
 
-function IconsGrid({ repository }: { repository: { id: number; name: string; iconCount: number } }) {
-    const [iconsPromise, setIconsPromise] = useState<Promise<IconWithDirectoryVariant[]> | null>(null);
+function IconsGrid({ iconsPromise }: { iconsPromise: Promise<IconWithDirectoryVariant[]> }) {
+    const icons = use(iconsPromise);
     const contentRef = useRef<HTMLDivElement>(null);
     const iconCount = repository.iconCount;
 
@@ -40,12 +44,6 @@ function IconsGrid({ repository }: { repository: { id: number; name: string; ico
             contentRef.current.style['minHeight'] = `${totalHeight}px`;
         }
     }, [iconCount]);
-
-    // useEffect(() => {
-    //     if (iconsPromise === null) {
-    //         setIconsPromise(getIconsByRepositoryIdAction(repository.id));
-    //     }
-    // }, [iconsPromise]);
 
     return (
         <div className="icons-grid" ref={contentRef}>

@@ -1,8 +1,8 @@
 import { getIconsByRepositoryId } from '@/db/icons';
-import { getRepositoriesWithIconCount } from '@/db/repositories';
+import { getRepositories } from '@/db/repositories';
 
-export function getAllRepositoriesAction() {
-    return getRepositoriesWithIconCount();
+export function getRepositoriesAction() {
+    return getRepositories();
 }
 
 export async function getIconsByRepositoryIdAction(repositoryId: number) {
