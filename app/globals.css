@@ -27,7 +27,7 @@
     }
 
     .icon {
-        @apply aspect-square rounded-sm bg-base-200 flex items-center justify-between; 
+        @apply aspect-square rounded-sm bg-base-200 flex items-center justify-center; 
     }
 }
 

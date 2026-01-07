@@ -7,6 +7,7 @@ declare module '*/icon.repositories.yaml' {
         directories: {
             variant: string;
             path: string;
+            attributes: { [key: string]: string };
         }[];
     }
 

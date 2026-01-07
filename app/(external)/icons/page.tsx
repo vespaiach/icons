@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import IconsContainer from './_components/IconsContainer';
 import Navbar from './_components/Navbar';
 import SearchModal from './_components/SearchModal';
-import { getIconsByRepositoryIdAction, getRepositoriesAction } from './actions';
+import {  getIconsByRepositoryIdAction, getRepositoriesAction } from './actions';
 
 export default async function PageIcons() {
     const repositories = await getRepositoriesAction();

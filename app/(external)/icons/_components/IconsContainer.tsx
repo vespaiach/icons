@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, use, useEffect, useRef, useState } from 'react';
+import { Fragment, Suspense, use, useEffect, useRef, useState } from 'react';
 import SkeletonIconsContainer from './SkeletonIconsContainer';
 
 const ICON_SIZE = 56; // in pixels
@@ -13,10 +13,10 @@ interface ShortRepository {
 
 export default function IconsContainer({
     repository,
-    iconsPromise
+    iconsPromise,
 }: {
     repository: ShortRepository;
-    iconsPromise: Promise<IconWithDirectoryVariant[]>;
+    iconsPromise: Promise<Icon[]>;
 }) {
     const contentRef = useRef<HTMLDivElement>(null);
     const iconCount = repository.iconCount;
@@ -73,10 +73,25 @@ export default function IconsContainer({
     );
 }
 
-function IconsContent({ iconsPromise }: { iconsPromise: Promise<IconWithDirectoryVariant[]> }) {
+function IconsContent({
+    iconsPromise,
+}: {
+    iconsPromise: Promise<Icon[]>;
+}) {
     const icons = use(iconsPromise);
 
-    return icons.map((icon) => (
-        <div key={icon.id} className="icon" dangerouslySetInnerHTML={{ __html: icon.svgContent }} />
-    ));
+    return icons.map((icon) => {
+        return (
+            <div className="icon" key={icon.id}>
+                <div className="d-tooltip d-tooltip-bottom" data-tip={icon.name}>
+                    <svg
+                        {...icon.svgAttributes}
+                        width={24}
+                        height={24}
+                        dangerouslySetInnerHTML={{ __html: icon.svgContent }}
+                    />
+                </div>
+            </div>
+        );
+    });
 }

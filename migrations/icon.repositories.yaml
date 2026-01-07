@@ -68,7 +68,9 @@ repos:
       - variant: "20/solid" 
         path: "/optimized/20/solid"
       - variant: "24"
-        path: "/optimized/24"
+        path: "/optimized/24/outline"
+      - variant: "24"
+        path: "/optimized/24/solid"
   - owner: "ionic-team"
     name: "ionicons"
     github_id: 13473768

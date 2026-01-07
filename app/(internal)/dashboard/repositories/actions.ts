@@ -6,6 +6,7 @@ import { $ } from 'bun';
 import { createIcon, deleteIconsByRepositoryId } from '@/db/icons';
 import { getRepositoryDirectories, getRepositoryDirectoriesById, updateRepository } from '@/db/repositories';
 import { log } from '@/utils/log.helpers';
+import { extractSvgAttributes, extractSvgInnerContent } from '@/utils/svg-helpers';
 import { parseRepositoryForm } from './validation';
 
 export async function loadRepositoriesAction() {
@@ -128,14 +129,15 @@ async function scanIconDirectories(repo: RepositoryDirectories) {
 
 async function saveIconsToDatabase(directoryId: number, fileName: string, fullPath: string) {
     try {
-        const file = await Bun.file(fullPath);
+        const file = Bun.file(fullPath);
         const svgContent = (await file.text()).trim();
 
         // Extract inner content of SVG tag (remove <svg> wrapper)
         const innerContent = extractSvgInnerContent(svgContent);
+        const { id, width, height, class: _, ...attributes } = extractSvgAttributes(svgContent);
 
         // Insert icon to database
-        await createIcon(directoryId, fileName, innerContent);
+        await createIcon(directoryId, fileName, attributes, innerContent);
 
         log('info', `Saved icon ${fullPath}, from directory id: ${directoryId}`);
     } catch (error) {
@@ -145,18 +147,6 @@ async function saveIconsToDatabase(directoryId: number, fileName: string, fullPa
             error
         );
     }
-}
-
-function extractSvgInnerContent(svgContent: string): string {
-    // Match the opening <svg...> tag and closing </svg> tag, capturing the content in between
-    const match = svgContent.match(/<svg[^>]*>([\s\S]*?)<\/svg>/i);
-    
-    if (match && match[1]) {
-        return match[1].trim();
-    }
-    
-    // If no match found, return original content (fallback)
-    return svgContent;
 }
 
 async function cleanupTemporaryFiles(repo: Repository) {

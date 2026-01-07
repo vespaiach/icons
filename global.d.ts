@@ -15,21 +15,23 @@ declare global {
 
     interface Directory {
         id: number;
+        repositoryId: number;
         path: string;
         variant: string;
+        attributes: { [key: string]: string };
         createdAt: Date;
     }
 
     interface Icon {
         id: string;
-        repositoryId: number;
+        directoryId: number;
         name: string;
         svgContent: string;
+        svgAttributes: { [key: string]: string };
         createdAt: Date;
     }
 
     interface IconWithDirectoryVariant extends Icon {
-        directoryId: number;
         variant: string;
     }
 

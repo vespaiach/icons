@@ -47,6 +47,7 @@ export async function up(sql: SQL): Promise<void> {
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
             directory_id INTEGER REFERENCES directories(id) ON DELETE CASCADE,
             name VARCHAR(255) NOT NULL,
+            svg_attributes JSONB NOT NULL,
             svg_content TEXT NOT NULL,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         )
