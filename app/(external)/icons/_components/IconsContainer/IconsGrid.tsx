@@ -1,27 +1,20 @@
-'use client';
-
-import { Fragment, Suspense, use, useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import { getIconsByRepositoryIdAction } from '../../actions';
+import IconsContent from './IconsContent';
 import SkeletonIconsContainer from './SkeletonIconsContainer';
 
 const ICON_SIZE = 56; // in pixels
 
-interface ShortRepository {
-    id: number;
-    name: string;
-    iconCount: number;
-}
-
-export default function IconsContainer({
-    repository,
-    iconsPromise,
-}: {
-    repository: ShortRepository;
-    iconsPromise: Promise<Icon[]>;
-}) {
+export default function IconsGrid({ repository }: { repository: RepositoryWithIconCount }) {
+    const [iconsPromise, setIconsPromise] = useState<Promise<IconWithRelativeData[]>>();
     const contentRef = useRef<HTMLDivElement>(null);
     const iconCount = repository.iconCount;
     const [shouldRender, setShouldRender] = useState(false);
     const [minHeight, setMinHeight] = useState(0);
+
+    useEffect(() => {
+        setIconsPromise(getIconsByRepositoryIdAction(repository.id));
+    }, []);
 
     useEffect(() => {
         if (contentRef.current) {
@@ -49,7 +42,6 @@ export default function IconsContainer({
         );
 
         observer.observe(element);
-
         return () => {
             observer.disconnect();
         };
@@ -63,7 +55,7 @@ export default function IconsContainer({
                 </h2>
             )}
             <div className="icons-grid" ref={contentRef} style={{ minHeight }}>
-                {shouldRender && (
+                {iconsPromise && shouldRender && (
                     <Suspense fallback={<SkeletonIconsContainer iconCount={iconCount} />}>
                         <IconsContent iconsPromise={iconsPromise} />
                     </Suspense>
@@ -71,27 +63,4 @@ export default function IconsContainer({
             </div>
         </div>
     );
-}
-
-function IconsContent({
-    iconsPromise,
-}: {
-    iconsPromise: Promise<Icon[]>;
-}) {
-    const icons = use(iconsPromise);
-
-    return icons.map((icon) => {
-        return (
-            <div className="icon" key={icon.id}>
-                <div className="d-tooltip d-tooltip-bottom" data-tip={icon.name}>
-                    <svg
-                        {...icon.svgAttributes}
-                        width={24}
-                        height={24}
-                        dangerouslySetInnerHTML={{ __html: icon.svgContent }}
-                    />
-                </div>
-            </div>
-        );
-    });
 }

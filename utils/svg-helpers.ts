@@ -35,7 +35,7 @@ export function extractSvgInnerContent(svgContent: string): string {
     // Match the opening <svg...> tag and closing </svg> tag, capturing the content in between
     const match = svgContent.match(/<svg[^>]*>([\s\S]*?)<\/svg>/i);
 
-    if (match && match[1]) {
+    if (match?.[1]) {
         return match[1].trim();
     }
 

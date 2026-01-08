@@ -28,6 +28,7 @@ export async function getIconsByRepositoryId(repositoryId: number) {
         SELECT 
             i.id,
             i.directory_id AS "directoryId",
+            d.repository_id AS "repositoryId",
             i.name,
             i.svg_content AS "svgContent",
             i.svg_attributes AS "svgAttributes",
@@ -36,5 +37,5 @@ export async function getIconsByRepositoryId(repositoryId: number) {
         WHERE d.repository_id = ${repositoryId}
         ORDER BY i.name ASC
     `;
-    return rows as Icon[];
+    return rows as IconWithRelativeData[];
 }
