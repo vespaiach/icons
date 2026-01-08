@@ -1,8 +1,9 @@
 'use client';
 
-import { Search } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, use, useEffect, useState } from 'react';
+import { nameToId } from '@/utils/common-helpers';
 
 export default function Navbar({
     repositoriesMapPromise
@@ -65,11 +66,9 @@ export default function Navbar({
                 </kbd>
             </button>
             <div className="flex-none">
-                <ul className="d-menu d-menu-horizontal px-1">
-                    <Suspense>
-                        <RepositoriesLinks repositoriesMapPromise={repositoriesMapPromise} />
-                    </Suspense>
-                </ul>
+                <Suspense>
+                    <RepositoriesLinks repositoriesMapPromise={repositoriesMapPromise} />
+                </Suspense>
             </div>
         </div>
     );
@@ -82,21 +81,74 @@ function RepositoriesLinks({
 }) {
     const repositoriesMap = use(repositoriesMapPromise);
     const repositories = Object.values(repositoriesMap).sort((a, b) => a.name.localeCompare(b.name));
+    const [activeRepo, setActiveRepo] = useState<string>('');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    useEffect(() => {
+        const observerOptions = {
+            root: null,
+            rootMargin: '-100px 0px -60% 0px',
+            threshold: 0
+        };
+
+        const observerCallback = (entries: IntersectionObserverEntry[]) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    setActiveRepo(entry.target.id);
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+        // Observe all repository sections
+        repositories.forEach((repo) => {
+            const element = document.getElementById(nameToId(repo.name));
+            if (element) {
+                observer.observe(element);
+            }
+        });
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [repositories]);
+
+    const displayName = activeRepo || repositories[0]?.name || 'Repositories';
 
     return (
-        <li>
-            <details>
-                <summary>Parent</summary>
-                <ul className="bg-base-100 rounded-t-none p-2">
-                    {repositories.map((repo) => (
-                        <li key={repo.id}>
-                            <a className="d-link capitalize" href={`#${repo.name}`}>
-                                {repo.name}
-                            </a>
-                        </li>
-                    ))}
-                </ul>
-            </details>
-        </li>
+        <div
+            className={`d-dropdown d-dropdown-end ${isDropdownOpen ? 'd-dropdown-open' : 'd-dropdown-close'}`}>
+            <div
+                tabIndex={0}
+                role="button"
+                className="capitalize flex items-center gap-1 d-btn d-btn-ghost"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                {displayName}
+                {isDropdownOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </div>
+            <ul
+                tabIndex={-1}
+                className="d-dropdown-content d-menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                {repositories.map((repo) => (
+                    <li key={repo.id}>
+                        <a
+                            className="d-link capitalize"
+                            href={`#${nameToId(repo.name)}`}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                const element = document.getElementById(nameToId(repo.name));
+                                if (element) {
+                                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }
+                                // Close dropdown
+                                setIsDropdownOpen(false);
+                            }}>
+                            {repo.name}
+                        </a>
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
 }

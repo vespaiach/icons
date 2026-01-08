@@ -50,9 +50,9 @@ export default function IconsGrid({
     if (filteredIcons.length === 0) return null;
 
     return (
-        <div className="pb-8 px-4">
+        <div className="pb-8 px-4" id={nameToId(repository.name)} style={{ scrollMarginTop: '72px' }}>
             <div className="mb-4">
-                <h2 className="font-semibold text-lg capitalize" id={nameToId(repository.name)}>
+                <h2 className="font-semibold text-lg capitalize">
                     {repository.name} ({filteredIcons.length})
                 </h2>
                 <a
