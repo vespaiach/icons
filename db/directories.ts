@@ -8,7 +8,7 @@ export async function getDirectories(): Promise<Directory[]> {
             variant,
             path,
             created_at AS "createdAt"
-        FROM directories;
+        FROM directories
         ORDER BY id ASC
     `;
     return rows as Directory[];

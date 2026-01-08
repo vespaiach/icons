@@ -10,6 +10,7 @@ interface IconContextType {
 const IconContext = createContext<IconContextType | undefined>(undefined);
 
 export function SelectedIconProvider({ children }: { children: ReactNode }) {
+    console.log('SelectedIconProvider rendered');
     const [selectedIcon, setSelectedIcon] = useState<IconWithRelativeData | null>(null);
 
     useEffect(() => {

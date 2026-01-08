@@ -1,3 +1,5 @@
+'use client';
+
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { getIconsByRepositoryIdAction } from '../../actions';
 import IconsContent from './IconsContent';
@@ -14,7 +16,7 @@ export default function IconsGrid({ repository }: { repository: RepositoryWithIc
 
     useEffect(() => {
         setIconsPromise(getIconsByRepositoryIdAction(repository.id));
-    }, []);
+    }, [repository.id]);
 
     useEffect(() => {
         if (contentRef.current) {

@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { Suspense } from 'react';
 import IconsContainer from './_components/IconsContainer';
 import Navbar from './_components/Navbar';
 import SearchModal from './_components/SearchModal';
@@ -11,11 +11,15 @@ export default async function PageIcons() {
     return (
         <>
             <Navbar />
-            <IconsContainer
-                repositoriesMapPromise={repositoriesMapPromise}
-                directoriesMapPromise={directoriesMapPromise}
-            />
-            <SearchModal repositoriesMapPromise={repositoriesMapPromise} />
+            <Suspense fallback={<div>Loading IconsContainer...</div>}>
+                <IconsContainer
+                    repositoriesMapPromise={repositoriesMapPromise}
+                    directoriesMapPromise={directoriesMapPromise}
+                />
+            </Suspense>
+            <Suspense fallback={<div>Loading IconsContainer...</div>}>
+                <SearchModal repositoriesMapPromise={repositoriesMapPromise} />
+            </Suspense>
         </>
     );
 }

@@ -24,6 +24,7 @@ export async function up(sql: SQL): Promise<void> {
             owner VARCHAR(255) NOT NULL,
             name VARCHAR(255) NOT NULL,
             ref VARCHAR(255) NOT NULL,
+            license VARCHAR(255),
             github_id INTEGER NOT NULL UNIQUE,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
             last_imported_at TIMESTAMPTZ,

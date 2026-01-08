@@ -1,7 +1,6 @@
-/** biome-ignore-all lint/security/noDangerouslySetInnerHtml: <explanation> */
 'use client';
 
-import { Suspense, use } from 'react';
+import { use } from 'react';
 import BottomModal from './BottomModal';
 import { SelectedIconProvider } from './IconContext';
 import IconsGrid from './IconsGrid';
@@ -13,26 +12,18 @@ export default function IconsContainer({
     repositoriesMapPromise: Promise<Record<number, RepositoryWithIconCount>>;
     directoriesMapPromise: Promise<Record<number, Directory>>;
 }) {
+    const repositoriesMap = use(repositoriesMapPromise);
+    const directoriesMap = use(directoriesMapPromise);
+
     return (
         <SelectedIconProvider>
-            <Suspense>
-                <IconsSections repositoriesMapPromise={repositoriesMapPromise} />
-                <BottomModal
-                    repositoriesMapPromise={repositoriesMapPromise}
-                    directoriesMapPromise={directoriesMapPromise}
-                />
-            </Suspense>
+            <IconsSections repositoriesMap={repositoriesMap} />
+            <BottomModal repositoriesMap={repositoriesMap} directoriesMap={directoriesMap} />
         </SelectedIconProvider>
     );
 }
 
-function IconsSections({
-    repositoriesMapPromise
-}: {
-    repositoriesMapPromise: Promise<Record<number, RepositoryWithIconCount>>;
-}) {
-    const repositoriesMap = use(repositoriesMapPromise);
-
+function IconsSections({ repositoriesMap }: { repositoriesMap: Record<number, RepositoryWithIconCount> }) {
     return (
         <div className="mt-6">
             {Object.keys(repositoriesMap)

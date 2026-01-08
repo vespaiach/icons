@@ -1,3 +1,5 @@
+'use client';
+
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: this is skeleton loading, don't care about rerendering */
 export default function SkeletonIconsContainer({ iconCount }: { iconCount: number }) {
     return Array.from({ length: iconCount }, (_, index) => (

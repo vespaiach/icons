@@ -1,16 +1,19 @@
 'use client';
 
 import { Search } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import { cx } from '@/utils/common-helpers';
 
 export default function SearchModal({
-    repositories
+    repositoriesMapPromise
 }: {
-    repositories: Array<{ id: number; name: string; iconCount?: number }>;
+    repositoriesMapPromise: Promise<Record<number, RepositoryWithIconCount>>;
 }) {
-    const [selectedRepo, setSelectedRepo] = useState<Record<number, boolean | undefined>>(
-        Object.fromEntries(repositories.map((repo) => [repo.id, false]))
+    console.log('Render SearchModal');
+    const repositoriesMap = use(repositoriesMapPromise);
+    const repositories = Object.values(repositoriesMap).sort((a, b) => a.name.localeCompare(b.name));
+    const [selectedRepo, setSelectedRepo] = useState<Record<number, boolean | undefined>>(() =>
+        Object.fromEntries((repositories || []).map((repo) => [repo.id, false]))
     );
     const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -28,7 +31,7 @@ export default function SearchModal({
                     </label>
                 </div>
                 <div className="px-4 py-2 space-x-1">
-                    {repositories.map((repo) => (
+                    {(repositories || []).map((repo) => (
                         <button
                             type="button"
                             key={repo.id}
@@ -43,7 +46,9 @@ export default function SearchModal({
                                 });
                             }}>
                             {repo.name.toLowerCase()}
-                            {repo.iconCount !== undefined && repo.iconCount !== null ? ` (${repo.iconCount})` : ''}
+                            {repo.iconCount !== undefined && repo.iconCount !== null
+                                ? ` (${repo.iconCount})`
+                                : ''}
                         </button>
                     ))}
                 </div>
