@@ -1,6 +1,7 @@
 'use client';
 
 import { Search } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { use, useEffect, useRef, useState } from 'react';
 import { cx } from '@/utils/common-helpers';
 
@@ -9,25 +10,61 @@ export default function SearchModal({
 }: {
     repositoriesMapPromise: Promise<Record<number, RepositoryWithIconCount>>;
 }) {
-    console.log('Render SearchModal');
     const repositoriesMap = use(repositoriesMapPromise);
     const repositories = Object.values(repositoriesMap).sort((a, b) => a.name.localeCompare(b.name));
     const [selectedRepo, setSelectedRepo] = useState<Record<number, boolean | undefined>>(() =>
         Object.fromEntries((repositories || []).map((repo) => [repo.id, false]))
     );
     const searchInputRef = useRef<HTMLInputElement>(null);
+    const router = useRouter();
 
     useEffect(() => {
-        searchInputRef.current?.focus();
+        const handleModalOpening = () => {
+            // Read query string when modal is opening
+            const params = new URLSearchParams(window.location.search);
+            const query = params.get('q') || '';
+
+            if (searchInputRef.current) {
+                searchInputRef.current.value = query;
+                searchInputRef.current?.focus();
+            }
+        };
+
+        window.addEventListener('searchModalOpening', handleModalOpening);
+        return () => window.removeEventListener('searchModalOpening', handleModalOpening);
     }, []);
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const query = formData.get('search') as string;
+
+        if (query) {
+            // Update URL with query string using Next.js router
+            router.push(`?q=${encodeURIComponent(query)}`);
+        } else {
+            router.push(`/icons/`);
+        }
+
+        // Close modal
+        const searchModal = document.getElementById('search_modal') as HTMLDialogElement;
+        if (searchModal) {
+            searchModal.close();
+        }
+    };
 
     return (
         <dialog id="search_modal" className="d-modal items-start pt-12">
-            <form className="d-modal-box pt-0 px-0">
+            <form className="d-modal-box pt-0 px-0" onSubmit={handleSubmit}>
                 <div className="border-b border-gray-300">
                     <label className="d-input d-input-ghost d-input-lg w-full outline-none">
                         <Search className="w-5" />
-                        <input type="search" ref={searchInputRef} required placeholder="Type to search…" />
+                        <input
+                            type="search"
+                            name="search"
+                            ref={searchInputRef}
+                            placeholder="Type to search…"
+                        />
                     </label>
                 </div>
                 <div className="px-4 py-2 space-x-1">

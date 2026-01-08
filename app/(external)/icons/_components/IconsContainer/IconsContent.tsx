@@ -1,10 +1,8 @@
 'use client';
 
-import { use } from 'react';
 import { useSelectedIcon } from './IconContext';
 
-export default function IconsContent({ iconsPromise }: { iconsPromise: Promise<IconWithRelativeData[]> }) {
-    const icons = use(iconsPromise);
+export default function IconsContent({ icons }: { icons: IconWithRelativeData[] }) {
     const { setSelectedIcon } = useSelectedIcon();
 
     return icons.map((icon) => {

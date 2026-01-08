@@ -10,7 +10,7 @@ export default async function PageIcons() {
 
     return (
         <>
-            <Navbar />
+            <Navbar repositoriesMapPromise={repositoriesMapPromise} />
             <Suspense fallback={<div>Loading IconsContainer...</div>}>
                 <IconsContainer
                     repositoriesMapPromise={repositoriesMapPromise}

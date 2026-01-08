@@ -1,10 +1,9 @@
 'use client';
 
 import { Copy, Download, ExternalLink, Star } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import useDownloadIconTsx from '@/hooks/useDownloadIconTsx';
 import useDownloadRawIcon from '@/hooks/useDownloadRawIcon';
-import useGithubStarCount from '@/hooks/useGithubStarCount';
 import useGithubRepoInfo from '@/hooks/useGithubStarCount';
 import { assertDate, assertNumber, assertString } from '@/utils/assert-helpers';
 import { cx } from '@/utils/common-helpers';

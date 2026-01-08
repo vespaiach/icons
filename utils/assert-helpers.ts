@@ -9,3 +9,15 @@ export function assertDate(value: Date | null | undefined): value is Date {
 export function assertString(value: string | null | undefined): value is string {
     return value !== null && value !== undefined && typeof value === 'string';
 }
+
+export function assertTruthy<T>(value: T | null | undefined): value is T {
+    return Boolean(value);
+}
+
+export function assertArray<T>(value: T[] | null | undefined): value is T[] {
+    return value !== null && value !== undefined && Array.isArray(value);
+}
+
+export function assertNotEmptyArray<T>(value: T[] | null | undefined): value is T[] {
+    return value !== null && value !== undefined && Array.isArray(value) && value.length > 0;
+}

@@ -11,18 +11,11 @@ export function cx(...name: unknown[]): string | undefined {
     );
 }
 
-export function assertString(value: string | null | undefined): value is string {
-    return value !== null && value !== undefined && value !== '';
-}
-
-export function assertArray<T>(value: T[] | null | undefined): value is T[] {
-    return value !== null && value !== undefined && Array.isArray(value);
-}
-
-export function assertNotEmptyArray<T>(value: T[] | null | undefined): value is T[] {
-    return value !== null && value !== undefined && Array.isArray(value) && value.length > 0;
-}
-
-export function assertTruthy<T>(value: T | null | undefined): value is T {
-    return Boolean(value);
+export function nameToId(name: string): string {
+    return name
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '') // Remove non-word chars (except spaces/hyphens)
+        .replace(/[\s_-]+/g, '-') // Replace spaces/underscores with a single hyphen
+        .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
 }
