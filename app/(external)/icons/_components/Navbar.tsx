@@ -3,6 +3,7 @@
 import { ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, use, useEffect, useState } from 'react';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { nameToId } from '@/utils/common-helpers';
 
 export default function Navbar({
@@ -65,7 +66,8 @@ export default function Navbar({
                     )}
                 </kbd>
             </button>
-            <div className="flex-none">
+            <div className="flex-none gap-2">
+                <ThemeSwitcher />
                 <Suspense>
                     <RepositoriesLinks repositoriesMapPromise={repositoriesMapPromise} />
                 </Suspense>

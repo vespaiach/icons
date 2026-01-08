@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronUp, CloudDownload, LogOut, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import Image from 'next/image';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { getAuthSession } from '@/utils/session';
 import SignOutForm from './_component/SignOutForm';
 
@@ -19,8 +20,10 @@ export default async function InternalLayout({ children }: { children: React.Rea
                         <PanelRightOpen className="block peer-checked/toggler:hidden" />
                     </label>
                     <div className="px-4">Navbar Title</div>
-                    <details className="d-dropdown ml-auto group cursor-pointer">
-                        <summary className="flex items-center gap-1">
+                    <div className="ml-auto flex items-center gap-2">
+                        <ThemeSwitcher />
+                        <details className="d-dropdown group cursor-pointer">
+                            <summary className="flex items-center gap-1">
                             {!!session.userProfilePictureUrl && (
                                 <div className="d-avatar">
                                     <div className="w-8 rounded-full">
@@ -51,6 +54,7 @@ export default async function InternalLayout({ children }: { children: React.Rea
                             </li>
                         </ul>
                     </details>
+                    </div>
                 </nav>
                 <div className="p-5">{children}</div>
             </div>
