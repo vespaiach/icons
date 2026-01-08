@@ -3,7 +3,7 @@
 import { Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { use, useEffect, useRef, useState } from 'react';
-import { cx } from '@/utils/common-helpers';
+import { cx, nameToId } from '@/utils/common-helpers';
 
 export default function SearchModal({
     repositoriesMapPromise
@@ -76,11 +76,14 @@ export default function SearchModal({
                                 'd-badge d-badge-sm cursor-pointer',
                                 selectedRepo[repo.id] ? 'd-badge-secondary' : 'd-badge-ghost'
                             )}
-                            onClick={() => {
-                                setSelectedRepo({
-                                    ...selectedRepo,
-                                    [repo.id]: !selectedRepo[repo.id]
-                                });
+                            onClick={(e) => {
+                                e.preventDefault();
+                                const element = document.getElementById(nameToId(repo.name));
+                                if (element) {
+                                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }
+                                const modal = document.getElementById('search_modal') as HTMLDialogElement;
+                                modal?.close();
                             }}>
                             {repo.name.toLowerCase()}
                             {repo.iconCount !== undefined && repo.iconCount !== null

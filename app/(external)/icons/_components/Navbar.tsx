@@ -43,8 +43,8 @@ export default function Navbar({
     }, []);
 
     return (
-        <div className="d-navbar bg-base-100 shadow-sm justify-between sticky top-0 z-10">
-            <a href="/icons/" className="btn btn-ghost font-mono font-semibold text-sm">
+        <div className="d-navbar bg-base-100 min-h-10 px-4 shadow-sm justify-between sticky top-0 z-10">
+            <a href="/icons/" className="btn btn-ghost font-mono font-semibold text-sm text-primary">
                 ICONS
             </a>
             <button type="button" className="d-btn d-btn-ghost md:hidden" onClick={openModel}>
