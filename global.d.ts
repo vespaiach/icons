@@ -18,8 +18,20 @@ declare global {
         path: string;
         name: string;
         regex: string;
+        svgRootAttributes: {
+            stroke?: string;
+            fill?: string;
+            strokeWidth?: string;
+            width?: string;
+            height?: string;
+        };
         createdAt: Date;
         updatedAt: Date;
+    }
+
+    interface VariantWithRepository extends Variant {
+        repositoryOwner: string;
+        repositoryName: string;
     }
 
     interface SvgNode {
@@ -43,6 +55,10 @@ declare global {
 
     interface RepositoryVariants extends Repository {
         variants: Variant[];
+    }
+
+    interface RepositoryVariantsWithIconCount extends RepositoryVariants {
+        iconCount: number;
     }
 
     interface User {

@@ -4,13 +4,17 @@ import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { $ } from 'bun';
 import { createIcon, deleteIconsByRepositoryId } from '@/db/icons';
-import { getRepositoryVariants, getRepositoryVariantsById, updateRepository } from '@/db/repositories';
+import {
+    getRepositoryVariantsById,
+    getRepositoryVariantsWithIconCount,
+    updateRepository
+} from '@/db/repositories';
 import { log } from '@/utils/log.helpers';
 import { parseSvgToAst } from '@/utils/svg-helpers';
 import { parseRepositoryForm } from './validation';
 
 export async function loadRepositoriesAction() {
-    return await getRepositoryVariants();
+    return await getRepositoryVariantsWithIconCount();
 }
 
 export async function importFromRepositoryAction(

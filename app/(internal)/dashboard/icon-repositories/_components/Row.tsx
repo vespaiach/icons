@@ -4,7 +4,13 @@ import { useActionState } from 'react';
 import { importFromRepositoryAction } from '../actions';
 import Form from './Form';
 
-export default function Row({ repository, order }: { order: number; repository: Repository }) {
+export default function Row({
+    repository,
+    order
+}: {
+    order: number;
+    repository: RepositoryVariantsWithIconCount;
+}) {
     const [formState, formAction, isPending] = useActionState(importFromRepositoryAction, {
         ...repository,
         errors: {}
@@ -22,7 +28,16 @@ export default function Row({ repository, order }: { order: number; repository: 
                     {formState.owner}/{formState.name}
                 </a>
             </td>
-            <td>{formState.githubId}</td>
+            <td>
+                <div className="flex flex-wrap gap-1">
+                    {repository.variants.map((variant) => (
+                        <span key={variant.id} className="d-badge d-badge-sm">
+                            {variant.name}
+                        </span>
+                    ))}
+                </div>
+            </td>
+            <td>{repository.iconCount.toLocaleString()}</td>
             <td>{formState.lastImportedAt ? formState.lastImportedAt.toLocaleString() : 'Never'}</td>
             <td>
                 <Form formState={formState} isPending={isPending} formAction={formAction} />

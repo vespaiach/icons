@@ -1,4 +1,12 @@
-import { ChevronDown, ChevronUp, CloudDownload, LogOut, PanelRightClose, PanelRightOpen } from 'lucide-react';
+import {
+    ChevronDown,
+    ChevronUp,
+    CloudDownload,
+    LogOut,
+    Paintbrush,
+    PanelRightClose,
+    PanelRightOpen
+} from 'lucide-react';
 import Image from 'next/image';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { getAuthSession } from '@/utils/session';
@@ -73,11 +81,20 @@ export default async function InternalLayout({ children }: { children: React.Rea
                     <ul className="d-menu w-full grow">
                         <li>
                             <a
-                                href="/dashboard/repositories"
+                                href="/dashboard/icon-repositories"
                                 className="d-is-drawer-close:d-tooltip d-is-drawer-close:d-tooltip-right"
                                 data-tip="Import Icons">
                                 <CloudDownload className="w-4" />
-                                <span className="d-is-drawer-close:hidden">Import Icons</span>
+                                <span className="d-is-drawer-close:hidden">Icon Repositories</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="/dashboard/icon-variants"
+                                className="d-is-drawer-close:d-tooltip d-is-drawer-close:d-tooltip-right"
+                                data-tip="Icon Variants">
+                                <Paintbrush className="w-4" />
+                                <span className="d-is-drawer-close:hidden">Icon Variants</span>
                             </a>
                         </li>
                     </ul>

@@ -7,16 +7,17 @@ export default async function RepositoriesManagementPage() {
 
     return (
         <div>
-            <h1 className="text-xl font-semibold mb-8">Repositories Management</h1>
+            <h1 className="text-xl font-semibold mb-8">Icon Repositories</h1>
             <Box>
-                <BoxHeader>Icon Repositories</BoxHeader>
+                <BoxHeader>List of Repositories</BoxHeader>
                 <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
                     <table className="d-table">
                         <thead>
                             <tr>
                                 <th></th>
                                 <th>Name</th>
-                                <th>Github Id</th>
+                                <th>Variants</th>
+                                <th>Icon Count</th>
                                 <th>Last Import At</th>
                                 <th></th>
                             </tr>
