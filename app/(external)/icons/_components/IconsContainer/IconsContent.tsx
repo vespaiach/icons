@@ -1,5 +1,6 @@
 'use client';
 
+import { astToInnerHtml } from '@/utils/svg-helpers';
 import { usePageContext } from '../PageContext';
 
 export default function IconsContent({ icons }: { icons: IconWithRelativeData[] }) {
@@ -16,10 +17,10 @@ export default function IconsContent({ icons }: { icons: IconWithRelativeData[] 
                     className="cursor-pointer d-tooltip d-tooltip-bottom"
                     data-tip={icon.name}>
                     <svg
-                        {...icon.svgAttributes}
+                        {...icon.svgAst.attrs}
                         width={24}
                         height={24}
-                        dangerouslySetInnerHTML={{ __html: icon.svgContent }}
+                        dangerouslySetInnerHTML={{ __html: astToInnerHtml(icon.svgAst) }}
                     />
                 </button>
             </div>

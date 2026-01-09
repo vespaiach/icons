@@ -5,20 +5,21 @@ import { use, useState } from 'react';
 import useDownloadIconTsx from '@/hooks/useDownloadIconTsx';
 import useDownloadRawIcon from '@/hooks/useDownloadRawIcon';
 import { cx } from '@/utils/common-helpers';
+import { astToInnerHtml } from '@/utils/svg-helpers';
 import { usePageContext } from '../PageContext';
 import RepositoryInfo from '../RepositoryInfo';
 
 const gridLineNumber = new Array(24).fill(0);
 
 export default function BottomModal({
-    directoriesMapPromise
+    variantsMapPromise
 }: {
-    directoriesMapPromise: Promise<Record<number, Directory>>;
+    variantsMapPromise: Promise<Record<number, Variant>>;
 }) {
-    const directoriesMap = use(directoriesMapPromise);
+    const variantsMap = use(variantsMapPromise);
     const { selectedIcon, setSelectedIcon, repositoriesMap } = usePageContext();
     const repository = selectedIcon ? repositoriesMap[selectedIcon.repositoryId] : null;
-    const directory = selectedIcon ? directoriesMap[selectedIcon.directoryId] : null;
+    const variant = selectedIcon ? variantsMap[selectedIcon.variantId] : null;
 
     const handleClose = () => {
         setSelectedIcon(null);
@@ -27,11 +28,11 @@ export default function BottomModal({
     return (
         <dialog id="bottom_panel" className="d-modal d-modal-bottom">
             <div className="d-modal-box">
-                {selectedIcon && repository && directory && (
+                {selectedIcon && repository && variant && (
                     <SelectedIconDetails
                         selectedIcon={selectedIcon}
                         repository={repository}
-                        directory={directory}
+                        variant={variant}
                     />
                 )}
             </div>
@@ -48,11 +49,11 @@ export default function BottomModal({
 function SelectedIconDetails({
     selectedIcon,
     repository,
-    directory
+    variant: _variant
 }: {
     selectedIcon: IconWithRelativeData;
     repository: Repository;
-    directory: Directory;
+    variant: Variant;
 }) {
     const [copied, setCopied] = useState(false);
     const handleDownloadTSX = useDownloadIconTsx(selectedIcon);
@@ -60,11 +61,11 @@ function SelectedIconDetails({
 
     // State for adjustable properties
     const [iconSize, setIconSize] = useState(200);
-    const [strokeColor, setStrokeColor] = useState(selectedIcon.svgAttributes.stroke || null);
+    const [strokeColor, setStrokeColor] = useState(selectedIcon.svgAst.attrs.stroke || null);
     const [strokeWidth, setStrokeWidth] = useState(
-        selectedIcon.svgAttributes['stroke-width'] ? Number(selectedIcon.svgAttributes['stroke-width']) : null
+        selectedIcon.svgAst.attrs['stroke-width'] ? Number(selectedIcon.svgAst.attrs['stroke-width']) : null
     );
-    const [fillColor, setFillColor] = useState(selectedIcon.svgAttributes.fill || null);
+    const [fillColor, setFillColor] = useState(selectedIcon.svgAst.attrs.fill || null);
 
     const getAdjustedAttributes = () =>
         Object.fromEntries(
@@ -101,7 +102,7 @@ function SelectedIconDetails({
                         ))}
                     </svg>
                     <svg
-                        {...selectedIcon.svgAttributes}
+                        {...selectedIcon.svgAst.attrs}
                         fill={fillColor === 'none' ? 'none' : fillColor || undefined}
                         stroke={strokeColor || undefined}
                         strokeWidth={strokeWidth || undefined}
@@ -109,7 +110,7 @@ function SelectedIconDetails({
                         height={iconSize}
                         className="z-10"
                         // biome-ignore lint/security/noDangerouslySetInnerHtml: have to use it to render SVG content
-                        dangerouslySetInnerHTML={{ __html: selectedIcon.svgContent }}
+                        dangerouslySetInnerHTML={{ __html: astToInnerHtml(selectedIcon.svgAst) }}
                     />
                 </div>
             </div>

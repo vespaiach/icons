@@ -5,7 +5,6 @@ import { importFromRepositoryAction } from '../actions';
 import Form from './Form';
 
 export default function Row({ repository, order }: { order: number; repository: Repository }) {
-    console.log('Render Row', repository.id);
     const [formState, formAction, isPending] = useActionState(importFromRepositoryAction, {
         ...repository,
         errors: {}

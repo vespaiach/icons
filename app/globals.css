@@ -2,7 +2,9 @@
 
 @plugin "daisyui" {
     prefix: "d-";
-    themes: light --default, dracula --prefersdark;
+    themes:
+        light --default,
+        dracula --prefersdark;
 }
 
 @layer components {
@@ -26,7 +28,6 @@
         @apply aspect-square rounded-sm bg-base-200 flex items-center justify-center;
     }
 }
-
 
 body {
     font-family: var(--font-inclusive-sans);

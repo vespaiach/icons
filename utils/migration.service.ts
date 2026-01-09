@@ -71,14 +71,10 @@ export class MigrationService {
         const executedVersions = new Set(executed.map((m) => m.version));
 
         const files = readdirSync(MIGRATION_DIR)
-            .filter(
-                (f) => f.endsWith('.ts') && !f.includes('migration.service')
-            )
+            .filter((f) => f.endsWith('.ts') && !f.includes('migration.service'))
             .sort();
 
-        return files.filter(
-            (f) => !executedVersions.has(f.replace(/\.(ts|js)$/, ''))
-        );
+        return files.filter((f) => !executedVersions.has(f.replace(/\.(ts|js)$/, '')));
     }
 
     async migrate(steps?: number): Promise<void> {
@@ -134,9 +130,7 @@ export class MigrationService {
 
         for (const record of toRollback) {
             const version = record.version;
-            const file = readdirSync(MIGRATION_DIR).find((f) =>
-                f.startsWith(version)
-            );
+            const file = readdirSync(MIGRATION_DIR).find((f) => f.startsWith(version));
 
             if (!file) {
                 this.logError(`✗ Migration file not found for: ${version}`);
@@ -197,11 +191,7 @@ export class MigrationService {
     }
 
     async create(name: string): Promise<void> {
-        const timestamp = new Date()
-            .toISOString()
-            .replace(/[-:]/g, '')
-            .replace(/\..+/, '')
-            .replace('T', '_');
+        const timestamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+/, '').replace('T', '_');
 
         const filename = `${timestamp}_${name}.ts`;
         const filepath = join(MIGRATION_DIR, filename);
@@ -242,9 +232,7 @@ export async function down(sql: SQL): Promise<void> {
 if (import.meta.main) {
     const args = process.argv.slice(2);
     const verbose = args.includes('--verbose') || args.includes('-v');
-    const filteredArgs = args.filter(
-        (arg) => arg !== '--verbose' && arg !== '-v'
-    );
+    const filteredArgs = args.filter((arg) => arg !== '--verbose' && arg !== '-v');
     const command = filteredArgs[0];
 
     const service = new MigrationService(verbose);
@@ -252,17 +240,13 @@ if (import.meta.main) {
     try {
         switch (command) {
             case 'migrate': {
-                const steps = filteredArgs[1]
-                    ? parseInt(filteredArgs[1], 10)
-                    : undefined;
+                const steps = filteredArgs[1] ? parseInt(filteredArgs[1], 10) : undefined;
                 await service.migrate(steps);
                 break;
             }
 
             case 'rollback': {
-                const rollbackSteps = filteredArgs[1]
-                    ? parseInt(filteredArgs[1], 10)
-                    : 1;
+                const rollbackSteps = filteredArgs[1] ? parseInt(filteredArgs[1], 10) : 1;
                 await service.rollback(rollbackSteps);
                 break;
             }

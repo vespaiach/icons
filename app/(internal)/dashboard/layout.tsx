@@ -24,36 +24,36 @@ export default async function InternalLayout({ children }: { children: React.Rea
                         <ThemeSwitcher />
                         <details className="d-dropdown group cursor-pointer">
                             <summary className="flex items-center gap-1">
-                            {!!session.userProfilePictureUrl && (
-                                <div className="d-avatar">
-                                    <div className="w-8 rounded-full">
-                                        <Image
-                                            src="https://img.daisyui.com/images/profile/demo/yellingcat@192.webp"
-                                            alt={`${session.userName}'s profile picture`}
-                                        />
+                                {!!session.userProfilePictureUrl && (
+                                    <div className="d-avatar">
+                                        <div className="w-8 rounded-full">
+                                            <Image
+                                                src="https://img.daisyui.com/images/profile/demo/yellingcat@192.webp"
+                                                alt={`${session.userName}'s profile picture`}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                            {!session.userProfilePictureUrl && (
-                                <div className="d-avatar d-avatar-placeholder">
-                                    <div className="bg-neutral text-neutral-content w-8 rounded-full">
-                                        <span>{session.userName.charAt(0).toUpperCase()}</span>
+                                )}
+                                {!session.userProfilePictureUrl && (
+                                    <div className="d-avatar d-avatar-placeholder">
+                                        <div className="bg-neutral text-neutral-content w-8 rounded-full">
+                                            <span>{session.userName.charAt(0).toUpperCase()}</span>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                            <p className="text-sm">{session.userName}</p>
-                            <ChevronDown className="w-5 group-open:hidden" />
-                            <ChevronUp className="w-5 hidden group-open:block" />
-                        </summary>
-                        <ul className="d-dropdown-content d-menu d-menu-sm bg-white border border-gray-300 d-rounded-box w-56 right-0 mt-1">
-                            <li>
-                                <a>Item 1</a>
-                            </li>
-                            <li>
-                                <SignOutForm />
-                            </li>
-                        </ul>
-                    </details>
+                                )}
+                                <p className="text-sm">{session.userName}</p>
+                                <ChevronDown className="w-5 group-open:hidden" />
+                                <ChevronUp className="w-5 hidden group-open:block" />
+                            </summary>
+                            <ul className="d-dropdown-content d-menu d-menu-sm bg-white border border-gray-300 d-rounded-box w-56 right-0 mt-1">
+                                <li>
+                                    <a>Item 1</a>
+                                </li>
+                                <li>
+                                    <SignOutForm />
+                                </li>
+                            </ul>
+                        </details>
                     </div>
                 </nav>
                 <div className="p-5">{children}</div>

@@ -1,14 +1,16 @@
 'use client';
 
 import { useCallback } from 'react';
+import { astToInnerHtml } from '@/utils/svg-helpers';
 
 export default function useDownloadRawIcon(icon: Icon) {
     return useCallback(
         (adjustedAttributes: Record<string, string>) => {
-            const { width, height, ...rest } = { ...icon.svgAttributes, ...adjustedAttributes };
+            const { width, height, ...rest } = { ...icon.svgAst.attrs, ...adjustedAttributes };
+            const innerContent = astToInnerHtml(icon.svgAst);
             const svgContent = `<svg width="${width || 24}" height="${height || 24}" ${Object.entries(rest)
                 .map(([key, value]) => `${key}="${value}"`)
-                .join(' ')}>${icon.svgContent}</svg>`;
+                .join(' ')}>${innerContent}</svg>`;
 
             const blob = new Blob([svgContent], { type: 'image/svg+xml' });
             const url = URL.createObjectURL(blob);

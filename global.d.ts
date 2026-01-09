@@ -4,38 +4,45 @@ declare global {
         owner: string;
         name: string;
         ref: string;
-        githubId: number;
-        createdAt: Date;
         lastImportedAt: Date | null;
+        createdAt: Date;
     }
 
     interface RepositoryWithIconCount extends Repository {
         iconCount: number;
     }
 
-    interface Directory {
+    interface Variant {
         id: number;
         repositoryId: number;
         path: string;
-        variant: string;
+        name: string;
+        regex: string;
         createdAt: Date;
+        updatedAt: Date;
+    }
+
+    interface SvgNode {
+        id: string;
+        type: string;
+        attrs: Record<string, string>;
+        children?: SvgNode[];
     }
 
     interface Icon {
         id: string;
         name: string;
-        svgContent: string;
-        svgAttributes: { [key: string]: string };
+        svgAst: SvgNode;
         createdAt: Date;
     }
 
     interface IconWithRelativeData extends Icon {
         repositoryId: number;
-        directoryId: number;
+        variantId: number;
     }
 
-    interface RepositoryDirectories extends Repository {
-        directories: Directory[];
+    interface RepositoryVariants extends Repository {
+        variants: Variant[];
     }
 
     interface User {

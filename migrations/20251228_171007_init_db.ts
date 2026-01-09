@@ -24,8 +24,6 @@ export async function up(sql: SQL): Promise<void> {
             owner VARCHAR(255) NOT NULL,
             name VARCHAR(255) NOT NULL,
             ref VARCHAR(255) NOT NULL,
-            license VARCHAR(255),
-            github_id INTEGER NOT NULL UNIQUE,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
             last_imported_at TIMESTAMPTZ,
             UNIQUE(owner, name)
@@ -33,42 +31,43 @@ export async function up(sql: SQL): Promise<void> {
     `;
 
     await sql`
-        CREATE TABLE IF NOT EXISTS directories (
+        CREATE TABLE IF NOT EXISTS variants (
             id SERIAL PRIMARY KEY, 
             repository_id INTEGER REFERENCES repositories(id) ON DELETE CASCADE,
-            variant VARCHAR(255) NOT NULL,
+            name VARCHAR(255) NOT NULL,
             path VARCHAR(1024) NOT NULL,
+            regex VARCHAR(255) NOT NULL DEFAULT '\\.svg$',
+            svg_root_attributes JSONB NOT NULL DEFAULT '{}'::jsonb,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE(repository_id, path)
+            updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         );
     `;
 
     await sql`
         CREATE TABLE IF NOT EXISTS icons (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            directory_id INTEGER REFERENCES directories(id) ON DELETE CASCADE,
+            variant_id INTEGER REFERENCES variants(id) ON DELETE CASCADE,
             name VARCHAR(255) NOT NULL,
-            svg_attributes JSONB NOT NULL,
-            svg_content TEXT NOT NULL,
-            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-        )
+            svg_ast JSONB NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        );
     `;
 
     for (const repo of repoData.repos) {
         const result = await sql`
-            INSERT INTO repositories (owner, name, ref, github_id)
-            VALUES (${repo.owner}, ${repo.name}, ${repo.ref}, ${repo.github_id})
-            ON CONFLICT (github_id) DO NOTHING
+            INSERT INTO repositories (owner, name, ref)
+            VALUES (${repo.owner}, ${repo.name}, ${repo.ref})
+            ON CONFLICT (owner, name) DO NOTHING
             RETURNING id;
         `;
 
         if (result.length > 0) {
             const repoId = result[0].id;
-            for (const dir of repo.directories) {
+            for (const dir of repo.variants) {
                 await sql`
-                    INSERT INTO directories (repository_id, variant, path)
-                    VALUES (${repoId}, ${dir.variant}, ${dir.path})
-                    ON CONFLICT (repository_id, path) DO NOTHING;
+                    INSERT INTO variants (repository_id, name, path, regex)
+                    VALUES (${repoId}, ${dir.name}, ${dir.path}, ${dir.regex ?? '\\.svg$'});
                 `;
             }
         }
@@ -85,7 +84,7 @@ export async function down(sql: SQL): Promise<void> {
     // Write your rollback here
     await sql`
         DROP TABLE IF EXISTS icons;
-        DROP TABLE IF EXISTS directories;
+        DROP TABLE IF EXISTS variants;
         DROP TABLE IF EXISTS repositories;
         DROP TABLE IF EXISTS users;
     `;

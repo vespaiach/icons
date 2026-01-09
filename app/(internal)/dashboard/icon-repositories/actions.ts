@@ -4,13 +4,13 @@ import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { $ } from 'bun';
 import { createIcon, deleteIconsByRepositoryId } from '@/db/icons';
-import { getRepositoryDirectories, getRepositoryDirectoriesById, updateRepository } from '@/db/repositories';
+import { getRepositoryVariants, getRepositoryVariantsById, updateRepository } from '@/db/repositories';
 import { log } from '@/utils/log.helpers';
-import { extractSvgAttributes, extractSvgInnerContent } from '@/utils/svg-helpers';
+import { parseSvgToAst } from '@/utils/svg-helpers';
 import { parseRepositoryForm } from './validation';
 
 export async function loadRepositoriesAction() {
-    return await getRepositoryDirectories();
+    return await getRepositoryVariants();
 }
 
 export async function importFromRepositoryAction(
@@ -24,7 +24,7 @@ export async function importFromRepositoryAction(
 
     const { repositoryId } = payload;
 
-    const repository = await getRepositoryDirectoriesById(repositoryId);
+    const repository = await getRepositoryVariantsById(repositoryId);
     if (!repository) {
         return {
             ...prevState,
@@ -48,8 +48,8 @@ export async function importFromRepositoryAction(
         return { ...prevState, errors: extractResult.errors };
     }
 
-    // Scan the specified directories for SVG icons and save them to the database
-    await scanIconDirectories(repository);
+    // Scan the specified variants for SVG icons and save them to the database
+    await scanIconVariants(repository);
 
     // Record the import timestamp
     const updatedRepository = await recordImportTimestamp(repository);
@@ -95,16 +95,17 @@ async function extractZipFile(repo: Repository) {
     return null;
 }
 
-async function scanIconDirectories(repo: RepositoryDirectories) {
+async function scanIconVariants(repo: RepositoryVariants) {
     const BATCH_SIZE = Number(Bun.env.PROCESSING_BATCH_SIZE);
 
-    for (const dir of repo.directories) {
-        const fullPath = `${Bun.env.PWD}/tmp/${repo.name}-${repo.ref}${dir.path}`;
-        log('info', `Scanning directories for icons in: ${fullPath}`);
+    for (const variant of repo.variants) {
+        const fullPath = `${Bun.env.PWD}/tmp/${repo.name}-${repo.ref}${variant.path}`;
+        log('info', `Scanning variant directory for icons in: ${fullPath}`);
 
         try {
             const files = await readdir(fullPath);
-            const svgFiles = files.filter((fileName) => fileName.endsWith('.svg'));
+            const r = new RegExp(variant.regex, 'i');
+            const svgFiles = files.filter((fileName) => r.test(fileName));
 
             log('info', `Found ${svgFiles.length} SVG files in ${fullPath}`);
 
@@ -113,12 +114,16 @@ async function scanIconDirectories(repo: RepositoryDirectories) {
                 const batch = svgFiles.slice(i, i + BATCH_SIZE);
                 await Promise.all(
                     batch.map((fileName) =>
-                        saveIconsToDatabase(dir.id, path.parse(fileName).name, path.join(fullPath, fileName))
+                        saveIconsToDatabase(
+                            variant.id,
+                            path.parse(fileName).name,
+                            path.join(fullPath, fileName)
+                        )
                     )
                 );
                 log(
                     'info',
-                    `Processed ${Math.min(i + BATCH_SIZE, svgFiles.length)}/${svgFiles.length} icons from ${dir.path}`
+                    `Processed ${Math.min(i + BATCH_SIZE, svgFiles.length)}/${svgFiles.length} icons from ${variant.path}`
                 );
             }
         } catch (error) {
@@ -127,23 +132,22 @@ async function scanIconDirectories(repo: RepositoryDirectories) {
     }
 }
 
-async function saveIconsToDatabase(directoryId: number, fileName: string, fullPath: string) {
+async function saveIconsToDatabase(variantId: number, fileName: string, fullPath: string) {
     try {
         const file = Bun.file(fullPath);
         const svgContent = (await file.text()).trim();
 
-        // Extract inner content of SVG tag (remove <svg> wrapper)
-        const innerContent = extractSvgInnerContent(svgContent);
-        const { id, width, height, class: _, ...attributes } = extractSvgAttributes(svgContent);
+        // Parse SVG into AST structure
+        const svgAst = parseSvgToAst(svgContent);
 
         // Insert icon to database
-        await createIcon(directoryId, fileName, attributes, innerContent);
+        await createIcon(variantId, fileName, svgAst);
 
-        log('info', `Saved icon ${fullPath}, from directory id: ${directoryId}`);
+        log('info', `Saved icon ${fullPath}, from variant id: ${variantId}`);
     } catch (error) {
         log(
             'error',
-            `Failed to save icon ${fileName} from directory id: ${directoryId} to database (${fullPath})`,
+            `Failed to save icon ${fileName} from variant id: ${variantId} to database (${fullPath})`,
             error
         );
     }

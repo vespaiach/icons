@@ -29,7 +29,7 @@ Components unwrap promises using React's `use()` hook or streaming patterns. See
 Uses **Bun's native SQL driver** via `new SQL(Bun.env.DATABASE_URL)` (see [db/db.client.ts](db/db.client.ts)). Query syntax uses **tagged templates**:
 
 ```typescript
-await dbClient`SELECT * FROM icons WHERE directory_id = ${directoryId}`;
+await dbClient`SELECT * FROM icons WHERE variant_id = ${variantId}`;
 ```
 
 ### Migration System
@@ -43,8 +43,8 @@ Custom migration system in [utils/migration.service.ts](utils/migration.service.
 ### Schema Overview
 
 - **repositories**: GitHub repo metadata (owner, name, ref, github_id)
-- **directories**: Multiple icon variants per repo (e.g., "outline", "solid")
-- **icons**: Parsed SVG data with attributes stored as JSONB
+- **variants**: Multiple icon variants per repo (e.g., "outline", "solid") - each variant has name, path, and regex for matching SVG files
+- **icons**: Parsed SVG data with attributes stored as JSONB, linked to variants via variant_id
 - **users**: Admin authentication
 
 ## Authentication Pattern
@@ -60,11 +60,11 @@ Cookie-based auth with `COOKIE_SECRET` and `COOKIE_MAX_AGE` env vars. Protected 
 
 ## Icon Import Workflow
 
-Repository imports happen in [app/(internal)/dashboard/repositories/actions.ts](app/(internal)/dashboard/repositories/actions.ts):
+Repository imports happen in [app/(internal)/dashboard/icon-repositories/actions.ts](app/(internal)/dashboard/icon-repositories/actions.ts):
 
 1. Downloads GitHub repo as ZIP using `codeload.github.com`
 2. Extracts to `/tmp` directory
-3. Scans directories defined in database for SVG files
+3. Scans variants (icon directories) defined in database for SVG files
 4. Parses each SVG: extracts root attributes (width/height/viewBox) + inner content
 5. Batch inserts icons using `PROCESSING_BATCH_SIZE` env var
 6. Cleans up temporary files
@@ -91,7 +91,7 @@ Returns structured errors keyed by field name. See [app/(internal)/dashboard/rep
 
 ### Type Definitions
 
-Global types in [global.d.ts](global.d.ts) - `Repository`, `Icon`, `Directory`, etc. No need to import these types.
+Global types in [global.d.ts](global.d.ts) - `Repository`, `Icon`, `Variant`, etc. No need to import these types.
 
 ## Development Commands
 

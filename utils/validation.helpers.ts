@@ -8,9 +8,7 @@ function defaultValuesExtractor(form: FormData): Record<string, unknown> {
     const data: Record<string, unknown> = {};
     for (const key of form.keys()) {
         if (key.endsWith('[]')) {
-            const values = form
-                .getAll(key)
-                .map((v) => (typeof v === 'string' ? v : null));
+            const values = form.getAll(key).map((v) => (typeof v === 'string' ? v : null));
             data[key.slice(0, -2)] = values;
             continue;
         }
@@ -20,9 +18,7 @@ function defaultValuesExtractor(form: FormData): Record<string, unknown> {
     return data;
 }
 
-export const buildFormParser = <
-    TSchema extends v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>
->(
+export const buildFormParser = <TSchema extends v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>>(
     schema: TSchema
 ) => {
     return async (

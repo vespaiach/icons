@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
+import { astToInnerHtml } from '@/utils/svg-helpers';
 
 export default function useDownloadIconTsx(icon: Icon) {
     return useCallback(
@@ -10,7 +11,7 @@ export default function useDownloadIconTsx(icon: Icon) {
                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                 .join('');
             const title = `${icon.name.replace(/-/g, ' ')} icon`;
-            const { width, height, ...rest } = { ...icon.svgAttributes, ...adjustedAttributes };
+            const { width, height, ...rest } = { ...icon.svgAst.attrs, ...adjustedAttributes };
 
             const content = `
 import type { SVGProps } from 'react';
@@ -28,11 +29,13 @@ export default function ${componentName} ({
     return (
         <svg
             {...rest}
-            ${Object.entries(rest).map(([key, value]) => `${key}="${value}"`).join('\n            ')}
+            ${Object.entries(rest)
+                .map(([key, value]) => `${key}="${value}"`)
+                .join('\n            ')}
             width={width}
             height={height}>
             <title>{title}</title>
-            ${icon.svgContent.trim()}
+            ${astToInnerHtml(icon.svgAst)}
         </svg>
     );
 }

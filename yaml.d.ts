@@ -3,11 +3,10 @@ declare module '*/icon.repositories.yaml' {
         owner: string;
         name: string;
         ref: string;
-        github_id: number;
-        directories: {
-            variant: string;
+        variants: {
+            name: string;
             path: string;
-            attributes: { [key: string]: string };
+            regex?: string;
         }[];
     }
 

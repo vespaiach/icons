@@ -1,8 +1,8 @@
 import SignInForm from './_components/SignInForm';
 
 export default async function SignInPage({ searchParams }: { searchParams: Promise<{ rt?: string }> }) {
-    const returnTo = (await searchParams).rt
-    
+    const returnTo = (await searchParams).rt;
+
     return (
         <>
             <div className="flex-8"></div>

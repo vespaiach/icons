@@ -8,6 +8,7 @@
         "start": "bun --bun run next start",
         "lint": "biome check",
         "format": "biome format --write",
+        "test": "bun test",
         "migrate:create": "bun run ./utils/migration.service.ts create",
         "migrate": "bun run ./utils/migration.service.ts migrate"
     },

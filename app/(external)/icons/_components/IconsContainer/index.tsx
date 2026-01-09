@@ -7,9 +7,9 @@ import BottomModal from './BottomModal';
 import IconsGrid from './IconsGrid';
 
 export default function IconsContainer({
-    directoriesMapPromise
+    variantsMapPromise
 }: {
-    directoriesMapPromise: Promise<Record<number, Directory>>;
+    variantsMapPromise: Promise<Record<number, Variant>>;
 }) {
     const { repositoriesMap } = usePageContext();
 
@@ -24,7 +24,7 @@ export default function IconsContainer({
                     })}
             </div>
             <Suspense>
-                <BottomModal directoriesMapPromise={directoriesMapPromise} />
+                <BottomModal variantsMapPromise={variantsMapPromise} />
             </Suspense>
         </>
     );

@@ -4,10 +4,10 @@ import IconsContainer from './_components/IconsContainer';
 import Navbar from './_components/Navbar';
 import { PageContextProvider } from './_components/PageContext';
 import SearchModal from './_components/SearchModal';
-import { getDirectoriesAction, getRepositoriesAction } from './actions';
+import { getRepositoriesAction, getVariantsAction } from './actions';
 
 export default async function PageIcons() {
-    const directoriesMapPromise = getDirectoriesAction();
+    const variantsMapPromise = getVariantsAction();
     const repositoriesMap = await getRepositoriesAction();
 
     return (
@@ -16,7 +16,7 @@ export default async function PageIcons() {
                 <DrawerToggler />
                 <div className="d-drawer-content">
                     <Navbar />
-                    <IconsContainer directoriesMapPromise={directoriesMapPromise} />
+                    <IconsContainer variantsMapPromise={variantsMapPromise} />
                     <SearchModal />
                 </div>
                 <Drawer />

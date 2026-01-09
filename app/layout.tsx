@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
     title: 'Web development helpers',
-    description: 'A collection of web development helper tools and resources.',
+    description: 'A collection of web development helper tools and resources.'
 };
 
 export default function RootLayout({

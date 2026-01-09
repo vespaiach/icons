@@ -7,7 +7,6 @@ export async function getRepositories(): Promise<Repository[]> {
             owner,
             name,
             ref,
-            github_id AS "githubId",
             created_at AS "createdAt",
             last_imported_at AS "lastImportedAt"
         FROM repositories
@@ -23,66 +22,65 @@ export async function getRepositoriesWithIconCount(): Promise<RepositoryWithIcon
             r.owner,
             r.name,
             r.ref,
-            r.github_id AS "githubId",
             r.created_at AS "createdAt",
             r.last_imported_at AS "lastImportedAt",
             COUNT(icons.id)::int AS "iconCount"
         FROM repositories as r
-        LEFT JOIN directories ON r.id = directories.repository_id
-        LEFT JOIN icons ON directories.id = icons.directory_id
-        GROUP BY r.id, r.owner, r.name, r.ref, r.github_id, r.created_at, r.last_imported_at
+        LEFT JOIN variants ON r.id = variants.repository_id
+        LEFT JOIN icons ON variants.id = icons.variant_id
+        GROUP BY r.id, r.owner, r.name, r.ref, r.created_at, r.last_imported_at
         ORDER BY r.name ASC
     `;
     return rows;
 }
 
-export async function getRepositoryDirectories(): Promise<RepositoryDirectories[]> {
+export async function getRepositoryVariants(): Promise<RepositoryVariants[]> {
     const rows = await dbClient`
         SELECT 
             repositories.id,
-            owner,
-            name,
-            ref,
-            github_id AS "githubId",
+            repositories.owner,
+            repositories.name,
+            repositories.ref,
             repositories.created_at AS "createdAt",
-            last_imported_at AS "lastImportedAt",
+            repositories.last_imported_at AS "lastImportedAt",
             json_agg(
                 json_build_object(
-                    'id', directories.id,
-                    'path', directories.path,
-                    'variant', directories.variant,
-                    'createdAt', directories.created_at
+                    'id', variants.id,
+                    'path', variants.path,
+                    'name', variants.name,
+                    'regex', variants.regex,
+                    'createdAt', variants.created_at,
+                    'updatedAt', variants.updated_at
                 )
-            ) AS directories
-        FROM repositories INNER JOIN directories ON repositories.id = directories.repository_id
-        GROUP BY 1, 2, 3, 4, 5, 6, 7
+            ) AS variants
+        FROM repositories INNER JOIN variants ON repositories.id = variants.repository_id
+        GROUP BY 1, 2, 3, 4, 5, 6
     `;
     return rows;
 }
 
-export async function getRepositoryDirectoriesById(
-    repositoryId: number
-): Promise<RepositoryDirectories | null> {
+export async function getRepositoryVariantsById(repositoryId: number): Promise<RepositoryVariants | null> {
     const rows = await dbClient`
         SELECT 
             repositories.id,
-            owner,
-            name,
-            ref,
-            github_id AS "githubId",
+            repositories.owner,
+            repositories.name,
+            repositories.ref,
             repositories.created_at AS "createdAt",
-            last_imported_at AS "lastImportedAt",
+            repositories.last_imported_at AS "lastImportedAt",
             json_agg(
                 json_build_object(
-                    'id', directories.id,
-                    'path', directories.path,
-                    'variant', directories.variant,
-                    'createdAt', directories.created_at
+                    'id', variants.id,
+                    'path', variants.path,
+                    'name', variants.name,
+                    'regex', variants.regex,
+                    'createdAt', variants.created_at,
+                    'updatedAt', variants.updated_at
                 )
-            ) AS directories
-        FROM repositories INNER JOIN directories ON repositories.id = directories.repository_id
+            ) AS variants
+        FROM repositories INNER JOIN variants ON repositories.id = variants.repository_id
         WHERE repositories.id = ${repositoryId}
-        GROUP BY 1, 2, 3, 4, 5, 6, 7
+        GROUP BY 1, 2, 3, 4, 5, 6
     `;
     return rows.length > 0 ? rows[0] : null;
 }
@@ -95,7 +93,6 @@ export async function updateRepository(
         SET owner = COALESCE(${data.owner}, owner),
             name = COALESCE(${data.name}, name),
             ref = COALESCE(${data.ref}, ref),
-            github_id = COALESCE(${data.githubId}, github_id),
             last_imported_at = COALESCE(${data.lastImportedAt}, last_imported_at)
         WHERE id = ${data.id}
         RETURNING 
@@ -103,7 +100,6 @@ export async function updateRepository(
             owner,
             name,
             ref,
-            github_id AS "githubId",
             created_at AS "createdAt",
             last_imported_at AS "lastImportedAt"
     `;
