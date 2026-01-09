@@ -31,15 +31,6 @@ repos:
     directories:
       - variant: default
         path: "/icons/svg"
-  - owner: "akveo"
-    name: "eva-icons"
-    github_id: 155437620
-    ref: "master"
-    directories:
-      - variant: fill
-        path: "/package/icons/fill/svg"
-      - variant: outline
-        path: "/package/icons/outline/svg"
   - owner: "feathericons"
     name: "feather"
     github_id: 20270252

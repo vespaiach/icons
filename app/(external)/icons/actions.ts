@@ -2,10 +2,10 @@
 
 import { getDirectories } from '@/db/directories';
 import { getIconsByRepositoryId } from '@/db/icons';
-import { getRepositoriesWithIconCount } from '@/db/repositories';
+import { getRepositories } from '@/db/repositories';
 
 export async function getRepositoriesAction() {
-    const repos = await getRepositoriesWithIconCount();
+    const repos = await getRepositories();
     return Object.fromEntries(repos.map((repo) => [repo.id, repo]));
 }
 

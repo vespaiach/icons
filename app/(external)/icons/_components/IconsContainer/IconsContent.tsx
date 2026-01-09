@@ -1,9 +1,9 @@
 'use client';
 
-import { useSelectedIcon } from './IconContext';
+import { usePageContext } from '../PageContext';
 
 export default function IconsContent({ icons }: { icons: IconWithRelativeData[] }) {
-    const { setSelectedIcon } = useSelectedIcon();
+    const { setSelectedIcon } = usePageContext();
 
     return icons.map((icon) => {
         return (

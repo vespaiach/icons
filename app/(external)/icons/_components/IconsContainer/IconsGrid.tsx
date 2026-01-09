@@ -1,21 +1,29 @@
 'use client';
 
-import { ExternalLink } from 'lucide-react';
+import { useIntersectionObserver } from '@uidotdev/usehooks';
+import { ExternalLink, Settings } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { use, useEffect, useMemo, useRef, useState } from 'react';
+import { use, useMemo } from 'react';
 import { nameToId } from '@/utils/common-helpers';
+import { usePageContext } from '../PageContext';
 import IconsContent from './IconsContent';
+
+const ICON_SIZE = 56;
 
 export default function IconsGrid({
     repository,
     iconsPromise
 }: {
-    repository: RepositoryWithIconCount;
+    repository: Repository;
     iconsPromise: Promise<IconWithRelativeData[]>;
 }) {
+    const { setSelectedRepository } = usePageContext();
     const icons = use(iconsPromise);
-    const contentRef = useRef<HTMLDivElement>(null);
-    const [shouldRender, setShouldRender] = useState(false);
+    const [contentRef, entry] = useIntersectionObserver<HTMLDivElement>({
+        threshold: 0,
+        root: null,
+        rootMargin: '0px'
+    });
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
 
@@ -25,35 +33,27 @@ export default function IconsGrid({
         return icons.filter((icon) => icon.name.toLowerCase().startsWith(lowerQuery));
     }, [icons, searchQuery]);
 
-    useEffect(() => {
-        const element = contentRef.current;
-        if (!element) return;
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    setShouldRender(entry.isIntersecting);
-                });
-            },
-            {
-                rootMargin: '200px', // Start loading 200px before the section is visible
-                threshold: 0
-            }
-        );
-
-        observer.observe(element);
-        return () => {
-            observer.disconnect();
-        };
-    }, []);
+    const iconCount = filteredIcons.length;
+    const minHeight = useMemo(() => {
+        const rows = Math.ceil(iconCount / Math.floor((window.innerWidth - 32) / ICON_SIZE)); // 32px padding left and right
+        return rows * ICON_SIZE + (rows - 1) * 8; // 8px gap
+    }, [iconCount]);
 
     if (filteredIcons.length === 0) return null;
 
     return (
-        <div className="pb-8 px-4" id={nameToId(repository.name)} style={{ scrollMarginTop: '72px' }}>
+        <div className="pb-12 px-4" id={nameToId(repository.name)} style={{ scrollMarginTop: '72px' }}>
             <div className="mb-4">
-                <h2 className="font-semibold text-lg capitalize">
+                <h2 className="font-semibold text-lg capitalize flex items-center gap-3">
                     {repository.name} ({filteredIcons.length})
+                    <button
+                        type="button"
+                        className="d-btn d-btn-ghost d-btn-sm d-btn-square cursor-pointer"
+                        onClick={() => {
+                            setSelectedRepository(repository);
+                        }}>
+                        <Settings className="w-5 h-5" />
+                    </button>
                 </h2>
                 <a
                     href={`https://github.com/${repository.owner}/${repository.name}`}
@@ -66,8 +66,8 @@ export default function IconsGrid({
                     <ExternalLink className="w-3 h-3" />
                 </a>
             </div>
-            <div className="icons-grid" ref={contentRef}>
-                {shouldRender && <IconsContent icons={filteredIcons} />}
+            <div className="icons-grid" ref={contentRef} style={{ minHeight }}>
+                {Boolean(entry?.isIntersecting) && <IconsContent icons={filteredIcons} />}
             </div>
         </div>
     );

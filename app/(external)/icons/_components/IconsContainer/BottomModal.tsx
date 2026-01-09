@@ -1,24 +1,22 @@
 'use client';
 
-import { Copy, Download, ExternalLink, Star } from 'lucide-react';
-import { useState } from 'react';
+import { Copy, Download } from 'lucide-react';
+import { use, useState } from 'react';
 import useDownloadIconTsx from '@/hooks/useDownloadIconTsx';
 import useDownloadRawIcon from '@/hooks/useDownloadRawIcon';
-import useGithubRepoInfo from '@/hooks/useGithubStarCount';
-import { assertDate, assertNumber, assertString } from '@/utils/assert-helpers';
 import { cx } from '@/utils/common-helpers';
-import { useSelectedIcon } from './IconContext';
+import { usePageContext } from '../PageContext';
+import RepositoryInfo from '../RepositoryInfo';
 
 const gridLineNumber = new Array(24).fill(0);
 
 export default function BottomModal({
-    repositoriesMap,
-    directoriesMap
+    directoriesMapPromise
 }: {
-    repositoriesMap: Record<number, RepositoryWithIconCount>;
-    directoriesMap: Record<number, Directory>;
+    directoriesMapPromise: Promise<Record<number, Directory>>;
 }) {
-    const { selectedIcon, setSelectedIcon } = useSelectedIcon();
+    const directoriesMap = use(directoriesMapPromise);
+    const { selectedIcon, setSelectedIcon, repositoriesMap } = usePageContext();
     const repository = selectedIcon ? repositoriesMap[selectedIcon.repositoryId] : null;
     const directory = selectedIcon ? directoriesMap[selectedIcon.directoryId] : null;
 
@@ -53,10 +51,9 @@ function SelectedIconDetails({
     directory
 }: {
     selectedIcon: IconWithRelativeData;
-    repository: RepositoryWithIconCount;
+    repository: Repository;
     directory: Directory;
 }) {
-    const repoInfo = useGithubRepoInfo(repository);
     const [copied, setCopied] = useState(false);
     const handleDownloadTSX = useDownloadIconTsx(selectedIcon);
     const handleDownloadRawIcon = useDownloadRawIcon(selectedIcon);
@@ -85,8 +82,6 @@ function SelectedIconDetails({
         setCopied(true);
         setTimeout(() => setCopied(false), 3000);
     };
-
-    const githubUrl = `https://github.com/${repository.owner}/${repository.name}`;
 
     return (
         <div className="flex items-start gap-10">
@@ -131,65 +126,7 @@ function SelectedIconDetails({
                     <Copy className="w-4 h-4 opacity-0 group-has-hover:opacity-100 text-white" />
                 </button>
 
-                <div className="space-y-1">
-                    <div className="flex gap-2">
-                        <span className="text-sm shrink-0 font-semibold">github:</span>
-                        <a
-                            href={githubUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="d-link d-link-hover inline-flex grow items-center gap-2 text-sm">
-                            <span>
-                                {repository.owner}/{repository.name}
-                            </span>
-                            <ExternalLink className="w-3 h-3" />
-                        </a>
-                    </div>
-                    {assertNumber(repoInfo?.starCount) && (
-                        <div className="flex gap-2">
-                            <span className="text-sm shrink-0 font-semibold">star(s):</span>
-                            <a
-                                href={githubUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="d-link d-link-hover inline-flex grow items-center gap-2">
-                                <span className="text-sm flex items-center gap-1">
-                                    <Star className="w-3 h-3" /> {repoInfo.starCount.toLocaleString()}
-                                </span>
-                                <ExternalLink className="w-3 h-3" />
-                            </a>
-                        </div>
-                    )}
-                    {assertString(repoInfo?.license) && (
-                        <div className="flex gap-2">
-                            <span className="text-sm shrink-0 font-semibold">license:</span>
-                            <a
-                                href={githubUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="d-link d-link-hover inline-flex grow items-center gap-2 text-sm">
-                                <span>{repoInfo.license}</span>
-                                <ExternalLink className="w-3 h-3" />
-                            </a>
-                        </div>
-                    )}
-                    {assertDate(repoInfo?.createdAt) && (
-                        <div className="flex gap-2">
-                            <span className="text-sm shrink-0 font-semibold">created at:</span>
-                            <span className="d-link no-underline text-sm cursor-default">
-                                {repoInfo.createdAt.toLocaleDateString()}
-                            </span>
-                        </div>
-                    )}
-                    {assertDate(repoInfo?.lastUpdatedAt) && (
-                        <div className="flex gap-2">
-                            <span className="text-sm shrink-0 font-semibold">updated at:</span>
-                            <span className="d-link no-underline text-sm cursor-default">
-                                {repoInfo.lastUpdatedAt.toLocaleDateString()}
-                            </span>
-                        </div>
-                    )}
-                </div>
+                <RepositoryInfo selectedRepository={repository} />
 
                 <div className="flex gap-3 mt-4">
                     <button

@@ -18,13 +18,9 @@ export function extractSvgAttributes(svgText: string): Record<string, string> {
     const attributes: Record<string, string> = {};
 
     for (const [key, value] of Object.entries(svg)) {
-        if (key.startsWith('@_')) {
-            const correctKey = key.replace('@_', '');
-            attributes[
-                correctKey.startsWith('aria-') || correctKey.startsWith('data-')
-                    ? correctKey
-                    : camelCase(correctKey)
-            ] = String(value);
+        const sanitizedKey = santizeSvgAttributeKey(key);
+        if (sanitizedKey) {
+            attributes[sanitizedKey] = String(value);
         }
     }
 
@@ -41,4 +37,33 @@ export function extractSvgInnerContent(svgContent: string): string {
 
     // If no match found, return original content (fallback)
     return svgContent;
+}
+
+function santizeSvgAttributeKey(rawKey: string): string | null {
+    const allowedKeys = new Set([
+        'viewBox',
+        'width',
+        'height',
+        'fill',
+        'fill-opacity',
+        'fill-rule',
+        'aria-hidden',
+        'aria-label',
+        'role',
+        'xmlns',
+        'stroke',
+        'stroke-dasharray',
+        'stroke-dashoffset',
+        'stroke-linecap',
+        'stroke-linejoin',
+        'stroke-miterlimit',
+        'stroke-opacity',
+        'stroke-width'
+    ]);
+    const key = rawKey.trim().replace(/^@_/, '');
+    return allowedKeys.has(key)
+        ? key.startsWith('aria-') || key.startsWith('data-')
+            ? key
+            : camelCase(key)
+        : null;
 }

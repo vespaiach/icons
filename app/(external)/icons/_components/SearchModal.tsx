@@ -1,16 +1,13 @@
 'use client';
 
 import { Search } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { use, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 import { cx, nameToId } from '@/utils/common-helpers';
+import { usePageContext } from './PageContext';
 
-export default function SearchModal({
-    repositoriesMapPromise
-}: {
-    repositoriesMapPromise: Promise<Record<number, RepositoryWithIconCount>>;
-}) {
-    const repositoriesMap = use(repositoriesMapPromise);
+export default function SearchModal() {
+    const { repositoriesMap } = usePageContext();
     const repositories = Object.values(repositoriesMap).sort((a, b) => a.name.localeCompare(b.name));
     const [selectedRepo, setSelectedRepo] = useState<Record<number, boolean | undefined>>(() =>
         Object.fromEntries((repositories || []).map((repo) => [repo.id, false]))
@@ -86,9 +83,6 @@ export default function SearchModal({
                                 modal?.close();
                             }}>
                             {repo.name.toLowerCase()}
-                            {repo.iconCount !== undefined && repo.iconCount !== null
-                                ? ` (${repo.iconCount})`
-                                : ''}
                         </button>
                     ))}
                 </div>

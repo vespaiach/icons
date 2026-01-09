@@ -1,16 +1,15 @@
 'use client';
 
+import { useClickAway } from '@uidotdev/usehooks';
 import { ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { Suspense, use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { nameToId } from '@/utils/common-helpers';
+import { usePageContext } from './PageContext';
 
-export default function Navbar({
-    repositoriesMapPromise
-}: {
-    repositoriesMapPromise: Promise<Record<number, RepositoryWithIconCount>>;
-}) {
+export default function Navbar() {
+    const { repositoriesMap } = usePageContext();
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
     const [isMac, setIsMac] = useState(false);
@@ -68,23 +67,19 @@ export default function Navbar({
             </button>
             <div className="flex-none gap-2">
                 <ThemeSwitcher />
-                <Suspense>
-                    <RepositoriesLinks repositoriesMapPromise={repositoriesMapPromise} />
-                </Suspense>
+                <RepositoriesLinks repositoriesMap={repositoriesMap} />
             </div>
         </div>
     );
 }
 
-function RepositoriesLinks({
-    repositoriesMapPromise
-}: {
-    repositoriesMapPromise: Promise<Record<number, RepositoryWithIconCount>>;
-}) {
-    const repositoriesMap = use(repositoriesMapPromise);
+function RepositoriesLinks({ repositoriesMap }: { repositoriesMap: Record<number, Repository> }) {
     const repositories = Object.values(repositoriesMap).sort((a, b) => a.name.localeCompare(b.name));
     const [activeRepo, setActiveRepo] = useState<string>('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const ref = useClickAway<HTMLDivElement>(() => {
+        setIsDropdownOpen(false);
+    });
 
     useEffect(() => {
         const observerOptions = {
@@ -120,6 +115,7 @@ function RepositoriesLinks({
 
     return (
         <div
+            ref={ref}
             className={`d-dropdown d-dropdown-end ${isDropdownOpen ? 'd-dropdown-open' : 'd-dropdown-close'}`}>
             <div
                 tabIndex={0}
