@@ -1,5 +1,6 @@
 'use client';
 
+import { useIsClient } from '@uidotdev/usehooks';
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 
 interface IconContextType {
@@ -7,31 +8,33 @@ interface IconContextType {
     setSelectedIcon: (icon: IconWithRelativeData | null) => void;
     selectedRepository: Repository | null;
     setSelectedRepository: (repo: Repository | null) => void;
-    repositoriesMap: Record<number, Repository>;
+    variantsById: Record<number, Variant>;
 }
 
 const IconContext = createContext<IconContextType | undefined>(undefined);
 
-export function PageContextProvider({
-    children,
-    repositoriesMap
-}: {
-    children: ReactNode;
-    repositoriesMap: Record<number, Repository>;
-}) {
+export function PageContextProvider({ children, variants }: { children: ReactNode; variants: Variant[] }) {
+    const isClient = useIsClient();
     const [selectedIcon, setSelectedIcon] = useState<IconWithRelativeData | null>(null);
     const [selectedRepository, setSelectedRepository] = useState<Repository | null>(null);
+    const [variantsById, setVariantsById] = useState<Record<number, Variant>>({});
 
     useEffect(() => {
-        const modalElement = document.getElementById('bottom_panel') as HTMLDialogElement | null;
-        if (!modalElement) return;
+        setVariantsById(Object.fromEntries(variants.map((v) => [v.id, v])));
+    }, [variants]);
 
-        if (selectedIcon) {
-            modalElement.showModal();
-        } else {
-            modalElement.close();
+    useEffect(() => {
+        if (isClient) {
+            const modalElement = document.getElementById('bottom_panel') as HTMLDialogElement | null;
+            if (!modalElement) return;
+
+            if (selectedIcon) {
+                modalElement.showModal();
+            } else {
+                modalElement.close();
+            }
         }
-    }, [selectedIcon]);
+    }, [selectedIcon, isClient]);
 
     return (
         <IconContext.Provider
@@ -40,7 +43,7 @@ export function PageContextProvider({
                 setSelectedIcon,
                 selectedRepository,
                 setSelectedRepository,
-                repositoriesMap
+                variantsById
             }}>
             {children}
         </IconContext.Provider>

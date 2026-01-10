@@ -1,25 +1,22 @@
 'use client';
 
 import { Copy, Download } from 'lucide-react';
-import { use, useState } from 'react';
+import { useState } from 'react';
+import AstToSvg from '@/components/AstToSvg';
 import useDownloadIconTsx from '@/hooks/useDownloadIconTsx';
 import useDownloadRawIcon from '@/hooks/useDownloadRawIcon';
 import { cx } from '@/utils/common-helpers';
-import { astToInnerHtml } from '@/utils/svg-helpers';
-import { usePageContext } from '../PageContext';
-import RepositoryInfo from '../RepositoryInfo';
+import { usePageContext } from './PageContext';
+import RepositoryInfo from './RepositoryInfo';
 
 const gridLineNumber = new Array(24).fill(0);
 
-export default function BottomModal({
-    variantsMapPromise
-}: {
-    variantsMapPromise: Promise<Record<number, Variant>>;
-}) {
-    const variantsMap = use(variantsMapPromise);
-    const { selectedIcon, setSelectedIcon, repositoriesMap } = usePageContext();
-    const repository = selectedIcon ? repositoriesMap[selectedIcon.repositoryId] : null;
-    const variant = selectedIcon ? variantsMap[selectedIcon.variantId] : null;
+export default function IconDetailsModal({ repositories }: { repositories: Repository[] }) {
+    const { selectedIcon, setSelectedIcon, variantsById } = usePageContext();
+    const repository = selectedIcon
+        ? repositories.find((repo) => repo.id === selectedIcon.repositoryId)
+        : null;
+    const variant = selectedIcon ? variantsById[selectedIcon.variantId] : null;
 
     const handleClose = () => {
         setSelectedIcon(null);
@@ -49,7 +46,7 @@ export default function BottomModal({
 function SelectedIconDetails({
     selectedIcon,
     repository,
-    variant: _variant
+    variant
 }: {
     selectedIcon: IconWithRelativeData;
     repository: Repository;
@@ -60,12 +57,12 @@ function SelectedIconDetails({
     const handleDownloadRawIcon = useDownloadRawIcon(selectedIcon);
 
     // State for adjustable properties
-    const [iconSize, setIconSize] = useState(200);
-    const [strokeColor, setStrokeColor] = useState(selectedIcon.svgAst.attrs.stroke || null);
+    const [iconSize, setIconSize] = useState(variant.svgRootAttributes.width || 24);
+    const [strokeColor, setStrokeColor] = useState(variant.svgRootAttributes.stroke || null);
     const [strokeWidth, setStrokeWidth] = useState(
-        selectedIcon.svgAst.attrs['stroke-width'] ? Number(selectedIcon.svgAst.attrs['stroke-width']) : null
+        variant.svgRootAttributes.strokeWidth ? Number(variant.svgRootAttributes.strokeWidth) : null
     );
-    const [fillColor, setFillColor] = useState(selectedIcon.svgAst.attrs.fill || null);
+    const [fillColor, setFillColor] = useState(variant.svgRootAttributes.fill || null);
 
     const getAdjustedAttributes = () =>
         Object.fromEntries(
@@ -101,16 +98,14 @@ function SelectedIconDetails({
                             </g>
                         ))}
                     </svg>
-                    <svg
-                        {...selectedIcon.svgAst.attrs}
+                    <AstToSvg
+                        svgAst={selectedIcon.svgAst}
                         fill={fillColor === 'none' ? 'none' : fillColor || undefined}
                         stroke={strokeColor || undefined}
                         strokeWidth={strokeWidth || undefined}
                         width={iconSize}
                         height={iconSize}
                         className="z-10"
-                        // biome-ignore lint/security/noDangerouslySetInnerHtml: have to use it to render SVG content
-                        dangerouslySetInnerHTML={{ __html: astToInnerHtml(selectedIcon.svgAst) }}
                     />
                 </div>
             </div>
@@ -165,7 +160,7 @@ function SelectedIconDetails({
                         <input
                             id="size-control"
                             type="range"
-                            min="50"
+                            min="8"
                             max="300"
                             value={iconSize}
                             onChange={(e) => setIconSize(Number.parseInt(e.target.value))}

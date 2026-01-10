@@ -2,16 +2,10 @@
 
 import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { cx, nameToId } from '@/utils/common-helpers';
-import { usePageContext } from './PageContext';
 
-export default function SearchModal() {
-    const { repositoriesMap } = usePageContext();
-    const repositories = Object.values(repositoriesMap).sort((a, b) => a.name.localeCompare(b.name));
-    const [selectedRepo, setSelectedRepo] = useState<Record<number, boolean | undefined>>(() =>
-        Object.fromEntries((repositories || []).map((repo) => [repo.id, false]))
-    );
+export default function SearchModal({ repositories }: { repositories: Repository[] }) {
     const searchInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
 
@@ -69,10 +63,7 @@ export default function SearchModal() {
                         <button
                             type="button"
                             key={repo.id}
-                            className={cx(
-                                'd-badge d-badge-sm cursor-pointer',
-                                selectedRepo[repo.id] ? 'd-badge-secondary' : 'd-badge-ghost'
-                            )}
+                            className={cx('d-badge d-badge-sm cursor-pointer')}
                             onClick={(e) => {
                                 e.preventDefault();
                                 const element = document.getElementById(nameToId(repo.name));
@@ -82,7 +73,7 @@ export default function SearchModal() {
                                 const modal = document.getElementById('search_modal') as HTMLDialogElement;
                                 modal?.close();
                             }}>
-                            {repo.name.toLowerCase()}
+                            {repo.owner}/{repo.name}
                         </button>
                     ))}
                 </div>

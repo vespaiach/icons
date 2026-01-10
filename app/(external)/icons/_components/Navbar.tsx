@@ -6,10 +6,8 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { nameToId } from '@/utils/common-helpers';
-import { usePageContext } from './PageContext';
 
-export default function Navbar() {
-    const { repositoriesMap } = usePageContext();
+export default function Navbar({ repositories }: { repositories: Repository[] }) {
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
     const [isMac, setIsMac] = useState(false);
@@ -35,7 +33,6 @@ export default function Navbar() {
         };
 
         window.addEventListener('keydown', handleKeyDown);
-
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
@@ -67,14 +64,13 @@ export default function Navbar() {
             </button>
             <div className="flex-none gap-2">
                 <ThemeSwitcher />
-                <RepositoriesLinks repositoriesMap={repositoriesMap} />
+                <RepositoriesLinks repositories={repositories} />
             </div>
         </div>
     );
 }
 
-function RepositoriesLinks({ repositoriesMap }: { repositoriesMap: Record<number, Repository> }) {
-    const repositories = Object.values(repositoriesMap).sort((a, b) => a.name.localeCompare(b.name));
+function RepositoriesLinks({ repositories }: { repositories: Repository[] }) {
     const [activeRepo, setActiveRepo] = useState<string>('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const ref = useClickAway<HTMLDivElement>(() => {
@@ -111,7 +107,7 @@ function RepositoriesLinks({ repositoriesMap }: { repositoriesMap: Record<number
         };
     }, [repositories]);
 
-    const displayName = activeRepo || repositories[0]?.name || 'Repositories';
+    const displayName = activeRepo || `${repositories[0]?.owner}/${repositories[0]?.name}` || 'Repositories';
 
     return (
         <div
@@ -121,7 +117,9 @@ function RepositoriesLinks({ repositoriesMap }: { repositoriesMap: Record<number
                 tabIndex={0}
                 role="button"
                 className="capitalize flex items-center gap-1 d-btn d-btn-ghost"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                onClick={() => {
+                    setIsDropdownOpen(!isDropdownOpen);
+                }}>
                 {displayName}
                 {isDropdownOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </div>
@@ -142,7 +140,7 @@ function RepositoriesLinks({ repositoriesMap }: { repositoriesMap: Record<number
                                 // Close dropdown
                                 setIsDropdownOpen(false);
                             }}>
-                            {repo.name}
+                            {repo.owner}/{repo.name}
                         </a>
                     </li>
                 ))}

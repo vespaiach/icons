@@ -197,8 +197,37 @@ function santizeSvgAttributeKey(rawKey: string): string | null {
     // Skip if empty
     if (!key) return null;
 
+    const allowedKeys = new Set([
+        'fill',
+        'fill-opacity',
+        'fill-rule',
+        'stroke',
+        'stroke-width',
+        'stroke-linecap',
+        'stroke-linejoin',
+        'stroke-opacity',
+        'viewBox',
+        'width',
+        'height',
+        'xmlns',
+        'd',
+        'tabindex',
+        'role',
+        'aria-hidden',
+        'aria-invalid',
+        'aria-label',
+        'aria-labelledby',
+        'aria-describedby',
+        'aria-description',
+        'aria-details'
+    ]);
+
+    if (!allowedKeys.has(key)) {
+        return null;
+    }
+
     // Keep aria- and data- attributes as-is (with hyphen)
-    if (key.startsWith('aria-') || key.startsWith('data-')) {
+    if (key.startsWith('aria-') ) {
         return key;
     }
 
