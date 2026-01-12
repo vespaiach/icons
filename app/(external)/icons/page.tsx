@@ -19,7 +19,9 @@ export default async function PageIcons() {
             <div className="d-drawer">
                 <DrawerToggler />
                 <div className="d-drawer-content">
-                    <Navbar repositories={repositories} />
+                    <Suspense>
+                        <Navbar repositories={repositories} />
+                    </Suspense>
 
                     <div className="mt-6">
                         {repositories.map((repository) => (

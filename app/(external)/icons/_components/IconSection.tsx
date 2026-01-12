@@ -1,15 +1,14 @@
 'use client';
 
-import { useIntersectionObserver, useIsClient } from '@uidotdev/usehooks';
+import { useIntersectionObserver } from '@uidotdev/usehooks';
 import { ExternalLink, Info, Settings } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { Fragment, use, useMemo, useRef, useState } from 'react';
+import { Fragment, use, useMemo, useRef } from 'react';
 import AstToSvg from '@/components/AstToSvg';
 import useDefaultVariantSettings from '@/hooks/useDefaultVariantSettings';
-import { cx, nameToId } from '@/utils/common-helpers';
+import { nameToId } from '@/utils/common-helpers';
 import { type ExtendedVariant, usePageContext } from './PageContext';
 
-const ICON_SIZE = 56;
 const filterFunc = (query: string) => (icon: IconWithRelativeData) =>
     icon.name.toLowerCase().startsWith(query.toLowerCase());
 
@@ -21,12 +20,9 @@ export default function IconSection({
     iconsPromise: Promise<IconWithRelativeData[]>; // The icons for this repository for all variants
 }) {
     const icons = use(iconsPromise);
-    const isClient = useIsClient();
 
     const { variants } = usePageContext();
     const variantByRepositories = variants.filter((v) => v.repositoryId === repository.id);
-    const [selectedVariantId, setSelectedVariantId] = useState(variantByRepositories[0].id);
-    const selectedVariant = variantByRepositories.find((v) => v.id === selectedVariantId);
 
     const { setSelectedRepository } = usePageContext();
     const [contentRef, entry] = useIntersectionObserver<HTMLDivElement>({
