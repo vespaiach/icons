@@ -49,7 +49,7 @@ export async function getRepositoryVariants(): Promise<RepositoryVariants[]> {
                     'path', variants.path,
                     'name', variants.name,
                     'regex', variants.regex,
-                    'svgRootAttributes', variants.svg_root_attributes,
+                    'attributesToAdjust', variants.attributes_to_adjust,
                     'createdAt', variants.created_at,
                     'updatedAt', variants.updated_at
                 )
@@ -83,7 +83,7 @@ export async function getRepositoryVariantsWithIconCount(): Promise<RepositoryVa
                     'path', v.path,
                     'name', v.name,
                     'regex', v.regex,
-                    'svgRootAttributes', v.svg_root_attributes,
+                    'attributesToAdjust', v.attributes_to_adjust,
                     'createdAt', v.created_at,
                     'updatedAt', v.updated_at
                 )
@@ -111,7 +111,7 @@ export async function getRepositoryVariantsById(repositoryId: number): Promise<R
                     'path', variants.path,
                     'name', variants.name,
                     'regex', variants.regex,
-                    'svgRootAttributes', variants.svg_root_attributes,
+                    'attributesToAdjust', variants.attributes_to_adjust,
                     'createdAt', variants.created_at,
                     'updatedAt', variants.updated_at
                 )

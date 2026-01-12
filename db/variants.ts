@@ -1,3 +1,4 @@
+import { sql } from 'bun';
 import { dbClient } from './db.client';
 
 export async function getVariants(): Promise<Variant[]> {
@@ -8,7 +9,7 @@ export async function getVariants(): Promise<Variant[]> {
             name,
             path,
             regex,
-            svg_root_attributes AS "svgRootAttributes",
+            attributes_to_adjust AS "attributesToAdjust",
             created_at AS "createdAt",
             updated_at AS "updatedAt"
         FROM variants
@@ -25,7 +26,7 @@ export async function getVariantById(id: number): Promise<Variant | null> {
             name,
             path,
             regex,
-            svg_root_attributes AS "svgRootAttributes",
+            attributes_to_adjust AS "attributesToAdjust",
             created_at AS "createdAt",
             updated_at AS "updatedAt"
         FROM variants
@@ -43,7 +44,7 @@ export async function getVariantsWithRepository(): Promise<VariantWithRepository
             v.name,
             v.path,
             v.regex,
-            v.svg_root_attributes AS "svgRootAttributes",
+            v.attributes_to_adjust AS "attributesToAdjust",
             v.created_at AS "createdAt",
             v.updated_at AS "updatedAt",
             r.owner AS "repositoryOwner",
@@ -65,7 +66,7 @@ export async function getVariantRepositoryById(
             v.name,
             v.path,
             v.regex,
-            v.svg_root_attributes AS "svgRootAttributes",
+            v.attributes_to_adjust AS "attributesToAdjust",
             v.created_at AS "createdAt",
             v.updated_at AS "updatedAt",
             json_build_object(
@@ -84,12 +85,12 @@ export async function getVariantRepositoryById(
     return rows.length > 0 ? (rows[0] as Variant & { repository: Repository }) : null;
 }
 
-export async function updateVariant(data: Pick<Variant, 'id' | 'path' | 'regex' | 'svgRootAttributes'>) {
+export async function updateVariant(data: Pick<Variant, 'id' | 'path' | 'regex' | 'attributesToAdjust'>) {
     const rows = await dbClient`
         UPDATE variants
         SET 
             regex = ${data.regex},
-            svg_root_attributes = ${data.svgRootAttributes},
+            attributes_to_adjust = ${sql.array(data.attributesToAdjust, 'text')},
             updated_at = CURRENT_TIMESTAMP
         WHERE id = ${data.id}
         RETURNING 
@@ -98,7 +99,7 @@ export async function updateVariant(data: Pick<Variant, 'id' | 'path' | 'regex' 
             name,
             path,
             regex,
-            svg_root_attributes AS "svgRootAttributes",
+            attributes_to_adjust AS "attributesToAdjust",
             created_at AS "createdAt",
             updated_at AS "updatedAt"
     `;

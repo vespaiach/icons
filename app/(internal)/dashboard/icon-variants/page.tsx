@@ -19,7 +19,7 @@ export default async function VariantsManagementPage() {
                                 <th>Repository</th>
                                 <th>Path</th>
                                 <th>Regex</th>
-                                <th>SVG Root Attributes</th>
+                                <th>Attributes</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -51,19 +51,7 @@ export default async function VariantsManagementPage() {
                                     </td>
                                     <td>
                                         <div className="flex flex-wrap gap-1">
-                                            {Object.keys(variant.svgRootAttributes).length > 0 ? (
-                                                Object.entries(variant.svgRootAttributes).map(
-                                                    ([key, value]) => (
-                                                        <span
-                                                            key={key}
-                                                            className="d-badge d-badge-sm d-badge-ghost">
-                                                            {key}: {value}
-                                                        </span>
-                                                    )
-                                                )
-                                            ) : (
-                                                <span className="text-xs text-base-content/50">None</span>
-                                            )}
+                                            {variant.attributesToAdjust.join(', ') || 'None'} 
                                         </div>
                                     </td>
                                     <td>

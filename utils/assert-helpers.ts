@@ -1,5 +1,5 @@
 export function assertNumber(value: number | null | undefined): value is number {
-    return value !== null && value !== undefined && !isNaN(value);
+    return value !== null && value !== undefined && !Number.isNaN(value);
 }
 
 export function assertDate(value: Date | null | undefined): value is Date {

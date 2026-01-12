@@ -18,12 +18,7 @@ declare global {
         path: string;
         name: string;
         regex: string;
-        svgRootAttributes: {
-            stroke?: string;
-            fill?: string;
-            strokeWidth?: number;
-            size?: number;
-        };
+        attributesToAdjust: string[];
         createdAt: Date;
         updatedAt: Date;
     }

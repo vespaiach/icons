@@ -3,10 +3,7 @@
 import { Copy, Download } from 'lucide-react';
 import { useState } from 'react';
 import AstToSvg from '@/components/AstToSvg';
-import FillColorAdjuster from '@/components/FillColorAdjuster';
-import SizeAdjuster from '@/components/SizeAdjuster';
-import StrokeColorAdjuster from '@/components/StrokeColorAdjuster';
-import StrokeWidthAdjuster from '@/components/StrokeWidthAdjuster';
+import AttributesAdjuster from '@/components/AttributesAdjuster';
 import useDownloadIconTsx from '@/hooks/useDownloadIconTsx';
 import useDownloadRawIcon from '@/hooks/useDownloadRawIcon';
 import { cx } from '@/utils/common-helpers';
@@ -16,11 +13,13 @@ import RepositoryInfo from './RepositoryInfo';
 const gridLineNumber = new Array(24).fill(0);
 
 export default function IconDetailsModal({ repositories }: { repositories: Repository[] }) {
-    const { selectedIcon, setSelectedIcon, variantsById } = usePageContext();
+    const { selectedIcon, setSelectedIcon, getVariantsByRepositoryId } = usePageContext();
     const repository = selectedIcon
         ? repositories.find((repo) => repo.id === selectedIcon.repositoryId)
         : null;
-    const variant = selectedIcon ? variantsById[selectedIcon.variantId] : null;
+    const variant = selectedIcon
+        ? getVariantsByRepositoryId(selectedIcon.repositoryId)[selectedIcon.variantId]
+        : null;
 
     const handleClose = () => {
         setSelectedIcon(null);
@@ -56,25 +55,22 @@ function SelectedIconDetails({
     repository: Repository;
     variant: ExtendedVariant;
 }) {
-    console.log('selectedIcon', variant);
     const [copied, setCopied] = useState(false);
     const handleDownloadTSX = useDownloadIconTsx(selectedIcon);
     const handleDownloadRawIcon = useDownloadRawIcon(selectedIcon);
 
     // State for adjustable properties
-    const [iconSize, setIconSize] = useState(variant.svgAttributes?.width || 24);
-    const [strokeWidth, setStrokeWidth] = useState(
-        variant.allowCustomAttributes.includes('strokeWidth') ? variant.svgAttributes?.strokeWidth : undefined
-    );
-    const [strokeColor, setStrokeColor] = useState(
-        variant.allowCustomAttributes.includes('stroke') ? variant.svgAttributes?.stroke : undefined
-    );
-    const [fillColor, setFillColor] = useState(
-        variant.allowCustomAttributes.includes('fill') ? variant.svgAttributes?.fill || '' : undefined
+    const [attributes, setAttributes] = useState(
+        variant.svgAttributes || {
+            width: 24,
+            height: 24
+        }
     );
 
-    const getAdjustedAttributes = () =>
-        Object.fromEntries(
+    const getAdjustedAttributes = () => {
+        const { width: iconSize, stroke: strokeColor, fill: fillColor, strokeWidth } = attributes;
+
+        return Object.fromEntries(
             [
                 ['width', iconSize],
                 ['height', iconSize],
@@ -83,6 +79,7 @@ function SelectedIconDetails({
                 ['strokeWidth', strokeWidth]
             ].filter(([_, value]) => value !== undefined)
         );
+    };
 
     const handleCopyName = () => {
         navigator.clipboard.writeText(selectedIcon.name);
@@ -111,11 +108,11 @@ function SelectedIconDetails({
                     </svg>
                     <AstToSvg
                         svgAst={selectedIcon.svgAst}
-                        fill={fillColor === 'none' ? 'none' : fillColor || undefined}
-                        stroke={strokeColor || undefined}
-                        strokeWidth={strokeWidth || undefined}
-                        width={iconSize}
-                        height={iconSize}
+                        fill={attributes.fill}
+                        stroke={attributes.stroke}
+                        strokeWidth={attributes.strokeWidth}
+                        width={attributes.width}
+                        height={attributes.width}
                         className="z-10"
                     />
                 </div>
@@ -161,26 +158,7 @@ function SelectedIconDetails({
             <div className="d-divider lg:d-divider-horizontal m-0 bg-base-100" />
             <div className="mb-4 space-y-3">
                 <h4 className="font-semibold text-sm mb-4">Customize Icon</h4>
-
-                <div className="space-y-3">
-                    {/* Size Control */}
-                    <SizeAdjuster size={iconSize} onSizeChange={(newSize) => setIconSize(newSize)} />
-
-                    {/* Stroke Width Control */}
-                    {strokeWidth !== undefined && (
-                        <StrokeWidthAdjuster onStrokeWidthChange={setStrokeWidth} strokeWidth={strokeWidth} />
-                    )}
-
-                    {/* Stroke Color Control */}
-                    {strokeColor !== undefined && (
-                        <StrokeColorAdjuster onStrokeColorChange={setStrokeColor} strokeColor={strokeColor} />
-                    )}
-
-                    {/* Fill Color Control */}
-                    {fillColor !== undefined && (
-                        <FillColorAdjuster onFillColorChange={setFillColor} fillColor={fillColor} />
-                    )}
-                </div>
+                <AttributesAdjuster value={attributes} onChange={setAttributes} />
             </div>
         </div>
     );

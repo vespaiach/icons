@@ -3,23 +3,22 @@
 import { useClickAway } from '@uidotdev/usehooks';
 import { ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { useCallback, useEffect, useState } from 'react';
 import { nameToId } from '@/utils/common-helpers';
 
 export default function Navbar({ repositories }: { repositories: Repository[] }) {
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
-    const [isMac, setIsMac] = useState(false);
+    const [isMac, setIsMac] = useState<boolean | null>(null);
 
-    const openModel = () => {
+    const openModel = useCallback(() => {
         const searchModal = document.getElementById('search_modal') as HTMLDialogElement;
         if (searchModal) {
             // Dispatch custom event to notify SearchModal component
             window.dispatchEvent(new CustomEvent('searchModalOpening'));
             searchModal.showModal();
         }
-    };
+    }, []);
 
     useEffect(() => {
         setIsMac(/(Mac|iPhone|iPod|iPad)/i.test(navigator.platform));
@@ -36,7 +35,7 @@ export default function Navbar({ repositories }: { repositories: Repository[] })
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, []);
+    }, [openModel]);
 
     return (
         <div className="d-navbar bg-base-100 min-h-10 px-4 shadow-sm justify-between sticky top-0 z-10">
@@ -52,18 +51,19 @@ export default function Navbar({ repositories }: { repositories: Repository[] })
                 onClick={openModel}>
                 <Search className="size-4 shrink-0 opacity-60" />
                 <span className="grow text-left">{searchQuery || 'Search…'}</span>
-                <kbd className="d-kbd d-kbd-sm font-mono opacity-50">
-                    {isMac ? (
-                        <>
-                            <span className="me-1 text-sm">⌘</span>K
-                        </>
-                    ) : (
-                        'Ctrl K'
-                    )}
-                </kbd>
+                {isMac !== null && (
+                    <kbd className="d-kbd d-kbd-sm font-mono opacity-50">
+                        {isMac ? (
+                            <>
+                                <span className="me-1 text-sm">⌘</span>K
+                            </>
+                        ) : (
+                            'Ctrl K'
+                        )}
+                    </kbd>
+                )}
             </button>
             <div className="flex-none gap-2">
-                <ThemeSwitcher />
                 <RepositoriesLinks repositories={repositories} />
             </div>
         </div>
@@ -113,16 +113,21 @@ function RepositoriesLinks({ repositories }: { repositories: Repository[] }) {
         <div
             ref={ref}
             className={`d-dropdown d-dropdown-end ${isDropdownOpen ? 'd-dropdown-open' : 'd-dropdown-close'}`}>
-            <div
-                tabIndex={0}
-                role="button"
+            <button
+                type="button"
                 className="capitalize flex items-center gap-1 d-btn d-btn-ghost"
                 onClick={() => {
                     setIsDropdownOpen(!isDropdownOpen);
+                }}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setIsDropdownOpen(!isDropdownOpen);
+                    }
                 }}>
                 {displayName}
                 {isDropdownOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </div>
+            </button>
             <ul
                 tabIndex={-1}
                 className="d-dropdown-content d-menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">

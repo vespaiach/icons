@@ -27,11 +27,7 @@ interface UpdateVariantParams {
         id: number;
         regex: string;
         path: string;
-        stroke?: string;
-        fill?: string;
-        strokeWidth?: string;
-        width?: string;
-        height?: string;
+        attributesToAdjust: string[];
     };
 }
 
@@ -41,22 +37,25 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
         return { ...prevState, errors };
     }
 
-    const { id, regex, stroke, fill, strokeWidth, width, height, path, enableStroke, enableFill, enableStrokeWidth, enableWidth, enableHeight } = payload;
+    const { id, regex, path, size, strokeColor, fillColor, strokeWidth } = payload;
 
     const variant = await getVariantById(id);
     if (!variant) {
         notFound();
     }
 
-    const svgRootAttributes = {
-        ...(enableStroke && stroke !== undefined && { stroke }),
-        ...(enableFill && fill !== undefined && { fill }),
-        ...(enableStrokeWidth && strokeWidth !== undefined && { strokeWidth }),
-        ...(enableWidth && width !== undefined && { width }),
-        ...(enableHeight && height !== undefined && { height })
-    };
+    const attributesToAdjust = (
+        [
+            ['size', size],
+            ['strokeColor', strokeColor],
+            ['fillColor', fillColor],
+            ['strokeWidth', strokeWidth]
+        ] as [string, boolean | undefined][]
+    )
+        .filter(([_, value]) => value !== undefined)
+        .map(([key]) => key);
 
-    const updatedVariant = await updateVariant({ id, regex, svgRootAttributes, path });
+    const updatedVariant = await updateVariant({ id, regex, attributesToAdjust, path });
     if (!updatedVariant) {
         return { ...prevState, errors: { global: ['Failed to update variant.'] } };
     }
@@ -66,11 +65,7 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
             id: updatedVariant.id,
             regex: updatedVariant.regex,
             path: updatedVariant.path,
-            stroke: updatedVariant.svgRootAttributes.stroke,
-            fill: updatedVariant.svgRootAttributes.fill,
-            strokeWidth: updatedVariant.svgRootAttributes.strokeWidth,
-            width: updatedVariant.svgRootAttributes.width,
-            height: updatedVariant.svgRootAttributes.height
+            attributesToAdjust: updatedVariant.attributesToAdjust
         },
         errors: {}
     };

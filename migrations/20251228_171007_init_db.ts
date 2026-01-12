@@ -37,7 +37,7 @@ export async function up(sql: SQL): Promise<void> {
             name VARCHAR(255) NOT NULL,
             path VARCHAR(1024) NOT NULL,
             regex VARCHAR(255) NOT NULL DEFAULT '\\.svg$',
-            svg_root_attributes JSONB NOT NULL DEFAULT '{}'::jsonb,
+            attributes_to_adjust VARCHAR(63)[] DEFAULT '{}',
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         );

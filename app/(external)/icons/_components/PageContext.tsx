@@ -1,24 +1,35 @@
 'use client';
 
 import { useIsClient } from '@uidotdev/usehooks';
-import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
+import {
+    createContext,
+    type Dispatch,
+    type ReactNode,
+    type SetStateAction,
+    useCallback,
+    useContext,
+    useEffect,
+    useState
+} from 'react';
 
 interface IconContextType {
     selectedIcon: IconWithRelativeData | null;
-    setSelectedIcon: (icon: IconWithRelativeData | null) => void;
     selectedRepository: Repository | null;
+    variants: ExtendedVariant[];
+    setSelectedIcon: (icon: IconWithRelativeData | null) => void;
     setSelectedRepository: (repo: Repository | null) => void;
-    variantsById: Record<number, ExtendedVariant>;
+    setVariants: Dispatch<SetStateAction<ExtendedVariant[]>>;
+    getVariantsByRepositoryId: (repoId: number) => ExtendedVariant[];
+    updatedVariant: (updatedVariant: ExtendedVariant) => void;
 }
 
 export interface ExtendedVariant extends Variant {
-    allowCustomAttributes: string[];
     svgAttributes?: {
         fill?: string;
         stroke?: string;
         strokeWidth?: number;
-        width?: number;
-        height?: number;
+        width: number;
+        height: number;
     };
 }
 
@@ -28,15 +39,7 @@ export function PageContextProvider({ children, variants }: { children: ReactNod
     const isClient = useIsClient();
     const [selectedIcon, setSelectedIcon] = useState<IconWithRelativeData | null>(null);
     const [selectedRepository, setSelectedRepository] = useState<Repository | null>(null);
-    const [variantsById, setVariantsById] = useState<Record<number, ExtendedVariant>>({});
-
-    useEffect(() => {
-        setVariantsById(
-            Object.fromEntries(
-                variants.map((v) => [v.id, { ...v, allowCustomAttributes: Object.keys(v.svgRootAttributes) }])
-            )
-        );
-    }, [variants]);
+    const [_variants, setVariants] = useState<ExtendedVariant[]>([...variants]);
 
     useEffect(() => {
         if (isClient) {
@@ -51,14 +54,28 @@ export function PageContextProvider({ children, variants }: { children: ReactNod
         }
     }, [selectedIcon, isClient]);
 
+    const getVariantsByRepositoryId = useCallback(
+        (repoId: number) => {
+            return _variants.filter((variant) => variant.repositoryId === repoId);
+        },
+        [_variants]
+    );
+
+    const updatedVariant = useCallback((updatedVariant: ExtendedVariant) => {
+        setVariants((vas) => vas.map((v) => (v.id === updatedVariant.id ? updatedVariant : v)));
+    }, []);
+
     return (
         <IconContext.Provider
             value={{
                 selectedIcon,
-                setSelectedIcon,
                 selectedRepository,
+                variants: _variants,
+                setSelectedIcon,
                 setSelectedRepository,
-                variantsById
+                setVariants,
+                getVariantsByRepositoryId,
+                updatedVariant
             }}>
             {children}
         </IconContext.Provider>
