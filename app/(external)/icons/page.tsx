@@ -27,7 +27,6 @@ export default async function PageIcons() {
                                 <IconSection
                                     key={repository.id}
                                     repository={repository}
-                                    variants={variants.filter((v) => v.repositoryId === repository.id)}
                                     iconsPromise={iconsByRepoIdPromise[repository.id]}
                                 />
                             </Suspense>

@@ -6,21 +6,24 @@ import { useSearchParams } from 'next/navigation';
 import { use, useMemo, useState } from 'react';
 import AstToSvg from '@/components/AstToSvg';
 import { cx, nameToId } from '@/utils/common-helpers';
-import { usePageContext } from './PageContext';
+import { type ExtendedVariant, usePageContext } from './PageContext';
 
 const ICON_SIZE = 56;
 
 export default function IconSection({
     repository,
-    iconsPromise,
-    variants
+    iconsPromise
 }: {
     repository: Repository;
     iconsPromise: Promise<IconWithRelativeData[]>;
-    variants: Variant[];
 }) {
     const icons = use(iconsPromise);
+
+    const { variantsById } = usePageContext();
+    const variants = Object.values(variantsById).sort((a, b) => a.name.localeCompare(b.name));
     const [selectedVariantId, setSelectedVariantId] = useState(variants[0].id);
+    const variant = variantsById[selectedVariantId];
+
     const isClient = useIsClient();
     const { setSelectedRepository } = usePageContext();
     const [contentRef, entry] = useIntersectionObserver<HTMLDivElement>({
@@ -83,7 +86,8 @@ export default function IconSection({
                 {variants.length > 1 && (
                     <div role="tablist" className="d-tabs d-tabs-lift d-tabs-sm mt-3">
                         {variants.map((variant) => (
-                            <a
+                            <button
+                                type="button"
                                 key={variant.id}
                                 role="tab"
                                 className={cx('d-tab', selectedVariantId === variant.id && 'd-tab-active')}
@@ -92,19 +96,21 @@ export default function IconSection({
                                     setSelectedVariantId(variant.id);
                                 }}>
                                 {variant.name}
-                            </a>
+                            </button>
                         ))}
                     </div>
                 )}
             </div>
             <div className="icons-grid" ref={contentRef} style={{ minHeight }}>
-                {Boolean(entry?.isIntersecting) && <IconContent icons={filteredIcons} />}
+                {Boolean(entry?.isIntersecting) && variant && (
+                    <IconContent icons={filteredIcons} variant={variant} />
+                )}
             </div>
         </div>
     );
 }
 
-function IconContent({ icons }: { icons: IconWithRelativeData[] }) {
+function IconContent({ icons, variant }: { icons: IconWithRelativeData[]; variant: ExtendedVariant }) {
     const { setSelectedIcon } = usePageContext();
 
     return icons.map((icon) => {
@@ -117,7 +123,7 @@ function IconContent({ icons }: { icons: IconWithRelativeData[] }) {
                     type="button"
                     className="cursor-pointer d-tooltip d-tooltip-bottom"
                     data-tip={icon.name}>
-                    <AstToSvg svgAst={icon.svgAst} width={20} height={20} />
+                    <AstToSvg svgAst={icon.svgAst} {...variant.svgAttributes} width={20} height={20} />
                 </button>
             </div>
         );

@@ -21,9 +21,8 @@ declare global {
         svgRootAttributes: {
             stroke?: string;
             fill?: string;
-            strokeWidth?: string;
-            width?: string;
-            height?: string;
+            strokeWidth?: number;
+            size?: number;
         };
         createdAt: Date;
         updatedAt: Date;

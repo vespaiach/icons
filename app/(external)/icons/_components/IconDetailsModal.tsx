@@ -3,10 +3,14 @@
 import { Copy, Download } from 'lucide-react';
 import { useState } from 'react';
 import AstToSvg from '@/components/AstToSvg';
+import FillColorAdjuster from '@/components/FillColorAdjuster';
+import SizeAdjuster from '@/components/SizeAdjuster';
+import StrokeColorAdjuster from '@/components/StrokeColorAdjuster';
+import StrokeWidthAdjuster from '@/components/StrokeWidthAdjuster';
 import useDownloadIconTsx from '@/hooks/useDownloadIconTsx';
 import useDownloadRawIcon from '@/hooks/useDownloadRawIcon';
 import { cx } from '@/utils/common-helpers';
-import { usePageContext } from './PageContext';
+import { type ExtendedVariant, usePageContext } from './PageContext';
 import RepositoryInfo from './RepositoryInfo';
 
 const gridLineNumber = new Array(24).fill(0);
@@ -50,19 +54,24 @@ function SelectedIconDetails({
 }: {
     selectedIcon: IconWithRelativeData;
     repository: Repository;
-    variant: Variant;
+    variant: ExtendedVariant;
 }) {
+    console.log('selectedIcon', variant);
     const [copied, setCopied] = useState(false);
     const handleDownloadTSX = useDownloadIconTsx(selectedIcon);
     const handleDownloadRawIcon = useDownloadRawIcon(selectedIcon);
 
     // State for adjustable properties
-    const [iconSize, setIconSize] = useState(variant.svgRootAttributes.width || 24);
-    const [strokeColor, setStrokeColor] = useState(variant.svgRootAttributes.stroke || null);
+    const [iconSize, setIconSize] = useState(variant.svgAttributes?.width || 24);
     const [strokeWidth, setStrokeWidth] = useState(
-        variant.svgRootAttributes.strokeWidth ? Number(variant.svgRootAttributes.strokeWidth) : null
+        variant.allowCustomAttributes.includes('strokeWidth') ? variant.svgAttributes?.strokeWidth : undefined
     );
-    const [fillColor, setFillColor] = useState(variant.svgRootAttributes.fill || null);
+    const [strokeColor, setStrokeColor] = useState(
+        variant.allowCustomAttributes.includes('stroke') ? variant.svgAttributes?.stroke : undefined
+    );
+    const [fillColor, setFillColor] = useState(
+        variant.allowCustomAttributes.includes('fill') ? variant.svgAttributes?.fill || '' : undefined
+    );
 
     const getAdjustedAttributes = () =>
         Object.fromEntries(
@@ -72,7 +81,7 @@ function SelectedIconDetails({
                 ['stroke', strokeColor],
                 ['fill', fillColor],
                 ['strokeWidth', strokeWidth]
-            ].filter(([_, value]) => value !== null)
+            ].filter(([_, value]) => value !== undefined)
         );
 
     const handleCopyName = () => {
@@ -89,9 +98,11 @@ function SelectedIconDetails({
                         className="absolute top-0 left-0 w-full h-full stroke-base-300 opacity-60 z-0"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke-width="0.1"
+                        strokeWidth="0.1"
                         xmlns="http://www.w3.org/2000/svg">
+                        <title>Grid Lines</title>
                         {gridLineNumber.map((_, index) => (
+                            // biome-ignore lint/suspicious/noArrayIndexKey: no better key available
                             <g key={index}>
                                 <line x1="0" y1={index} x2="24" y2={index}></line>
                                 <line x1={index} y1="0" x2={index} y2="24"></line>
@@ -153,88 +164,21 @@ function SelectedIconDetails({
 
                 <div className="space-y-3">
                     {/* Size Control */}
-                    <div>
-                        <label htmlFor="size-control" className="text-xs font-medium block mb-1">
-                            Size: {iconSize}px
-                        </label>
-                        <input
-                            id="size-control"
-                            type="range"
-                            min="8"
-                            max="300"
-                            value={iconSize}
-                            onChange={(e) => setIconSize(Number.parseInt(e.target.value))}
-                            className="d-range d-range-xs"
-                        />
-                    </div>
+                    <SizeAdjuster size={iconSize} onSizeChange={(newSize) => setIconSize(newSize)} />
+
+                    {/* Stroke Width Control */}
+                    {strokeWidth !== undefined && (
+                        <StrokeWidthAdjuster onStrokeWidthChange={setStrokeWidth} strokeWidth={strokeWidth} />
+                    )}
 
                     {/* Stroke Color Control */}
-                    {strokeColor !== null && (
-                        <div>
-                            <label htmlFor="stroke-color" className="text-xs font-medium block mb-1">
-                                Stroke Color
-                            </label>
-                            <div className="flex items-center gap-2">
-                                <input
-                                    id="stroke-color"
-                                    type="color"
-                                    value={strokeColor}
-                                    onChange={(e) => setStrokeColor(e.target.value)}
-                                    className="d-input d-input-bordered d-input-xs w-16 h-8 p-1 cursor-pointer"
-                                />
-                                <input
-                                    type="text"
-                                    value={strokeColor}
-                                    onChange={(e) => setStrokeColor(e.target.value)}
-                                    className="d-input d-input-bordered d-input-xs flex-1 font-mono text-xs"
-                                    placeholder="#000000"
-                                />
-                            </div>
-                        </div>
+                    {strokeColor !== undefined && (
+                        <StrokeColorAdjuster onStrokeColorChange={setStrokeColor} strokeColor={strokeColor} />
                     )}
 
                     {/* Fill Color Control */}
-                    {fillColor !== null && fillColor !== 'none' && (
-                        <div>
-                            <label htmlFor="fill-color" className="text-xs font-medium block mb-1">
-                                Fill Color
-                            </label>
-                            <div className="flex items-center gap-2">
-                                <input
-                                    id="fill-color"
-                                    type="color"
-                                    value={fillColor}
-                                    onChange={(e) => setFillColor(e.target.value)}
-                                    className="d-input d-input-bordered d-input-xs w-16 h-8 p-1 cursor-pointer"
-                                />
-                                <input
-                                    type="text"
-                                    value={fillColor}
-                                    onChange={(e) => setFillColor(e.target.value)}
-                                    className="d-input d-input-bordered d-input-xs flex-1 font-mono text-xs"
-                                    placeholder="#000000"
-                                />
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Stroke Width Control */}
-                    {strokeWidth !== null && (
-                        <div>
-                            <label htmlFor="stroke-width" className="text-xs font-medium block mb-1">
-                                Stroke Width: {strokeWidth}
-                            </label>
-                            <input
-                                id="stroke-width"
-                                type="range"
-                                min="0.5"
-                                max="10"
-                                step="0.5"
-                                value={strokeWidth}
-                                onChange={(e) => setStrokeWidth(Number.parseFloat(e.target.value))}
-                                className="d-range d-range-xs"
-                            />
-                        </div>
+                    {fillColor !== undefined && (
+                        <FillColorAdjuster onFillColorChange={setFillColor} fillColor={fillColor} />
                     )}
                 </div>
             </div>

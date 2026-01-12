@@ -8,7 +8,18 @@ interface IconContextType {
     setSelectedIcon: (icon: IconWithRelativeData | null) => void;
     selectedRepository: Repository | null;
     setSelectedRepository: (repo: Repository | null) => void;
-    variantsById: Record<number, Variant>;
+    variantsById: Record<number, ExtendedVariant>;
+}
+
+export interface ExtendedVariant extends Variant {
+    allowCustomAttributes: string[];
+    svgAttributes?: {
+        fill?: string;
+        stroke?: string;
+        strokeWidth?: number;
+        width?: number;
+        height?: number;
+    };
 }
 
 const IconContext = createContext<IconContextType | undefined>(undefined);
@@ -17,10 +28,14 @@ export function PageContextProvider({ children, variants }: { children: ReactNod
     const isClient = useIsClient();
     const [selectedIcon, setSelectedIcon] = useState<IconWithRelativeData | null>(null);
     const [selectedRepository, setSelectedRepository] = useState<Repository | null>(null);
-    const [variantsById, setVariantsById] = useState<Record<number, Variant>>({});
+    const [variantsById, setVariantsById] = useState<Record<number, ExtendedVariant>>({});
 
     useEffect(() => {
-        setVariantsById(Object.fromEntries(variants.map((v) => [v.id, v])));
+        setVariantsById(
+            Object.fromEntries(
+                variants.map((v) => [v.id, { ...v, allowCustomAttributes: Object.keys(v.svgRootAttributes) }])
+            )
+        );
     }, [variants]);
 
     useEffect(() => {

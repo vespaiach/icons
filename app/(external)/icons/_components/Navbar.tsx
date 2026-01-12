@@ -58,7 +58,7 @@ export default function Navbar({ repositories }: { repositories: Repository[] })
                             <span className="me-1 text-sm">⌘</span>K
                         </>
                     ) : (
-                        <>Ctrl K</>
+                        'Ctrl K'
                     )}
                 </kbd>
             </button>
