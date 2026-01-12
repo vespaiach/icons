@@ -1,4 +1,4 @@
-export function assertArray<T = any>(arr: T[] | null | undefined): arr is T[] {
+export function assertArray<T = unknown>(arr: T[] | null | undefined): arr is T[] {
     if (!arr || !Array.isArray(arr)) {
         return false;
     }

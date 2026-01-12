@@ -2,7 +2,7 @@
 
 import { RedirectType, redirect } from 'next/navigation';
 import { getUserByEmail } from '@/db/users';
-import { dropAuthCookie, getReturnToPath } from '@/utils/session';
+import { dropAuthCookie } from '@/utils/session';
 import { parseSignInForm } from './validation';
 
 interface SignInFormState {

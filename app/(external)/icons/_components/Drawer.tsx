@@ -5,8 +5,7 @@ import { usePageContext } from './PageContext';
 import RepositoryInfo from './RepositoryInfo';
 
 export default function Drawer() {
-    const { selectedRepository, getVariantsByRepositoryId } = usePageContext();
-    const variants = getVariantsByRepositoryId(selectedRepository?.id || 0);
+    const { selectedRepository } = usePageContext();
 
     return (
         <div className="d-drawer-side">

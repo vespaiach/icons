@@ -9,11 +9,11 @@ export default function useDefaultVariantSettings(
 
     const variantRef = useRef<ExtendedVariant>(_variant);
     variantRef.current = _variant;
-    const isNotNullSvg = svgRef.current !== null;
+    const ref = svgRef.current;
 
     useEffect(() => {
-        if (svgRef.current && variantRef.current.svgAttributes === undefined) {
-            const computedStyles = window.getComputedStyle(svgRef.current);
+        if (ref && variantRef.current.svgAttributes === undefined) {
+            const computedStyles = window.getComputedStyle(ref);
             const variant = variantRef.current;
             const svgAttributes: ExtendedVariant['svgAttributes'] = {
                 fill: variant.attributesToAdjust.includes('fillColor') ? computedStyles.fill : undefined,
@@ -28,5 +28,5 @@ export default function useDefaultVariantSettings(
             };
             updatedVariant({ ...variant, svgAttributes });
         }
-    }, [updatedVariant, isNotNullSvg]);
+    }, [updatedVariant, ref]);
 }

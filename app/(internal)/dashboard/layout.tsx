@@ -2,7 +2,6 @@ import {
     ChevronDown,
     ChevronUp,
     CloudDownload,
-    LogOut,
     Paintbrush,
     PanelRightClose,
     PanelRightOpen
@@ -54,9 +53,6 @@ export default async function InternalLayout({ children }: { children: React.Rea
                                 <ChevronUp className="w-5 hidden group-open:block" />
                             </summary>
                             <ul className="d-dropdown-content d-menu d-menu-sm bg-white border border-gray-300 d-rounded-box w-56 right-0 mt-1">
-                                <li>
-                                    <a>Item 1</a>
-                                </li>
                                 <li>
                                     <SignOutForm />
                                 </li>

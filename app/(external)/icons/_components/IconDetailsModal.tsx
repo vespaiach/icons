@@ -97,7 +97,6 @@ function SelectedIconDetails({
                         xmlns="http://www.w3.org/2000/svg">
                         <title>Grid Lines</title>
                         {gridLineNumber.map((_, index) => (
-                            // biome-ignore lint/suspicious/noArrayIndexKey: no better key available
                             <g key={index}>
                                 <line x1="0" y1={index} x2="24" y2={index}></line>
                                 <line x1={index} y1="0" x2={index} y2="24"></line>

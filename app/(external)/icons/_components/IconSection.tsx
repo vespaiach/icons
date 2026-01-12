@@ -1,6 +1,5 @@
 'use client';
 
-import { useIntersectionObserver } from '@uidotdev/usehooks';
 import { ExternalLink, Info, Settings } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { Fragment, use, useMemo, useRef } from 'react';
@@ -25,11 +24,7 @@ export default function IconSection({
     const variantByRepositories = variants.filter((v) => v.repositoryId === repository.id);
 
     const { setSelectedRepository } = usePageContext();
-    const [contentRef, entry] = useIntersectionObserver<HTMLDivElement>({
-        threshold: 0,
-        root: null,
-        rootMargin: '0px'
-    });
+
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
 
@@ -54,18 +49,6 @@ export default function IconSection({
 
         return iconsByVariant;
     }, [icons, searchQuery]);
-
-    // const minHeight = useMemo(() => {
-    //     if (!isClient || Object.keys(filteredIconsByVariant).length === 0) return 0;
-
-    //     let maxHeight = 0;
-    //     for (const icons of Object.values(filteredIconsByVariant)) {
-    //         const iconCount = icons.length;
-    //         const rows = Math.ceil(iconCount / Math.floor((window.innerWidth - 32) / ICON_SIZE));
-    //         maxHeight = Math.max(maxHeight, rows * ICON_SIZE + (rows - 1) * 8); // 8px gap
-    //     }
-    //     return maxHeight;
-    // }, [filteredIconsByVariant, isClient]);
 
     return (
         <div className="pb-12 px-4" id={nameToId(repository.name)} style={{ scrollMarginTop: '72px' }}>
@@ -99,7 +82,7 @@ export default function IconSection({
                     </button>
                 </h2>
 
-                <div className="d-tabs d-tabs-lift mt-3" ref={contentRef}>
+                <div className="d-tabs d-tabs-lift mt-3">
                     {Object.keys(filteredIconsByVariant).map((_key, index) => {
                         const key = Number(_key);
                         const iconsForVariant = filteredIconsByVariant[key];
