@@ -51,7 +51,7 @@ export default async function VariantsManagementPage() {
                                     </td>
                                     <td>
                                         <div className="flex flex-wrap gap-1">
-                                            {variant.attributesToAdjust.join(', ') || 'None'} 
+                                            {variant.attributesToAdjust.join(', ') || 'None'}
                                         </div>
                                     </td>
                                     <td>

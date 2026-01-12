@@ -51,10 +51,18 @@ export default function PageContent({ variant }: { variant: Variant & { reposito
                     <div className="col-span-2">
                         <strong>Attributes To Adjust:</strong>
                         <ul className="list-disc pl-6 mt-4">
-                            {formState.values.attributesToAdjust.includes('fillColor') && (<li> Fill color </li>)}
-                            {formState.values.attributesToAdjust.includes('strokeColor') && (<li> Stroke color </li>)}
-                            {formState.values.attributesToAdjust.includes('strokeWidth') && (<li> Stroke width </li>)}
-                            {formState.values.attributesToAdjust.includes('size') && (<li> Size (width & height) </li>)}
+                            {formState.values.attributesToAdjust.includes('fillColor') && (
+                                <li> Fill color </li>
+                            )}
+                            {formState.values.attributesToAdjust.includes('strokeColor') && (
+                                <li> Stroke color </li>
+                            )}
+                            {formState.values.attributesToAdjust.includes('strokeWidth') && (
+                                <li> Stroke width </li>
+                            )}
+                            {formState.values.attributesToAdjust.includes('size') && (
+                                <li> Size (width & height) </li>
+                            )}
                         </ul>
                     </div>
                 </div>

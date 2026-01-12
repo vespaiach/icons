@@ -227,7 +227,7 @@ function santizeSvgAttributeKey(rawKey: string): string | null {
     }
 
     // Keep aria- and data- attributes as-is (with hyphen)
-    if (key.startsWith('aria-') ) {
+    if (key.startsWith('aria-')) {
         return key;
     }
 

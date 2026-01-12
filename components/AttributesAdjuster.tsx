@@ -38,9 +38,7 @@ export default function AttributesAdjuster({ value, onChange }: AttributesAdjust
             {/* Stroke Color Control */}
             {assertString(value.stroke) && (
                 <StrokeColorAdjuster
-                    onStrokeColorChange={(newStrokeColor) =>
-                        onChange({ ...value, stroke: newStrokeColor })
-                    }
+                    onStrokeColorChange={(newStrokeColor) => onChange({ ...value, stroke: newStrokeColor })}
                     strokeColor={value.stroke}
                 />
             )}

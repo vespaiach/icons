@@ -10,9 +10,7 @@ export default function FillColorAdjuster({
     const disableInput = disabled || fillColor === 'none';
     return (
         <fieldset className="d-fieldset flex-1">
-            <legend className="d-fieldset-legend flex items-center gap-2">
-                Fill Color
-            </legend>
+            <legend className="d-fieldset-legend flex items-center gap-2">Fill Color</legend>
             <div className="flex items-center gap-3">
                 <input
                     id="fill-color"
