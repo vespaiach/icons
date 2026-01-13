@@ -19,6 +19,7 @@ export default function IconSection({
     iconsPromise: Promise<IconWithRelativeData[]>; // The icons for this repository for all variants
 }) {
     const icons = use(iconsPromise);
+    console.log(`Icons loaded for repository ${repository.name}:`, icons);
 
     const { variants } = usePageContext();
     const variantByRepositories = variants.filter((v) => v.repositoryId === repository.id);
