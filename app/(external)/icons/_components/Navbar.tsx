@@ -1,7 +1,7 @@
 'use client';
 
 import { useClickAway } from '@uidotdev/usehooks';
-import { ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp, Globe, Search } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { nameToId } from '@/utils/common-helpers';
@@ -39,8 +39,9 @@ export default function Navbar({ repositories }: { repositories: Repository[] })
 
     return (
         <div className="d-navbar bg-base-100 min-h-10 px-4 shadow-sm justify-between sticky top-0 z-10">
-            <a href="/icons/" className="btn btn-ghost font-mono font-semibold text-sm text-primary">
-                ICONS
+            <a href="/icons/" className="btn btn-ghost font-mono font-semibold text-sm text-primary flex items-center">
+                <Globe className="size-5 me-2 inline-block" />
+                FICONS
             </a>
             <button type="button" className="d-btn d-btn-ghost md:hidden" onClick={openModel}>
                 <Search className="size-4 shrink-0" />
