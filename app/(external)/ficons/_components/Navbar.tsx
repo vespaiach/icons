@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import useTrackingVisibleSections from '@/hooks/useTrackingVisibleSections';
 import { repoToId } from '@/utils/common-helpers';
 
-export default function Navbar({ repositories }: { repositories: Repository[] }) {
+export default function Navbar({ repositories }: { repositories: RepositoryVariants[] }) {
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
     const [isMac, setIsMac] = useState<boolean | null>(null);

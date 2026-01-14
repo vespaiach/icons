@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { cx, repoToId } from '@/utils/common-helpers';
 
-export default function SearchModal({ repositories }: { repositories: Repository[] }) {
+export default function SearchModal({ repositories }: { repositories: RepositoryVariants[] }) {
     const searchInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
 

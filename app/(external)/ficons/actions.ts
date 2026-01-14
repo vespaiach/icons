@@ -1,17 +1,12 @@
 'use server';
 
 import { getIconsByRepositoryId } from '@/db/icons';
-import { getRepositories } from '@/db/repositories';
-import { getVariants } from '@/db/variants';
+import { getRepositoriesWithVariants } from '@/db/repositories';
 
 export async function getRepositoriesAction() {
-    return await getRepositories();
+    return await getRepositoriesWithVariants();
 }
 
 export async function getIconsByRepositoryIdAction(repositoryId: number) {
     return await getIconsByRepositoryId(repositoryId);
-}
-
-export async function getVariantsAction() {
-    return await getVariants();
 }

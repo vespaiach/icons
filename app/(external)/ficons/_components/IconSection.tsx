@@ -11,13 +11,10 @@ const filterFunc = (query: string) => (icon: IconWithRelativeData) =>
     icon.name.toLowerCase().startsWith(query.toLowerCase());
 
 export default function IconSection({
-    repository,
     iconsPromise
 }: {
-    repository: Repository;
     iconsPromise: Promise<IconWithRelativeData[]>; // The icons for this repository for all variants
 }) {
-    const variantsRef = useRef<Variant[] | null>(null);
     const icons = use(iconsPromise);
     const iconsByVariant = useMemo(
         () =>
@@ -31,21 +28,21 @@ export default function IconSection({
             ),
         [icons]
     );
+    const { repositories } = usePageContext();
+    const repository = icons[0] ? repositories.find((repo) => repo.id === icons[0].repositoryId) : null;
 
-    const { variants: _variants, selectedRepository } = usePageContext();
+    if (icons.length === 0 || !repository) return null;
 
-    // Use variantsRef to prevent re-rendering while users are changing svg attributes
-    variantsRef.current = _variants;
-    const isDrawerOpen = !selectedRepository;
+    return <IconSectionContent iconsByVariant={iconsByVariant} repository={repository} />;
+}
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: we only want to recalculate when isDrawerOpen changes
-    const variantByRepositories = useMemo(() => {
-        if (!variantsRef.current) return [];
-        const variantIds = new Set(Object.keys(iconsByVariant).map((id) => Number(id)));
-
-        return variantsRef.current.filter((v) => variantIds.has(v.id));
-    }, [iconsByVariant, isDrawerOpen]);
-
+function IconSectionContent({
+    iconsByVariant,
+    repository
+}: {
+    iconsByVariant: Record<number, IconWithRelativeData[]>;
+    repository: RepositoryVariants;
+}) {
     const { setSelectedRepository } = usePageContext();
 
     const searchParams = useSearchParams();
@@ -104,7 +101,7 @@ export default function IconSection({
                     {Object.keys(filteredIconsByVariant).map((_key, index) => {
                         const key = Number(_key);
                         const iconsForVariant = filteredIconsByVariant[key];
-                        const variant = variantByRepositories.find((v) => v.id === key);
+                        const variant = repository.variants.find((v) => v.id === key);
 
                         if (iconsForVariant.length === 0 || !variant) {
                             return null;

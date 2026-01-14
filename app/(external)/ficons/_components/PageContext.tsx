@@ -15,21 +15,21 @@ import {
 interface IconContextType {
     selectedIcon: IconWithRelativeData | null;
     selectedRepository: Repository | null;
-    variants: Variant[];
+    repositories: RepositoryVariants[];
     setSelectedIcon: (icon: IconWithRelativeData | null) => void;
     setSelectedRepository: (repo: Repository | null) => void;
-    setVariants: Dispatch<SetStateAction<Variant[]>>;
+    setRepositoriesVariants: Dispatch<SetStateAction<RepositoryVariants[]>>;
     getVariantsByRepositoryId: (repoId: number) => Variant[];
     updatedVariant: (updatedVariant: Variant) => void;
 }
 
 const IconContext = createContext<IconContextType | undefined>(undefined);
 
-export function PageContextProvider({ children, variants }: { children: ReactNode; variants: Variant[] }) {
+export function PageContextProvider({ children, repositoriesVariants }: { children: ReactNode; repositoriesVariants: RepositoryVariants[] }) {
     const isClient = useIsClient();
     const [selectedIcon, setSelectedIcon] = useState<IconWithRelativeData | null>(null);
     const [selectedRepository, setSelectedRepository] = useState<Repository | null>(null);
-    const [_variants, setVariants] = useState<Variant[]>([...variants]);
+    const [_repositoriesVariants, setRepositoriesVariants] = useState<RepositoryVariants[]>([...repositoriesVariants]);
 
     useEffect(() => {
         if (isClient) {
@@ -46,13 +46,19 @@ export function PageContextProvider({ children, variants }: { children: ReactNod
 
     const getVariantsByRepositoryId = useCallback(
         (repoId: number) => {
-            return _variants.filter((variant) => variant.repositoryId === repoId);
+            const repository = _repositoriesVariants.find((repo) => repo.id === repoId);
+            return repository?.variants || [];
         },
-        [_variants]
+        [_repositoriesVariants]
     );
 
     const updatedVariant = useCallback((updatedVariant: Variant) => {
-        setVariants((vas) => vas.map((v) => (v.id === updatedVariant.id ? updatedVariant : v)));
+        setRepositoriesVariants((repos) =>
+            repos.map((repo) => ({
+                ...repo,
+                variants: repo.variants.map((v) => (v.id === updatedVariant.id ? updatedVariant : v))
+            }))
+        );
     }, []);
 
     return (
@@ -60,10 +66,10 @@ export function PageContextProvider({ children, variants }: { children: ReactNod
             value={{
                 selectedIcon,
                 selectedRepository,
-                variants: _variants,
+                repositories: _repositoriesVariants,
                 setSelectedIcon,
                 setSelectedRepository,
-                setVariants,
+                setRepositoriesVariants,
                 getVariantsByRepositoryId,
                 updatedVariant
             }}>

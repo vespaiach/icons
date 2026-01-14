@@ -1,16 +1,29 @@
 import { dbClient } from './db.client';
 
-export async function getRepositories(): Promise<Repository[]> {
+export async function getRepositoriesWithVariants(): Promise<RepositoryVariants[]> {
     const rows = await dbClient`
         SELECT 
-            id,
-            owner,
-            name,
-            ref,
-            created_at AS "createdAt",
-            last_imported_at AS "lastImportedAt"
-        FROM repositories
-        ORDER BY name ASC;
+            repositories.id,
+            repositories.owner,
+            repositories.name,
+            repositories.ref,
+            repositories.created_at AS "createdAt",
+            repositories.last_imported_at AS "lastImportedAt",
+            json_agg(
+                json_build_object(
+                    'id', variants.id,
+                    'path', variants.path,
+                    'name', variants.name,
+                    'regex', variants.regex,
+                    'repositoryId', variants.repository_id,
+                    'defaultSvgAttributes', variants.default_svg_attributes,
+                    'createdAt', variants.created_at,
+                    'updatedAt', variants.updated_at
+                )
+            ) AS variants
+        FROM repositories INNER JOIN variants ON repositories.id = variants.repository_id
+        GROUP BY 1, 2, 3, 4, 5, 6
+        ORDER BY repositories.name ASC
     `;
     return rows;
 }

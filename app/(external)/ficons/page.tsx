@@ -6,37 +6,33 @@ import IconSection from './_components/IconSection';
 import Navbar from './_components/Navbar';
 import { PageContextProvider } from './_components/PageContext';
 import SearchModal from './_components/SearchModal';
-import { getIconsByRepositoryIdAction, getRepositoriesAction, getVariantsAction } from './actions';
+import { getIconsByRepositoryIdAction, getRepositoriesAction } from './actions';
 
 export default async function PageIcons() {
-    const [repositories, variants] = await Promise.all([getRepositoriesAction(), getVariantsAction()]);
+    const repositoriesVariants = await getRepositoriesAction();
     const iconsByRepoIdPromise = Object.fromEntries(
-        repositories.map((repo) => [repo.id, getIconsByRepositoryIdAction(repo.id)])
+        repositoriesVariants.map((repo) => [repo.id, getIconsByRepositoryIdAction(repo.id)])
     );
 
     return (
-        <PageContextProvider variants={variants}>
+        <PageContextProvider repositoriesVariants={repositoriesVariants}>
             <div className="d-drawer">
                 <DrawerToggler />
                 <div className="d-drawer-content">
                     <Suspense>
-                        <Navbar repositories={repositories} />
+                        <Navbar repositories={repositoriesVariants} />
                     </Suspense>
 
                     <div className="mt-6">
-                        {repositories.map((repository) => (
+                        {repositoriesVariants.map((repository) => (
                             <Suspense key={repository.id}>
-                                <IconSection
-                                    key={repository.id}
-                                    repository={repository}
-                                    iconsPromise={iconsByRepoIdPromise[repository.id]}
-                                />
+                                <IconSection iconsPromise={iconsByRepoIdPromise[repository.id]} />
                             </Suspense>
                         ))}
                     </div>
 
-                    <SearchModal repositories={repositories} />
-                    <IconDetailsModal repositories={repositories} />
+                    <SearchModal repositories={repositoriesVariants} />
+                    <IconDetailsModal repositories={repositoriesVariants} />
                 </div>
                 <Drawer />
             </div>
