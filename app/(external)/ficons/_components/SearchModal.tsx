@@ -3,7 +3,7 @@
 import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-import { cx, nameToId, repoToId } from '@/utils/common-helpers';
+import { cx, repoToId } from '@/utils/common-helpers';
 
 export default function SearchModal({ repositories }: { repositories: Repository[] }) {
     const searchInputRef = useRef<HTMLInputElement>(null);
@@ -63,7 +63,9 @@ export default function SearchModal({ repositories }: { repositories: Repository
                         <button
                             type="button"
                             key={repo.id}
-                            className={cx('d-badge d-badge-outline d-badge-sm d-badge-secondary cursor-pointer')}
+                            className={cx(
+                                'd-badge d-badge-outline d-badge-sm d-badge-secondary cursor-pointer'
+                            )}
                             onClick={(e) => {
                                 e.preventDefault();
                                 const element = document.getElementById(repoToId(repo));

@@ -1,0 +1,43 @@
+repos:
+  - owner: "feathericons"
+    name: "feather"
+    ref: "main"
+    variants:
+      - name: default
+        path: "/icons"
+  - owner: "tailwindlabs"
+    name: "heroicons"
+    ref: "master"
+    variants:
+      - name: "16/solid"
+        path: "/optimized/16/solid"
+      - name: "20/solid" 
+        path: "/optimized/20/solid"
+      - name: "24"
+        path: "/optimized/24/outline"
+      - name: "24"
+        path: "/optimized/24/solid"
+  - owner: "ionic-team"
+    name: "ionicons"
+    ref: "main"
+    variants:
+      - name: "outline"
+        path: "/src/svg"
+        regex: "^(?!.*-fill\\.svg$).*$"
+      - name: "filled"
+        path: "/src/svg"
+        regex: "-fill\\.svg$"        
+  - owner: "lucide-icons"
+    name: "lucide"
+    ref: "main"
+    variants:
+      - name: default
+        path: "/icons"
+  - owner: "tabler"
+    name: "tabler-icons"
+    ref: "main"
+    variants:
+      - name: filled
+        path: "/icons/filled"
+      - name: outline
+        path: "/icons/outline"

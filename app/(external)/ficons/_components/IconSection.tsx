@@ -65,7 +65,11 @@ export default function IconSection({
     }, [iconsByVariant, searchQuery]);
 
     return (
-        <div className="pb-12 px-4" id={repoToId(repository)} data-name={`${repository.owner}/${repository.name}`} style={{ scrollMarginTop: '72px' }}>
+        <div
+            className="pb-12 px-4"
+            id={repoToId(repository)}
+            data-name={`${repository.owner}/${repository.name}`}
+            style={{ scrollMarginTop: '72px' }}>
             <div className="mb-4">
                 <h2 className="font-semibold text-lg capitalize flex items-center">
                     {repository.owner}/{repository.name}
@@ -148,6 +152,18 @@ function IconButton({
     reportDefaultAttribute?: boolean;
 }) {
     const { setSelectedIcon } = usePageContext();
+    const iconElement = useMemo(() => {
+        return (
+            <AstToSvg
+                svgAst={icon.svgAst}
+                fill={variant.defaultSvgAttributes.fillColor}
+                stroke={variant.defaultSvgAttributes.strokeColor}
+                strokeWidth={variant.defaultSvgAttributes.strokeWidth}
+                width={20}
+                height={20}
+            />
+        );
+    }, [icon.svgAst, variant.defaultSvgAttributes]);
 
     return (
         <button
@@ -157,14 +173,7 @@ function IconButton({
             type="button"
             className="cursor-pointer d-tooltip d-tooltip-bottom"
             data-tip={icon.name}>
-            <AstToSvg
-                svgAst={icon.svgAst}
-                fill={variant.defaultSvgAttributes.fillColor}
-                stroke={variant.defaultSvgAttributes.strokeColor}
-                strokeWidth={variant.defaultSvgAttributes.strokeWidth}
-                width={20}
-                height={20}
-            />
+            {iconElement}
         </button>
     );
 }

@@ -1,4 +1,4 @@
-import type { Ref } from 'react';
+import { type Ref, useMemo } from 'react';
 import { astToInnerHtml } from '@/utils/client-side/svg-helpers';
 
 interface AstToSvgProps
@@ -11,14 +11,31 @@ interface AstToSvgProps
     ref?: Ref<SVGSVGElement>;
 }
 
-export default function AstToSvg({ svgAst, dataVariantId, ref, ...rest }: AstToSvgProps) {
+export default function AstToSvg({
+    svgAst,
+    dataVariantId,
+    ref,
+    fill,
+    stroke,
+    strokeWidth,
+    ...rest
+}: AstToSvgProps) {
     const innerHtml = astToInnerHtml(svgAst);
     return (
         <svg
-            {...svgAst.attrs}
+            {...Object.assign(
+                {},
+                svgAst.attrs,
+                Object.fromEntries(
+                    [
+                        ['fill', fill],
+                        ['stroke', stroke],
+                        ['strokeWidth', strokeWidth]
+                    ].filter(([, v]) => v !== undefined)
+                )
+            )}
             {...rest}
             ref={ref}
-            data-variant-id={dataVariantId}
             // biome-ignore lint/security/noDangerouslySetInnerHtml: we need this to render SVG from AST
             dangerouslySetInnerHTML={{ __html: innerHtml }}
         />

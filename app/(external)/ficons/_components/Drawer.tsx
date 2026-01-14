@@ -37,9 +37,7 @@ function SettingForm({ repository }: { repository: Repository }) {
 
                 return (
                     <div key={variant.id}>
-                        <h3 className="font-semibold text-lg capitalize mt-6 mb-2">
-                            {variant.name}
-                        </h3>
+                        <h3 className="font-semibold text-lg capitalize mt-6 mb-2">{variant.name}</h3>
                         <AttributesAdjuster
                             value={{
                                 width: variant.defaultSvgAttributes.size ?? 24,
