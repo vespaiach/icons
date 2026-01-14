@@ -1,10 +1,11 @@
 'use client';
 
 import { useClickAway } from '@uidotdev/usehooks';
-import { ChevronDown, ChevronUp, Globe, Search } from 'lucide-react';
+import { Globe, Search } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
-import { nameToId } from '@/utils/common-helpers';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import useTrackingVisibleSections from '@/hooks/useTrackingVisibleSections';
+import { repoToId } from '@/utils/common-helpers';
 
 export default function Navbar({ repositories }: { repositories: Repository[] }) {
     const searchParams = useSearchParams();
@@ -40,7 +41,7 @@ export default function Navbar({ repositories }: { repositories: Repository[] })
     return (
         <div className="d-navbar bg-base-100 min-h-10 px-4 shadow-sm justify-between sticky top-0 z-10">
             <a
-                href="/icons/"
+                href="/ficons/"
                 className="btn btn-ghost font-mono font-semibold text-sm text-primary flex items-center">
                 <Globe className="size-5 me-2 inline-block" />
                 FICONS
@@ -74,79 +75,63 @@ export default function Navbar({ repositories }: { repositories: Repository[] })
 }
 
 function RepositoriesLinks({ repositories }: { repositories: Repository[] }) {
-    const [activeRepo, setActiveRepo] = useState<string>('');
+    const ids = useMemo(() => repositories.map((repo) => repoToId(repo)), [repositories]);
+    const [visibleSectionId, setVisibleSectionId] = useTrackingVisibleSections(ids);
+    const visibleRepo = useMemo(() => {
+        if (!visibleSectionId) return null;
+        return repositories.find((repo) => repoToId(repo) === visibleSectionId) || null;
+    }, [visibleSectionId, repositories]);
+
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
     const ref = useClickAway<HTMLDivElement>(() => {
         setIsDropdownOpen(false);
     });
-
-    useEffect(() => {
-        const observerOptions = {
-            root: null,
-            rootMargin: '-100px 0px -60% 0px',
-            threshold: 0
-        };
-
-        const observerCallback = (entries: IntersectionObserverEntry[]) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    setActiveRepo(entry.target.id);
-                }
-            });
-        };
-
-        const observer = new IntersectionObserver(observerCallback, observerOptions);
-
-        // Observe all repository sections
-        repositories.forEach((repo) => {
-            const element = document.getElementById(nameToId(repo.name));
-            if (element) {
-                observer.observe(element);
-            }
-        });
-
-        return () => {
-            observer.disconnect();
-        };
-    }, [repositories]);
-
-    const displayName = activeRepo || `${repositories[0]?.owner}/${repositories[0]?.name}` || 'Repositories';
 
     return (
         <div
             ref={ref}
             className={`d-dropdown d-dropdown-end ${isDropdownOpen ? 'd-dropdown-open' : 'd-dropdown-close'}`}>
-            <button
-                type="button"
-                className="capitalize flex items-center gap-1 d-btn d-btn-ghost"
-                onClick={() => {
-                    setIsDropdownOpen(!isDropdownOpen);
-                }}
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
+            {visibleRepo !== null && (
+                <button
+                    type="button"
+                    className="capitalize flex items-center gap-1 d-btn d-btn-ghost"
+                    onClick={() => {
                         setIsDropdownOpen(!isDropdownOpen);
-                    }
-                }}>
-                {displayName}
-                {isDropdownOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setIsDropdownOpen(!isDropdownOpen);
+                        }
+                    }}>
+                    # {visibleRepo.owner}/{visibleRepo.name}
+                </button>
+            )}
             <ul
                 tabIndex={-1}
-                className="d-dropdown-content d-menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                className="d-dropdown-content d-menu bg-base-100 rounded-box z-1 w-62 p-2 shadow-sm">
                 {repositories.map((repo) => (
                     <li key={repo.id}>
                         <a
                             className="d-link capitalize"
-                            href={`#${nameToId(repo.name)}`}
+                            href={`#${repoToId(repo)}`}
                             onClick={(e) => {
                                 e.preventDefault();
-                                const element = document.getElementById(nameToId(repo.name));
+                                const id = repoToId(repo);
+
+                                const element = document.getElementById(id);
                                 if (element) {
                                     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                 }
+
                                 // Close dropdown
                                 setIsDropdownOpen(false);
+
+                                // A workaround to ensure the visible section is updated after scrolling but intersection observer doesn't fire immediately
+                                setTimeout(() => {
+                                    setVisibleSectionId(id);
+                                }, 1000);
                             }}>
                             {repo.owner}/{repo.name}
                         </a>

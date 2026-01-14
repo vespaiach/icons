@@ -19,3 +19,7 @@ export function nameToId(name: string): string {
         .replace(/[\s_-]+/g, '-') // Replace spaces/underscores with a single hyphen
         .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
 }
+
+export function repoToId(repo: Repository): string {
+    return nameToId(`${repo.owner}/${repo.name}`);
+}

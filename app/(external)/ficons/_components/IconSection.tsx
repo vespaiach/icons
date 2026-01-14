@@ -4,7 +4,7 @@ import { ExternalLink, Info, Settings } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { Fragment, use, useMemo, useRef } from 'react';
 import AstToSvg from '@/components/AstToSvg';
-import { nameToId } from '@/utils/common-helpers';
+import { repoToId } from '@/utils/common-helpers';
 import { usePageContext } from './PageContext';
 
 const filterFunc = (query: string) => (icon: IconWithRelativeData) =>
@@ -65,7 +65,7 @@ export default function IconSection({
     }, [iconsByVariant, searchQuery]);
 
     return (
-        <div className="pb-12 px-4" id={nameToId(repository.name)} style={{ scrollMarginTop: '72px' }}>
+        <div className="pb-12 px-4" id={repoToId(repository)} data-name={`${repository.owner}/${repository.name}`} style={{ scrollMarginTop: '72px' }}>
             <div className="mb-4">
                 <h2 className="font-semibold text-lg capitalize flex items-center">
                     {repository.owner}/{repository.name}

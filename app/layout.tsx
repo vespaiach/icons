@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Ficons - Free Icon Collections - stayon.online',
         description: 'A curated list of free icon collections for designers and developers.',
-        url: 'https://stayon.online/icons',
+        url: 'https://stayon.online/ficons',
         siteName: 'Free Icon Collections - stayon.online',
         locale: 'en_US',
         type: 'website'

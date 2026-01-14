@@ -3,7 +3,7 @@
 import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-import { cx, nameToId } from '@/utils/common-helpers';
+import { cx, nameToId, repoToId } from '@/utils/common-helpers';
 
 export default function SearchModal({ repositories }: { repositories: Repository[] }) {
     const searchInputRef = useRef<HTMLInputElement>(null);
@@ -34,7 +34,7 @@ export default function SearchModal({ repositories }: { repositories: Repository
             // Update URL with query string using Next.js router
             router.push(`?q=${encodeURIComponent(query)}`);
         } else {
-            router.push(`/icons/`);
+            router.push(`/ficons/`);
         }
 
         // Close modal
@@ -54,7 +54,7 @@ export default function SearchModal({ repositories }: { repositories: Repository
                             type="search"
                             name="search"
                             ref={searchInputRef}
-                            placeholder="Type to search…"
+                            placeholder="Type and hit enter to search…"
                         />
                     </label>
                 </div>
@@ -63,10 +63,10 @@ export default function SearchModal({ repositories }: { repositories: Repository
                         <button
                             type="button"
                             key={repo.id}
-                            className={cx('d-badge d-badge-sm cursor-pointer')}
+                            className={cx('d-badge d-badge-outline d-badge-sm d-badge-secondary cursor-pointer')}
                             onClick={(e) => {
                                 e.preventDefault();
-                                const element = document.getElementById(nameToId(repo.name));
+                                const element = document.getElementById(repoToId(repo));
                                 if (element) {
                                     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                 }

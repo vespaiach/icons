@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { usePageContext } from '@/app/(external)/icons/_components/PageContext';
+import { usePageContext } from '@/app/(external)/ficons/_components/PageContext';
 
 export default function useReportDefaultAttributeValues(
     _variant: Variant,
