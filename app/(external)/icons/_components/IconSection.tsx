@@ -39,7 +39,7 @@ export default function IconSection({
     variantsRef.current = _variants;
     const isDrawerOpen = !selectedRepository;
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: we only want to recalculate when isDrawerOpen changes 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: we only want to recalculate when isDrawerOpen changes
     const variantByRepositories = useMemo(() => {
         if (!variantsRef.current) return [];
         const variantIds = new Set(Object.keys(iconsByVariant).map((id) => Number(id)));

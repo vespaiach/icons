@@ -7,7 +7,7 @@ export default function FillColorAdjuster({
     fillColor: string;
     onFillColorChange: (newFillColor: string) => void;
 }) {
-    const disableInput = disabled || fillColor === 'none';
+    const disableInput = disabled || ['none', 'currentcolor'].includes(fillColor.toLowerCase());
     return (
         <fieldset className="d-fieldset flex-1">
             <legend className="d-fieldset-legend flex items-center gap-2">Fill Color</legend>
@@ -29,7 +29,7 @@ export default function FillColorAdjuster({
                     name="fill"
                     value={fillColor}
                     onChange={(e) => {
-                        if (disabled) return;
+                        if (disableInput) return;
                         const value = e.target.value;
                         onFillColorChange(value);
                     }}

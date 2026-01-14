@@ -9,7 +9,7 @@ export default function StrokeColorAdjuster({
     strokeColor: string;
     onStrokeColorChange: (newStrokeColor: string) => void;
 }) {
-    const disableInput = disabled || strokeColor === 'none';
+    const disableInput = disabled || ['none', 'currentcolor'].includes(strokeColor.toLowerCase());
     return (
         <fieldset className={cx('d-fieldset flex-1', disabled && 'opacity-50')}>
             <legend className="d-fieldset-legend flex items-center gap-2">Stroke Color</legend>

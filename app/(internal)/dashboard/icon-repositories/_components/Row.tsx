@@ -37,6 +37,7 @@ export default function Row({
                     ))}
                 </div>
             </td>
+            {/* TODO: fix this icon count to make it realtime */}
             <td>{repository.iconCount.toLocaleString()}</td>
             <td>{formState.lastImportedAt ? formState.lastImportedAt.toLocaleString() : 'Never'}</td>
             <td>

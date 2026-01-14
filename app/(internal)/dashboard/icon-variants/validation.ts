@@ -5,19 +5,33 @@ export const variantUpdateFormSchema = v.object({
     id: v.pipe(v.string(), v.transform(Number), v.number(), v.integer()),
     regex: v.pipe(v.string(), v.minLength(1, 'Regex is required')),
     path: v.pipe(v.string(), v.minLength(1, 'Path is required')),
-    size: v.nullish(
+    enableSize: v.optional(
         v.pipe(
             v.string(),
             v.transform((val) => val === 'on')
         )
     ),
-    strokeColor: v.optional(
+    size: v.optional(
+        v.pipe(
+            v.string(),
+            v.transform((val) => (val ? Number(val) : undefined))
+        )
+    ),
+    enableStrokeColor: v.optional(
         v.pipe(
             v.string(),
             v.transform((val) => val === 'on')
         )
     ),
-    fillColor: v.optional(
+    strokeColor: v.optional(v.string()),
+    enableFillColor: v.optional(
+        v.pipe(
+            v.string(),
+            v.transform((val) => val === 'on')
+        )
+    ),
+    fillColor: v.optional(v.string()),
+    enableStrokeWidth: v.optional(
         v.pipe(
             v.string(),
             v.transform((val) => val === 'on')
@@ -26,7 +40,7 @@ export const variantUpdateFormSchema = v.object({
     strokeWidth: v.optional(
         v.pipe(
             v.string(),
-            v.transform((val) => val === 'on')
+            v.transform((val) => (val ? Number(val) : undefined))
         )
     )
 });

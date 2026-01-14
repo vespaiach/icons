@@ -39,7 +39,9 @@ export default function Navbar({ repositories }: { repositories: Repository[] })
 
     return (
         <div className="d-navbar bg-base-100 min-h-10 px-4 shadow-sm justify-between sticky top-0 z-10">
-            <a href="/icons/" className="btn btn-ghost font-mono font-semibold text-sm text-primary flex items-center">
+            <a
+                href="/icons/"
+                className="btn btn-ghost font-mono font-semibold text-sm text-primary flex items-center">
                 <Globe className="size-5 me-2 inline-block" />
                 FICONS
             </a>

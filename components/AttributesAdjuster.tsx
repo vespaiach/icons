@@ -24,7 +24,9 @@ export default function AttributesAdjuster({ value, onChange }: AttributesAdjust
             <SizeAdjuster
                 width={value.width}
                 height={value.height}
-                onSizeChange={(newWidth, newHeight) => onChange({ ...value, width: newWidth, height: newHeight })}
+                onSizeChange={(newWidth, newHeight) =>
+                    onChange({ ...value, width: newWidth, height: newHeight })
+                }
             />
             {/* Stroke Width Control */}
             {assertNumber(value.strokeWidth) && (

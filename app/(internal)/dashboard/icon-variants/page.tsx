@@ -51,7 +51,11 @@ export default async function VariantsManagementPage() {
                                     </td>
                                     <td>
                                         <div className="flex flex-wrap gap-1">
-                                            {variant.attributesToAdjust.join(', ') || 'None'}
+                                            {Object.entries(variant.defaultSvgAttributes).length > 0
+                                                ? Object.entries(variant.defaultSvgAttributes)
+                                                      .map(([key, value]) => `${key}: ${value}`)
+                                                      .join(', ')
+                                                : 'None'}
                                         </div>
                                     </td>
                                     <td>

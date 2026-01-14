@@ -4,7 +4,7 @@ import { ExternalLink } from 'lucide-react';
 import { useActionState } from 'react';
 import Box, { BoxHeader } from '@/components/Box';
 import { updateVariantAction } from '../../actions';
-import UpdateForm from './UpdateFormWrapper';
+import VariantForm from './VariantForm';
 
 export default function PageContent({ variant }: { variant: Variant & { repository: Repository } }) {
     const [formState, formAction, isPending] = useActionState(updateVariantAction, {
@@ -49,25 +49,48 @@ export default function PageContent({ variant }: { variant: Variant & { reposito
                         </a>
                     </p>
                     <div className="col-span-2">
-                        <strong>Attributes To Adjust:</strong>
+                        <strong>Default SVG Attributes:</strong>
                         <ul className="list-disc pl-6 mt-4">
-                            {formState.values.attributesToAdjust.includes('fillColor') && (
-                                <li> Fill color </li>
+                            {formState.values.defaultSvgAttributes.fillColor && (
+                                <li>
+                                    Fill color:{' '}
+                                    <code className="bg-base-300 px-2 py-1 rounded">
+                                        {formState.values.defaultSvgAttributes.fillColor}
+                                    </code>
+                                </li>
                             )}
-                            {formState.values.attributesToAdjust.includes('strokeColor') && (
-                                <li> Stroke color </li>
+                            {formState.values.defaultSvgAttributes.strokeColor && (
+                                <li>
+                                    Stroke color:{' '}
+                                    <code className="bg-base-300 px-2 py-1 rounded">
+                                        {formState.values.defaultSvgAttributes.strokeColor}
+                                    </code>
+                                </li>
                             )}
-                            {formState.values.attributesToAdjust.includes('strokeWidth') && (
-                                <li> Stroke width </li>
+                            {formState.values.defaultSvgAttributes.strokeWidth !== undefined && (
+                                <li>
+                                    Stroke width:{' '}
+                                    <code className="bg-base-300 px-2 py-1 rounded">
+                                        {formState.values.defaultSvgAttributes.strokeWidth}
+                                    </code>
+                                </li>
                             )}
-                            {formState.values.attributesToAdjust.includes('size') && (
-                                <li> Size (width & height) </li>
+                            {formState.values.defaultSvgAttributes.size !== undefined && (
+                                <li>
+                                    Size (width & height):{' '}
+                                    <code className="bg-base-300 px-2 py-1 rounded">
+                                        {formState.values.defaultSvgAttributes.size}px
+                                    </code>
+                                </li>
+                            )}
+                            {Object.keys(formState.values.defaultSvgAttributes).length === 0 && (
+                                <li className="text-base-content/50">None configured</li>
                             )}
                         </ul>
                     </div>
                 </div>
             </div>
-            <UpdateForm formState={formState} formAction={formAction} isPending={isPending} />
+            <VariantForm formState={formState} formAction={formAction} isPending={isPending} />
         </Box>
     );
 }

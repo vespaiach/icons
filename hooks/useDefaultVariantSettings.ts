@@ -16,13 +16,15 @@ export default function useDefaultVariantSettings(
             const computedStyles = window.getComputedStyle(ref);
             const variant = variantRef.current;
             const svgAttributes: ExtendedVariant['svgAttributes'] = {
-                fill: variant.attributesToAdjust.includes('fillColor') ? computedStyles.fill : undefined,
-                stroke: variant.attributesToAdjust.includes('strokeColor')
-                    ? computedStyles.stroke
-                    : undefined,
-                strokeWidth: variant.attributesToAdjust.includes('strokeWidth')
-                    ? parseFloat(computedStyles.strokeWidth || '0')
-                    : undefined,
+                fill: variant.defaultSvgAttributes.fillColor !== undefined ? computedStyles.fill : undefined,
+                stroke:
+                    variant.defaultSvgAttributes.strokeColor !== undefined
+                        ? computedStyles.stroke
+                        : undefined,
+                strokeWidth:
+                    variant.defaultSvgAttributes.strokeWidth !== undefined
+                        ? parseFloat(computedStyles.strokeWidth || '0')
+                        : undefined,
                 width: 24,
                 height: 24
             };

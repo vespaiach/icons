@@ -18,7 +18,12 @@ declare global {
         path: string;
         name: string;
         regex: string;
-        attributesToAdjust: string[];
+        defaultSvgAttributes: {
+            fillColor?: string;
+            strokeColor?: string;
+            strokeWidth?: number;
+            size?: number;
+        };
         createdAt: Date;
         updatedAt: Date;
     }
