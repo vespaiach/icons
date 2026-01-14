@@ -22,6 +22,7 @@
         align-items: stretch;
         gap: 8px;
         width: 100%;
+        min-height: var(--min-height);
     }
 
     .icon {

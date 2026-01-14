@@ -2,13 +2,12 @@
 
 import { ExternalLink, Info, Settings } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { Fragment, use, useMemo, useRef } from 'react';
+import { use, useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import AstToSvg from '@/components/AstToSvg';
-import { repoToId } from '@/utils/common-helpers';
+import { cx, repoToId } from '@/utils/common-helpers';
 import { usePageContext } from './PageContext';
 
-const filterFunc = (query: string) => (icon: IconWithRelativeData) =>
-    icon.name.toLowerCase().startsWith(query.toLowerCase());
+const ICON_BUTTON_SIZE = 56; // in pixels
 
 export default function IconSection({
     iconsPromise
@@ -16,18 +15,27 @@ export default function IconSection({
     iconsPromise: Promise<IconWithRelativeData[]>; // The icons for this repository for all variants
 }) {
     const icons = use(iconsPromise);
+
+    const searchParams = useSearchParams();
+    const searchQuery = (searchParams.get('q') || '').toLowerCase();
+
+    // Group and filter icons by variant and by search query
     const iconsByVariant = useMemo(
         () =>
             icons.reduce(
                 (acc, icon) => {
                     acc[icon.variantId] = acc[icon.variantId] || [];
-                    acc[icon.variantId].push(icon);
+
+                    if (!searchQuery || icon.name.toLowerCase().startsWith(searchQuery)) {
+                        acc[icon.variantId].push(icon);
+                    }
                     return acc;
                 },
                 {} as Record<number, IconWithRelativeData[]>
             ),
-        [icons]
+        [icons, searchQuery]
     );
+
     const { repositories } = usePageContext();
     const repository = icons[0] ? repositories.find((repo) => repo.id === icons[0].repositoryId) : null;
 
@@ -44,22 +52,7 @@ function IconSectionContent({
     repository: RepositoryVariants;
 }) {
     const { setSelectedRepository } = usePageContext();
-
-    const searchParams = useSearchParams();
-    const searchQuery = searchParams.get('q') || '';
-
-    const filteredIconsByVariant = useMemo(() => {
-        if (!searchQuery) return iconsByVariant;
-
-        const lowerQuery = searchQuery.toLowerCase();
-
-        for (const _key of Object.keys(iconsByVariant)) {
-            const key = Number(_key);
-            iconsByVariant[key] = iconsByVariant[key].filter(filterFunc(lowerQuery));
-        }
-
-        return iconsByVariant;
-    }, [iconsByVariant, searchQuery]);
+    const [selectedVariant, setSelectedVariant] = useState<Variant>(repository.variants[0]);
 
     return (
         <div
@@ -96,48 +89,121 @@ function IconSectionContent({
                         <Settings className="w-4 h-4" />
                     </button>
                 </h2>
-
-                <div className="d-tabs d-tabs-lift mt-3">
-                    {Object.keys(filteredIconsByVariant).map((_key, index) => {
-                        const key = Number(_key);
-                        const iconsForVariant = filteredIconsByVariant[key];
-                        const variant = repository.variants.find((v) => v.id === key);
-
-                        if (iconsForVariant.length === 0 || !variant) {
-                            return null;
-                        }
-
-                        return (
-                            <Fragment key={variant.id}>
-                                <input
-                                    type="radio"
-                                    name={`variant_tabs_${variant.repositoryId}`}
-                                    className="d-tab font-semibold"
-                                    aria-label={`${variant.name} (${iconsForVariant.length})`}
-                                    defaultChecked={index === 0}
-                                />
-                                <div className="d-tab-content mt-2">
-                                    <div className="icons-grid">
-                                        <IconContent icons={iconsForVariant} variant={variant} />
-                                    </div>
-                                </div>
-                            </Fragment>
-                        );
-                    })}
-                </div>
+                <IconsTabs
+                    selectedVariant={selectedVariant}
+                    variants={repository.variants}
+                    onSelectVariant={setSelectedVariant}
+                />
+                <IconsContent icons={iconsByVariant[selectedVariant.id]} selectedVariant={selectedVariant} />
             </div>
         </div>
     );
 }
 
-function IconContent({ icons, variant }: { icons: IconWithRelativeData[]; variant: Variant }) {
-    return icons.map((icon) => {
-        return (
-            <div className="icon" key={icon.id}>
-                <IconButton icon={icon} variant={variant} />
-            </div>
+function IconsTabs({
+    selectedVariant,
+    variants,
+    onSelectVariant
+}: {
+    selectedVariant: Variant;
+    variants: Variant[];
+    onSelectVariant: (variant: Variant) => void;
+}) {
+    const [_, startTransition] = useTransition();
+    return (
+        <div className="d-tabs d-tabs-lift mt-3 mb-1">
+            {variants.map((variant) => (
+                <button
+                    type="button"
+                    key={variant.id}
+                    className={cx('d-tab font-semibold', selectedVariant.id === variant.id && 'd-tab-active')}
+                    aria-label={`${variant.name} (${variant.iconCount})`}
+                    onClick={() => {
+                        startTransition(() => {
+                            onSelectVariant(variant);
+                        });
+                    }}>
+                    {variant.name} ({variant.iconCount})
+                </button>
+            ))}
+        </div>
+    );
+}
+
+function IconsGrid({ children, selectedVariant }: { children: React.ReactNode; selectedVariant: Variant }) {
+    const ref = useRef<HTMLDivElement | null>(null);
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        if (ref.current) {
+            const width = ref.current.getBoundingClientRect().width;
+            const iconCount = selectedVariant.iconCount;
+
+            // Grid constants from CSS
+            const MIN_COLUMN_WIDTH = 56; // minmax(56px, 1fr)
+            const GAP = 8; // gap: 8px
+
+            // Calculate how many columns fit in the available width
+            const columnsCount = Math.floor((width + GAP) / (MIN_COLUMN_WIDTH + GAP));
+
+            // Calculate number of rows needed
+            const rowsCount = Math.ceil(iconCount / columnsCount);
+
+            // Calculate min-height: (rows * iconSize) + (gaps between rows)
+            const calculatedMinHeight = rowsCount * ICON_BUTTON_SIZE + (rowsCount - 1) * GAP;
+
+            ref.current.style = `--min-height: ${calculatedMinHeight}px;`;
+        }
+    }, [selectedVariant, ref.current]);
+
+    useEffect(() => {
+        const element = ref.current;
+        if (!element) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    setIsVisible(entry.isIntersecting);
+                });
+            },
+            {
+                // Start loading when element is 200px away from viewport
+                rootMargin: '200px'
+            }
         );
-    });
+
+        observer.observe(element);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
+
+    return (
+        <div ref={ref} className="icons-grid">
+            {isVisible ? children : null}
+        </div>
+    );
+}
+
+function IconsContent({
+    icons,
+    selectedVariant
+}: {
+    icons: IconWithRelativeData[];
+    selectedVariant: Variant;
+}) {
+    return (
+        <IconsGrid selectedVariant={selectedVariant}>
+            {icons.map((icon) => {
+                return (
+                    <div className="icon" key={icon.id}>
+                        <IconButton icon={icon} variant={selectedVariant} />
+                    </div>
+                );
+            })}
+        </IconsGrid>
+    );
 }
 
 function IconButton({

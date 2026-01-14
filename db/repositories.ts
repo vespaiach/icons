@@ -17,6 +17,7 @@ export async function getRepositoriesWithVariants(): Promise<RepositoryVariants[
                     'regex', variants.regex,
                     'repositoryId', variants.repository_id,
                     'defaultSvgAttributes', variants.default_svg_attributes,
+                    'iconCount', variants.icon_count,
                     'createdAt', variants.created_at,
                     'updatedAt', variants.updated_at
                 )

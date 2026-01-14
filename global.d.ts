@@ -24,6 +24,7 @@ declare global {
             strokeWidth?: number;
             size?: number;
         };
+        iconCount: number;
         createdAt: Date;
         updatedAt: Date;
     }

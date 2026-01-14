@@ -9,6 +9,7 @@ export async function getVariants(): Promise<Variant[]> {
             path,
             regex,
             default_svg_attributes AS "defaultSvgAttributes",
+            icon_count AS "iconCount",
             created_at AS "createdAt",
             updated_at AS "updatedAt"
         FROM variants
@@ -26,6 +27,7 @@ export async function getVariantById(id: number): Promise<Variant | null> {
             path,
             regex,
             default_svg_attributes AS "defaultSvgAttributes",
+            icon_count AS "iconCount",
             created_at AS "createdAt",
             updated_at AS "updatedAt"
         FROM variants
@@ -44,6 +46,7 @@ export async function getVariantsWithRepository(): Promise<VariantWithRepository
             v.path,
             v.regex,
             v.default_svg_attributes AS "defaultSvgAttributes",
+            v.icon_count AS "iconCount",
             v.created_at AS "createdAt",
             v.updated_at AS "updatedAt",
             r.owner AS "repositoryOwner",
@@ -66,6 +69,7 @@ export async function getVariantRepositoryById(
             v.path,
             v.regex,
             v.default_svg_attributes AS "defaultSvgAttributes",
+            v.icon_count AS "iconCount",
             v.created_at AS "createdAt",
             v.updated_at AS "updatedAt",
             json_build_object(
@@ -99,8 +103,21 @@ export async function updateVariant(data: Pick<Variant, 'id' | 'path' | 'regex' 
             path,
             regex,
             default_svg_attributes AS "defaultSvgAttributes",
+            icon_count AS "iconCount",
             created_at AS "createdAt",
             updated_at AS "updatedAt"
     `;
     return rows.length > 0 ? (rows[0] as Variant) : null;
+}
+
+export async function updateVariantIconCount(repositoryId: number) {
+    await dbClient`
+        UPDATE variants
+        SET icon_count = (
+            SELECT COUNT(*)
+            FROM icons
+            WHERE icons.variant_id = variants.id
+        )
+        WHERE repository_id = ${repositoryId}
+    `;
 }

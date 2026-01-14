@@ -9,6 +9,7 @@ import {
     getRepositoryVariantsWithIconCount,
     updateRepository
 } from '@/db/repositories';
+import { updateVariantIconCount } from '@/db/variants';
 import { log } from '@/utils/log.helpers';
 import { parseSvgToAst } from '@/utils/svg-helpers';
 import { parseRepositoryForm } from './validation';
@@ -54,6 +55,9 @@ export async function importFromRepositoryAction(
 
     // Scan the specified variants for SVG icons and save them to the database
     await scanIconVariants(repository);
+
+    // Update icon_count cache for variants
+    await updateVariantIconCount(repository.id);
 
     // Record the import timestamp
     const updatedRepository = await recordImportTimestamp(repository);
