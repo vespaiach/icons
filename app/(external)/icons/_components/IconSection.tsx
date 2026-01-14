@@ -18,10 +18,34 @@ export default function IconSection({
     repository: Repository;
     iconsPromise: Promise<IconWithRelativeData[]>; // The icons for this repository for all variants
 }) {
+    const variantsRef = useRef<ExtendedVariant[] | null>(null);
     const icons = use(iconsPromise);
+    const iconsByVariant = useMemo(
+        () =>
+            icons.reduce(
+                (acc, icon) => {
+                    acc[icon.variantId] = acc[icon.variantId] || [];
+                    acc[icon.variantId].push(icon);
+                    return acc;
+                },
+                {} as Record<number, IconWithRelativeData[]>
+            ),
+        [icons]
+    );
 
-    const { variants } = usePageContext();
-    const variantByRepositories = variants.filter((v) => v.repositoryId === repository.id);
+    const { variants: _variants, selectedRepository } = usePageContext();
+
+    // Use variantsRef to prevent re-rendering while users are changing svg attributes
+    variantsRef.current = _variants;
+    const isDrawerOpen = !selectedRepository;
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: we only want to recalculate when isDrawerOpen changes 
+    const variantByRepositories = useMemo(() => {
+        if (!variantsRef.current) return [];
+        const variantIds = new Set(Object.keys(iconsByVariant).map((id) => Number(id)));
+
+        return variantsRef.current.filter((v) => variantIds.has(v.id));
+    }, [iconsByVariant, isDrawerOpen]);
 
     const { setSelectedRepository } = usePageContext();
 
@@ -29,15 +53,6 @@ export default function IconSection({
     const searchQuery = searchParams.get('q') || '';
 
     const filteredIconsByVariant = useMemo(() => {
-        const iconsByVariant = icons.reduce(
-            (acc, icon) => {
-                acc[icon.variantId] = acc[icon.variantId] || [];
-                acc[icon.variantId].push(icon);
-                return acc;
-            },
-            {} as Record<number, IconWithRelativeData[]>
-        );
-
         if (!searchQuery) return iconsByVariant;
 
         const lowerQuery = searchQuery.toLowerCase();
@@ -48,7 +63,7 @@ export default function IconSection({
         }
 
         return iconsByVariant;
-    }, [icons, searchQuery]);
+    }, [iconsByVariant, searchQuery]);
 
     return (
         <div className="pb-12 px-4" id={nameToId(repository.name)} style={{ scrollMarginTop: '72px' }}>

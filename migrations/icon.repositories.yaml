@@ -9,4 +9,20 @@ repos:
       - name: "filled"
         path: "/icons"
         regex: "-fill\\.svg$"
-  
+  - owner: "atisawd"
+    name: "boxicons"
+    ref: "master"
+    variants:
+      - name: logos
+        path: "/svg/logos"
+      - name: regular
+        path: "/svg/regular"
+      - name: solid
+        path: "/svg/solid" 
+  - owner: "danklammer"
+    name: "bytesize-icons"
+    github_id: 39126489
+    ref: "master"
+    variants:
+      - name: default
+        path: "/dist/icons"
