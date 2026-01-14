@@ -154,7 +154,7 @@ function IconsGrid({ children, selectedVariant }: { children: React.ReactNode; s
 
             ref.current.style = `--min-height: ${calculatedMinHeight}px;`;
         }
-    }, [selectedVariant, ref.current]);
+    }, [selectedVariant]);
 
     useEffect(() => {
         const element = ref.current;

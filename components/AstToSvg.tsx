@@ -1,4 +1,4 @@
-import { type Ref, useMemo } from 'react';
+import type { Ref } from 'react';
 import { astToInnerHtml } from '@/utils/client-side/svg-helpers';
 
 interface AstToSvgProps

@@ -13,13 +13,12 @@ import RepositoryInfo from './RepositoryInfo';
 const gridLineNumber = new Array(24).fill(0);
 
 export default function IconDetailsModal({ repositories }: { repositories: RepositoryVariants[] }) {
-    const { selectedIcon, setSelectedIcon, repositoriesVariants } = usePageContext();
+    const { selectedIcon, setSelectedIcon } = usePageContext();
     const repository = selectedIcon
         ? repositories.find((repo) => repo.id === selectedIcon.repositoryId)
         : null;
-    const variant = selectedIcon && repository
-        ? repository.variants.find((v) => v.id === selectedIcon.variantId)
-        : null;
+    const variant =
+        selectedIcon && repository ? repository.variants.find((v) => v.id === selectedIcon.variantId) : null;
 
     const handleClose = () => {
         setSelectedIcon(null);

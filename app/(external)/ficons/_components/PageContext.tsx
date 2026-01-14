@@ -25,11 +25,19 @@ interface IconContextType {
 
 const IconContext = createContext<IconContextType | undefined>(undefined);
 
-export function PageContextProvider({ children, repositoriesVariants }: { children: ReactNode; repositoriesVariants: RepositoryVariants[] }) {
+export function PageContextProvider({
+    children,
+    repositoriesVariants
+}: {
+    children: ReactNode;
+    repositoriesVariants: RepositoryVariants[];
+}) {
     const isClient = useIsClient();
     const [selectedIcon, setSelectedIcon] = useState<IconWithRelativeData | null>(null);
     const [selectedRepository, setSelectedRepository] = useState<Repository | null>(null);
-    const [_repositoriesVariants, setRepositoriesVariants] = useState<RepositoryVariants[]>([...repositoriesVariants]);
+    const [_repositoriesVariants, setRepositoriesVariants] = useState<RepositoryVariants[]>([
+        ...repositoriesVariants
+    ]);
 
     useEffect(() => {
         if (isClient) {
