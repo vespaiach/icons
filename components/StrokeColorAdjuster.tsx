@@ -9,7 +9,6 @@ export default function StrokeColorAdjuster({
     strokeColor: string;
     onStrokeColorChange: (newStrokeColor: string) => void;
 }) {
-    const disableInput = disabled || ['none', 'currentcolor'].includes(strokeColor.toLowerCase());
     return (
         <fieldset className={cx('d-fieldset flex-1', disabled && 'opacity-50')}>
             <legend className="d-fieldset-legend flex items-center gap-2">Stroke Color</legend>
@@ -18,16 +17,17 @@ export default function StrokeColorAdjuster({
                     type="color"
                     value={strokeColor}
                     onChange={(e) => {
-                        if (disableInput) return;
+                        if (disabled) return;
                         const value = e.target.value;
                         onStrokeColorChange(value);
                     }}
-                    disabled={disableInput}
+                    disabled={disabled}
                     className="d-input d-input-bordered w-16 h-8 p-1 cursor-pointer"
                 />
                 <input
                     type="text"
                     name="stroke"
+                    list="stroke-color-options"
                     value={strokeColor}
                     onChange={(e) => {
                         if (disabled) return;
@@ -38,6 +38,10 @@ export default function StrokeColorAdjuster({
                     className="d-input d-input-bordered d-input-sm flex-1 font-mono text-xs"
                     placeholder="#000000"
                 />
+                <datalist id="stroke-color-options">
+                    <option value="none" />
+                    <option value="currentColor" />
+                </datalist>
             </div>
         </fieldset>
     );

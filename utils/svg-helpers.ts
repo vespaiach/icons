@@ -219,7 +219,20 @@ function santizeSvgAttributeKey(rawKey: string): string | null {
         'aria-labelledby',
         'aria-describedby',
         'aria-description',
-        'aria-details'
+        'aria-details',
+        'cx',
+        'cy',
+        'r',
+        'x',
+        'y',
+        'x1',
+        'y1',
+        'x2',
+        'y2',
+        'transform',
+        'offset',
+        'stop-color',
+        'stop-opacity'
     ]);
 
     if (!allowedKeys.has(key)) {
