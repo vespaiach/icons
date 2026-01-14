@@ -13,8 +13,6 @@ export default async function PageIcons() {
     const iconsByRepoIdPromise = Object.fromEntries(
         repositories.map((repo) => [repo.id, getIconsByRepositoryIdAction(repo.id)])
     );
-    console.log('Repositories loaded:', repositories);
-    console.log('Variants loaded:', variants);
 
     return (
         <PageContextProvider variants={variants}>
