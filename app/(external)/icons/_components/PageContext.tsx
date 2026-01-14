@@ -15,22 +15,12 @@ import {
 interface IconContextType {
     selectedIcon: IconWithRelativeData | null;
     selectedRepository: Repository | null;
-    variants: ExtendedVariant[];
+    variants: Variant[];
     setSelectedIcon: (icon: IconWithRelativeData | null) => void;
     setSelectedRepository: (repo: Repository | null) => void;
-    setVariants: Dispatch<SetStateAction<ExtendedVariant[]>>;
-    getVariantsByRepositoryId: (repoId: number) => ExtendedVariant[];
-    updatedVariant: (updatedVariant: ExtendedVariant) => void;
-}
-
-export interface ExtendedVariant extends Variant {
-    svgAttributes?: {
-        fill?: string;
-        stroke?: string;
-        strokeWidth?: number;
-        width: number;
-        height: number;
-    };
+    setVariants: Dispatch<SetStateAction<Variant[]>>;
+    getVariantsByRepositoryId: (repoId: number) => Variant[];
+    updatedVariant: (updatedVariant: Variant) => void;
 }
 
 const IconContext = createContext<IconContextType | undefined>(undefined);
@@ -39,7 +29,7 @@ export function PageContextProvider({ children, variants }: { children: ReactNod
     const isClient = useIsClient();
     const [selectedIcon, setSelectedIcon] = useState<IconWithRelativeData | null>(null);
     const [selectedRepository, setSelectedRepository] = useState<Repository | null>(null);
-    const [_variants, setVariants] = useState<ExtendedVariant[]>([...variants]);
+    const [_variants, setVariants] = useState<Variant[]>([...variants]);
 
     useEffect(() => {
         if (isClient) {
@@ -61,7 +51,7 @@ export function PageContextProvider({ children, variants }: { children: ReactNod
         [_variants]
     );
 
-    const updatedVariant = useCallback((updatedVariant: ExtendedVariant) => {
+    const updatedVariant = useCallback((updatedVariant: Variant) => {
         setVariants((vas) => vas.map((v) => (v.id === updatedVariant.id ? updatedVariant : v)));
     }, []);
 

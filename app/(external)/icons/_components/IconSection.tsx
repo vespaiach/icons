@@ -4,9 +4,8 @@ import { ExternalLink, Info, Settings } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { Fragment, use, useMemo, useRef } from 'react';
 import AstToSvg from '@/components/AstToSvg';
-import useDefaultVariantSettings from '@/hooks/useDefaultVariantSettings';
 import { nameToId } from '@/utils/common-helpers';
-import { type ExtendedVariant, usePageContext } from './PageContext';
+import { usePageContext } from './PageContext';
 
 const filterFunc = (query: string) => (icon: IconWithRelativeData) =>
     icon.name.toLowerCase().startsWith(query.toLowerCase());
@@ -18,7 +17,7 @@ export default function IconSection({
     repository: Repository;
     iconsPromise: Promise<IconWithRelativeData[]>; // The icons for this repository for all variants
 }) {
-    const variantsRef = useRef<ExtendedVariant[] | null>(null);
+    const variantsRef = useRef<Variant[] | null>(null);
     const icons = use(iconsPromise);
     const iconsByVariant = useMemo(
         () =>
@@ -130,11 +129,11 @@ export default function IconSection({
     );
 }
 
-function IconContent({ icons, variant }: { icons: IconWithRelativeData[]; variant: ExtendedVariant }) {
-    return icons.map((icon, index) => {
+function IconContent({ icons, variant }: { icons: IconWithRelativeData[]; variant: Variant }) {
+    return icons.map((icon) => {
         return (
             <div className="icon" key={icon.id}>
-                <IconButton icon={icon} variant={variant} checkDefault={index === 0} />
+                <IconButton icon={icon} variant={variant} />
             </div>
         );
     });
@@ -142,17 +141,13 @@ function IconContent({ icons, variant }: { icons: IconWithRelativeData[]; varian
 
 function IconButton({
     icon,
-    variant,
-    checkDefault = false
+    variant
 }: {
     icon: IconWithRelativeData;
-    variant: ExtendedVariant;
-    checkDefault?: boolean;
+    variant: Variant;
+    reportDefaultAttribute?: boolean;
 }) {
-    const svgRef = useRef<SVGSVGElement>(null);
     const { setSelectedIcon } = usePageContext();
-
-    useDefaultVariantSettings(variant, svgRef);
 
     return (
         <button
@@ -164,10 +159,11 @@ function IconButton({
             data-tip={icon.name}>
             <AstToSvg
                 svgAst={icon.svgAst}
-                {...variant.svgAttributes}
+                fill={variant.defaultSvgAttributes.fillColor}
+                stroke={variant.defaultSvgAttributes.strokeColor}
+                strokeWidth={variant.defaultSvgAttributes.strokeWidth}
                 width={20}
                 height={20}
-                ref={checkDefault ? svgRef : undefined}
             />
         </button>
     );

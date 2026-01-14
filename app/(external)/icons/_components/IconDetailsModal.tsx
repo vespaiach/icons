@@ -7,7 +7,7 @@ import AttributesAdjuster from '@/components/AttributesAdjuster';
 import useDownloadIconTsx from '@/hooks/useDownloadIconTsx';
 import useDownloadRawIcon from '@/hooks/useDownloadRawIcon';
 import { cx } from '@/utils/common-helpers';
-import { type ExtendedVariant, usePageContext } from './PageContext';
+import { usePageContext } from './PageContext';
 import RepositoryInfo from './RepositoryInfo';
 
 const gridLineNumber = new Array(24).fill(0);
@@ -51,19 +51,26 @@ function SelectedIconDetails({
 }: {
     selectedIcon: IconWithRelativeData;
     repository: Repository;
-    variant: ExtendedVariant;
+    variant: Variant;
 }) {
     const [copied, setCopied] = useState(false);
     const handleDownloadTSX = useDownloadIconTsx(selectedIcon);
     const handleDownloadRawIcon = useDownloadRawIcon(selectedIcon);
 
-    // State for adjustable properties
-    const [attributes, setAttributes] = useState(
-        variant.svgAttributes || {
-            width: 24,
-            height: 24
-        }
-    );
+    // State for adjustable properties - use defaultSvgAttributes as initial values
+    const [attributes, setAttributes] = useState<{
+        width: number;
+        height: number;
+        stroke?: string;
+        fill?: string;
+        strokeWidth?: number;
+    }>({
+        width: variant.defaultSvgAttributes.size ?? 24,
+        height: variant.defaultSvgAttributes.size ?? 24,
+        stroke: variant.defaultSvgAttributes.strokeColor,
+        fill: variant.defaultSvgAttributes.fillColor,
+        strokeWidth: variant.defaultSvgAttributes.strokeWidth
+    });
 
     const getAdjustedAttributes = () => {
         const { width: iconSize, stroke: strokeColor, fill: fillColor, strokeWidth } = attributes;

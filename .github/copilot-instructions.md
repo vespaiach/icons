@@ -212,7 +212,7 @@ Client-side helpers in [utils/client-side/](utils/client-side/) directory:
 
 Hooks in [hooks/](hooks/) directory:
 
-- **useDefaultVariantSettings.ts**: Manages default variant settings and attributes
+- **useReportDefaultAttributeValues.ts**: Manages default variant settings and attributes
 - **useDownloadIconTsx.ts**: Generates and downloads React component code for selected icon
 - **useDownloadRawIcon.ts**: Downloads raw SVG file
 - **useGithubStarCount.ts**: Fetches GitHub star count for repositories
