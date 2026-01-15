@@ -17,16 +17,15 @@
     }
 
     .icons-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
-        align-items: stretch;
+        display: flex;
+        flex-wrap: wrap;
         gap: 8px;
         width: 100%;
         min-height: var(--min-height);
     }
 
     .icon {
-        @apply d-tooltip d-tooltip-bottom aspect-square rounded-sm bg-base-200 flex items-center justify-center;
+        @apply aspect-square rounded-sm bg-base-200 flex items-center justify-center w-14 h-14;
     }
 
     .icon button {

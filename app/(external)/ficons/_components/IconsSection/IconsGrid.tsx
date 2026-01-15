@@ -1,40 +1,52 @@
 'use client';
 
-import { Suspense, useState } from 'react';
-import { cx } from '@/utils/common-helpers';
+import { useIntersectionObserver } from '@uidotdev/usehooks';
+import { Suspense } from 'react';
 import IconsGridContent from './IconsGridContent';
 import IconsGridSkeleton from './IconsGridSkeleton';
 
 export default function IconsGrid({
     iconsPromise,
-    variants
+    variants,
+    repositoryId
 }: {
     iconsPromise: Promise<IconWithRelativeData[]>;
     variants: Variant[];
+    repositoryId: number;
 }) {
-    const [selectedVariantId, setSelectedVariantId] = useState(variants[0].id);
-    const selectedVariant = variants.find((v) => v.id === selectedVariantId)!;
+    const id = `icons-grid-tabs-${repositoryId}`;
+    const [ref, entry] = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px', threshold: 0 });
+    const isIntersecting = entry?.isIntersecting || false;
 
     return (
-        <>
-            <div className="d-tabs d-tabs-box mt-3 mb-1">
-                {variants.map((variant) => {
-                    return (
-                        <button
+        <div ref={ref} className="d-tabs d-tabs-box mt-3 mb-1" id={id}>
+            {variants.map((variant, index) => {
+                return (
+                    <Suspense
+                        key={variant.id}
+                        fallback={
+                            <IconsGridSkeleton
+                                variant={variant}
+                                checked={index === 0}
+                                repositoryId={repositoryId}
+                            />
+                        }>
+                        <input
                             key={variant.id}
-                            type="button"
-                            role="tab"
-                            className={cx('d-tab', selectedVariantId === variant.id && 'd-tab-active')}
-                            onClick={() => setSelectedVariantId(variant.id)}>
-                            {variant.name} ({variant.iconCount})
-                        </button>
-                    );
-                })}
-            </div>
-
-            <Suspense fallback={<IconsGridSkeleton iconCount={selectedVariant.iconCount} />}>
-                <IconsGridContent iconsPromise={iconsPromise} selectedVariant={selectedVariant} />
-            </Suspense>
-        </>
+                            type="radio"
+                            className="d-tab"
+                            name={`icon-variant-tab-${repositoryId}`}
+                            aria-label={`${variant.name} (${variant.iconCount})`}
+                            defaultChecked={index === 0}
+                        />
+                        <IconsGridContent
+                            iconsPromise={iconsPromise}
+                            selectedVariant={variant}
+                            isIntersecting={isIntersecting}
+                        />
+                    </Suspense>
+                );
+            })}
+        </div>
     );
 }

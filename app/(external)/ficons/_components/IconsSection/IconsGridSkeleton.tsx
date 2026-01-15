@@ -1,9 +1,32 @@
-export default function IconsGridSkeleton({ iconCount }: { iconCount: number }) {
+import { cx } from '@/utils/common-helpers';
+
+export default function IconsGridSkeleton({
+    repositoryId,
+    checked,
+    variant
+}: {
+    repositoryId: number;
+    checked: boolean;
+    variant: Variant;
+}) {
     return (
-        <div className="icons-grid">
-            {Array.from({ length: iconCount }, (_, index) => (
-                <div key={index} className="icon-skeleton" />
-            ))}
-        </div>
+        <>
+            <input
+                type="radio"
+                className={cx('d-tab', checked && 'd-tab-active')}
+                name={`icon-variant-tab-${repositoryId}`}
+                aria-label={`${variant.name} (${variant.iconCount})`}
+                disabled={!checked}
+            />
+            <div className="d-tab-content bg-base-100 border-base-300 p-2">
+                <div className="icons-grid">
+                    {checked
+                        ? Array.from({ length: variant.iconCount }, (_, index) => (
+                              <div key={index} className="icon-skeleton" />
+                          ))
+                        : null}
+                </div>
+            </div>
+        </>
     );
 }

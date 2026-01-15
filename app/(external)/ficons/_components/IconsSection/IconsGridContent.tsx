@@ -2,25 +2,28 @@
 
 import { use, useMemo } from 'react';
 import AstToSvg from '@/components/AstToSvg';
+import useTrackMinHeight from '@/hooks/useTrackMinHeight';
 import { usePageContext } from '../PageContext';
-import IconsContainer from './IconsContainer';
 
 export default function IconsGridContent({
     iconsPromise,
-    selectedVariant
+    selectedVariant,
+    isIntersecting
 }: {
     iconsPromise: Promise<IconWithRelativeData[]>;
     selectedVariant: Variant;
+    isIntersecting: boolean;
 }) {
     const icons = use(iconsPromise);
     const filteredIcons = icons.filter((icon) => icon.variantId === selectedVariant.id);
+    const ref = useTrackMinHeight<HTMLDivElement>(filteredIcons.length);
 
     return (
-        <IconsContainer variant={selectedVariant}>
-            {filteredIcons.map((icon) => (
-                <IconButton key={icon.id} icon={icon} />
-            ))}
-        </IconsContainer>
+        <div className="d-tab-content bg-base-100 border-base-300 p-2">
+            <div className="icons-grid" ref={ref}>
+                {isIntersecting && filteredIcons.map((icon) => <IconButton key={icon.id} icon={icon} />)}
+            </div>
+        </div>
     );
 }
 

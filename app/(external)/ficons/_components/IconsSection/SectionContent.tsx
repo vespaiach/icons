@@ -5,5 +5,5 @@ export default function SectionContent({ repository }: { repository: RepositoryV
     const iconsPromise = getIconsByRepositoryIdAction(repository.id);
     const variants = repository.variants;
 
-    return <IconsGrid iconsPromise={iconsPromise} variants={variants} />;
+    return <IconsGrid iconsPromise={iconsPromise} variants={variants} repositoryId={repository.id} />;
 }

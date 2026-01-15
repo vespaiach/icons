@@ -15,7 +15,7 @@ export default function IconsContainer({
 }) {
     const iconCount = variant.iconCount;
     const [ref, entry] = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px', threshold: 0 });
-    const visible = entry?.isIntersecting || false;
+    const _visible = entry?.isIntersecting || false;
 
     useEffect(() => {
         const gridElement = document.getElementById(`icons-grid-${variant.id}`);
@@ -34,8 +34,10 @@ export default function IconsContainer({
     }, [iconCount, variant.id]);
 
     return (
-        <div ref={ref} className="icons-grid" id={`icons-grid-${variant.id}`}>
-            {visible ? children : null}
+        <div className="d-tab-content bg-base-100 border-base-300 p-2">
+            <div ref={ref} className="icons-grid" id={`icons-grid-${variant.id}`}>
+                {children}
+            </div>
         </div>
     );
 }

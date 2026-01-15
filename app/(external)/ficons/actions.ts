@@ -8,6 +8,5 @@ export async function getRepositoriesAction() {
 }
 
 export async function getIconsByRepositoryIdAction(repositoryId: number) {
-    await new Promise((resolve) => setTimeout(resolve, 50000));
     return await getIconsByRepositoryId(repositoryId);
 }
