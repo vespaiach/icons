@@ -13,13 +13,14 @@
         "migrate": "bun run ./utils/migration.service.ts migrate"
     },
     "dependencies": {
+        "@next/third-parties": "^16.1.2",
         "@uidotdev/usehooks": "^2.4.1",
         "daisyui": "^5.5.14",
         "fast-xml-parser": "^5.3.3",
         "iron-session": "^8.0.4",
         "lodash": "^4.17.21",
         "lucide-react": "^0.562.0",
-        "next": "16.1.1",
+        "next": "^16.1.2",
         "react": "19.2.3",
         "react-dom": "19.2.3",
         "valibot": "^1.2.0"
