@@ -1,5 +1,6 @@
 'use client';
 
+import { useSearchParams } from 'next/navigation';
 import { use, useMemo } from 'react';
 import AstToSvg from '@/components/AstToSvg';
 import useTrackMinHeight from '@/hooks/useTrackMinHeight';
@@ -15,13 +16,24 @@ export default function IconsGridContent({
     isIntersecting: boolean;
 }) {
     const icons = use(iconsPromise);
-    const filteredIcons = icons.filter((icon) => icon.variantId === selectedVariant.id);
+    const searchParams = useSearchParams();
+    const query = (searchParams.get('q') || '').toLowerCase();
+    const filteredIcons = useMemo(
+        () =>
+            icons.filter(
+                (icon) => icon.variantId === selectedVariant.id && icon.name.toLowerCase().includes(query)
+            ),
+        [icons, selectedVariant.id, query]
+    );
     const ref = useTrackMinHeight<HTMLDivElement>(filteredIcons.length);
 
     return (
         <div className="d-tab-content bg-base-100 border-base-300 p-2">
             <div className="icons-grid" ref={ref}>
-                {isIntersecting && filteredIcons.map((icon) => <IconButton key={icon.id} icon={icon} />)}
+                {isIntersecting &&
+                    filteredIcons.length > 0 &&
+                    filteredIcons.map((icon) => <IconButton key={icon.id} icon={icon} />)}
+                {isIntersecting && filteredIcons.length == 0 && <p>No icons found.</p>}
             </div>
         </div>
     );
