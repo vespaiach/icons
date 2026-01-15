@@ -33,7 +33,7 @@ export default function IconsGridContent({
                 {isIntersecting &&
                     filteredIcons.length > 0 &&
                     filteredIcons.map((icon) => <IconButton key={icon.id} icon={icon} />)}
-                {isIntersecting && filteredIcons.length == 0 && <p>No icons found.</p>}
+                {isIntersecting && filteredIcons.length === 0 && <p>No icons found.</p>}
             </div>
         </div>
     );

@@ -74,7 +74,7 @@ Cookie-based auth with `COOKIE_SECRET` and `COOKIE_MAX_AGE` env vars. Protected 
 Repository imports happen in [app/(internal)/dashboard/icon-repositories/actions.ts](app/(internal)/dashboard/icon-repositories/actions.ts):
 
 1. Downloads GitHub repo as ZIP using `codeload.github.com`
-2. Extracts to `/tmp` directory using Bun's `$` shell helper
+2. Extracts to `/var/tmp` directory using Bun's `$` shell helper
 3. Scans variant directories (defined in database) for SVG files matching the regex pattern
 4. Parses each SVG: converts to AST structure with `svg_ast` containing nodes with id, type, attrs, and children
 5. Batch inserts icons using `PROCESSING_BATCH_SIZE` env var

@@ -80,7 +80,7 @@ async function downloadRepository(repo: Repository) {
         return { errors: { global: [`Failed to download repository from ${repo.owner}/${repo.name}.`] } };
     }
 
-    const saveTo = `${Bun.env.PWD}/tmp/${repo.owner}-${repo.name}-${repo.ref}.zip`;
+    const saveTo = `/var/tmp/${repo.owner}-${repo.name}-${repo.ref}.zip`;
     await Bun.write(saveTo, await response.arrayBuffer());
 
     log('info', `Downloaded repository from: ${url}`);
@@ -91,9 +91,9 @@ async function downloadRepository(repo: Repository) {
 
 async function extractZipFile(repo: Repository) {
     try {
-        await $`rm -rf ${Bun.env.PWD}/tmp/${repo.name}-${repo.ref}`;
-        const zipFilePath = `${Bun.env.PWD}/tmp/${repo.owner}-${repo.name}-${repo.ref}.zip`;
-        await $`unzip -q -d ${Bun.env.PWD}/tmp ${zipFilePath}`;
+        await $`rm -rf /var/tmp/${repo.name}-${repo.ref}`;
+        const zipFilePath = `/var/tmp/${repo.owner}-${repo.name}-${repo.ref}.zip`;
+        await $`unzip -q -d /var/tmp ${zipFilePath}`;
     } catch (error) {
         log('error', `Failed to extract ZIP file for repository: ${repo.owner}/${repo.name}`, error);
         return {
@@ -107,7 +107,7 @@ async function scanIconVariants(repo: RepositoryVariants) {
     const BATCH_SIZE = Number(Bun.env.PROCESSING_BATCH_SIZE);
 
     for (const variant of repo.variants) {
-        const fullPath = `${Bun.env.PWD}/tmp/${repo.name}-${repo.ref}${variant.path}`;
+        const fullPath = `/var/tmp/${repo.name}-${repo.ref}${variant.path}`;
         log('info', `Scanning variant directory for icons in: ${fullPath}`);
 
         try {
@@ -163,8 +163,8 @@ async function saveIconsToDatabase(variantId: number, fileName: string, fullPath
 
 async function cleanupTemporaryFiles(repo: Repository) {
     try {
-        await $`rm ${Bun.env.PWD}/tmp/${repo.owner}-${repo.name}-${repo.ref}.zip`;
-        await $`rm -rf ${Bun.env.PWD}/tmp/${repo.name}-${repo.ref}`;
+        await $`rm /var/tmp/${repo.owner}-${repo.name}-${repo.ref}.zip`;
+        await $`rm -rf /var/tmp/${repo.name}-${repo.ref}`;
     } catch (error) {
         log('error', `Failed to clean up temporary files for repository: ${repo.owner}/${repo.name}`, error);
     }
