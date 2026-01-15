@@ -11,7 +11,7 @@ export default function RepositoryInfo({ selectedRepository }: { selectedReposit
     return (
         <div className="space-y-1">
             <div className="flex gap-2">
-                <span className="text-sm shrink-0 font-semibold">github:</span>
+                <span className="text-sm shrink-0 font-semibold">Github:</span>
                 <a
                     href={githubUrl}
                     target="_blank"
@@ -25,7 +25,7 @@ export default function RepositoryInfo({ selectedRepository }: { selectedReposit
             </div>
             {assertNumber(repoInfo?.starCount) && (
                 <div className="flex gap-2">
-                    <span className="text-sm shrink-0 font-semibold">star(s):</span>
+                    <span className="text-sm shrink-0 font-semibold">Star(s):</span>
                     <a
                         href={githubUrl}
                         target="_blank"
@@ -40,7 +40,7 @@ export default function RepositoryInfo({ selectedRepository }: { selectedReposit
             )}
             {assertString(repoInfo?.license) && (
                 <div className="flex gap-2">
-                    <span className="text-sm shrink-0 font-semibold">license:</span>
+                    <span className="text-sm shrink-0 font-semibold">License:</span>
                     <a
                         href={githubUrl}
                         target="_blank"
@@ -51,19 +51,19 @@ export default function RepositoryInfo({ selectedRepository }: { selectedReposit
                     </a>
                 </div>
             )}
-            {assertDate(repoInfo?.createdAt) && (
+            {assertDate(repoInfo?.lastUpdatedAt) && (
                 <div className="flex gap-2">
-                    <span className="text-sm shrink-0 font-semibold">created at:</span>
+                    <span className="text-sm shrink-0 font-semibold">Recent update:</span>
                     <span className="d-link no-underline text-sm cursor-default">
-                        {repoInfo.createdAt.toLocaleDateString()}
+                        {repoInfo.lastUpdatedAt.toLocaleDateString()}
                     </span>
                 </div>
             )}
-            {assertDate(repoInfo?.lastUpdatedAt) && (
+            {assertDate(repoInfo?.createdAt) && (
                 <div className="flex gap-2">
-                    <span className="text-sm shrink-0 font-semibold">updated at:</span>
+                    <span className="text-sm shrink-0 font-semibold">Created at:</span>
                     <span className="d-link no-underline text-sm cursor-default">
-                        {repoInfo.lastUpdatedAt.toLocaleDateString()}
+                        {repoInfo.createdAt.toLocaleDateString()}
                     </span>
                 </div>
             )}
