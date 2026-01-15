@@ -26,7 +26,15 @@
     }
 
     .icon {
-        @apply aspect-square rounded-sm bg-base-200 flex items-center justify-center;
+        @apply d-tooltip d-tooltip-bottom aspect-square rounded-sm bg-base-200 flex items-center justify-center;
+    }
+
+    .icon button {
+        @apply absolute inset-0 flex items-center justify-center cursor-pointer;
+    }
+
+    .icon-skeleton {
+        @apply w-14 h-14 bg-gray-200 rounded-md animate-pulse;
     }
 }
 

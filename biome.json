@@ -33,6 +33,9 @@
             },
             "correctness": {
                 "noUnknownProperty": "off"
+            },
+            "style": {
+                "noNonNullAssertion": "off"
             }
         },
         "domains": {
