@@ -1,4 +1,3 @@
-import { Suspense } from 'react';
 import Drawer from './_components/Drawer';
 import DrawerToggler from './_components/DrawerToggler';
 import IconDetailsModal from './_components/IconDetailsModal';
@@ -16,9 +15,7 @@ export default async function PageIcons() {
             <PageContextProvider repositoriesVariants={repositoriesVariants}>
                 <DrawerToggler />
                 <div className="d-drawer-content">
-                    <Suspense>
-                        <Navbar repositories={repositoriesVariants} />
-                    </Suspense>
+                    <Navbar repositories={repositoriesVariants} />
 
                     <div className="mt-6">
                         {repositoriesVariants.map((repository) => (

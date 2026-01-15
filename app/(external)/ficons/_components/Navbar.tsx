@@ -1,6 +1,6 @@
 'use client';
 
-import { useClickAway } from '@uidotdev/usehooks';
+import { useClickAway, useIsClient } from '@uidotdev/usehooks';
 import { Globe, Search } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -8,6 +8,7 @@ import useTrackingVisibleSections from '@/hooks/useTrackingVisibleSections';
 import { repoToId } from '@/utils/common-helpers';
 
 export default function Navbar({ repositories }: { repositories: RepositoryVariants[] }) {
+    const isClient = useIsClient();
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
     const [isMac, setIsMac] = useState<boolean | null>(null);
@@ -22,8 +23,12 @@ export default function Navbar({ repositories }: { repositories: RepositoryVaria
     }, []);
 
     useEffect(() => {
+        if (!isClient) return;
         setIsMac(/(Mac|iPhone|iPod|iPad)/i.test(navigator.platform));
+    }, [isClient]);
 
+    useEffect(() => {
+        if (!isClient) return;
         const handleKeyDown = (event: KeyboardEvent) => {
             // Check for Cmd+K (Mac) or Ctrl+K (Windows/Linux)
             if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
@@ -36,22 +41,22 @@ export default function Navbar({ repositories }: { repositories: RepositoryVaria
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [openModel]);
+    }, [openModel, isClient]);
 
     return (
-        <div className="d-navbar bg-base-100 min-h-10 px-4 shadow-sm justify-between sticky top-0 z-10">
+        <div className="d-navbar bg-base-100 min-h-10 px-4 shadow-sm sticky top-0 z-10">
             <a
                 href="/ficons/"
                 className="btn btn-ghost font-mono font-semibold text-sm text-primary flex items-center">
                 <Globe className="size-5 me-2 inline-block" />
                 FICONS
             </a>
-            <button type="button" className="d-btn d-btn-ghost md:hidden" onClick={openModel}>
+            <button type="button" className="d-btn d-btn-ghost md:hidden mr-auto ml-8" onClick={openModel}>
                 <Search className="size-4 shrink-0" />
             </button>
             <button
                 type="button"
-                className="hidden md:flex d-input d-input-ghost hover:bg-base-200 focus-visible:bg-base-200 cursor-pointer transition-colors focus:outline-none"
+                className="mr-auto ml-8 hidden md:flex d-input d-input-ghost hover:bg-base-200 focus-visible:bg-base-200 cursor-pointer transition-colors focus:outline-none"
                 onClick={openModel}>
                 <Search className="size-4 shrink-0 opacity-60" />
                 <span className="grow text-left">{searchQuery || 'Search…'}</span>
