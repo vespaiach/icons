@@ -1,7 +1,9 @@
-import { dbClient } from './db.client';
+import { log } from '../utils/log.helpers';
+import { sql } from './db.client';
 
 export async function getRepositoriesWithVariants(): Promise<RepositoryVariants[]> {
-    const rows = await dbClient`
+    log('info', '[DB] getRepositoriesWithVariants - START');
+    const rows = await sql`
         SELECT 
             repositories.id,
             repositories.owner,
@@ -26,11 +28,16 @@ export async function getRepositoriesWithVariants(): Promise<RepositoryVariants[
         GROUP BY 1, 2, 3, 4, 5, 6
         ORDER BY repositories.name ASC
     `;
-    return rows;
+    log('info', `[DB] getRepositoriesWithVariants - END (${rows.length} rows)`);
+    if (Bun.env.DEBUG_QUERIES === 'true') {
+        log('info', '[DB] getRepositoriesWithVariants - RESULTS', rows);
+    }
+    return rows as unknown as RepositoryVariants[];
 }
 
 export async function getRepositoriesWithIconCount(): Promise<RepositoryWithIconCount[]> {
-    const rows = await dbClient`
+    log('info', '[DB] getRepositoriesWithIconCount - START');
+    const rows = await sql`
         SELECT 
             r.id,
             r.owner,
@@ -45,11 +52,16 @@ export async function getRepositoriesWithIconCount(): Promise<RepositoryWithIcon
         GROUP BY r.id, r.owner, r.name, r.ref, r.created_at, r.last_imported_at
         ORDER BY r.name ASC
     `;
-    return rows;
+    log('info', `[DB] getRepositoriesWithIconCount - END (${rows.length} rows)`);
+    if (Bun.env.DEBUG_QUERIES === 'true') {
+        log('info', '[DB] getRepositoriesWithIconCount - RESULTS', rows);
+    }
+    return rows as unknown as RepositoryWithIconCount[];
 }
 
 export async function getRepositoryVariants(): Promise<RepositoryVariants[]> {
-    const rows = await dbClient`
+    log('info', '[DB] getRepositoryVariants - START');
+    const rows = await sql`
         SELECT 
             repositories.id,
             repositories.owner,
@@ -71,11 +83,13 @@ export async function getRepositoryVariants(): Promise<RepositoryVariants[]> {
         FROM repositories INNER JOIN variants ON repositories.id = variants.repository_id
         GROUP BY 1, 2, 3, 4, 5, 6
     `;
-    return rows;
+    log('info', `[DB] getRepositoryVariants - END (${rows.length} rows)`);
+    return rows as unknown as RepositoryVariants[];
 }
 
 export async function getRepositoryVariantsWithIconCount(): Promise<RepositoryVariantsWithIconCount[]> {
-    const rows = await dbClient`
+    log('info', '[DB] getRepositoryVariantsWithIconCount - START');
+    const rows = await sql`
         WITH icon_counts AS (
             SELECT 
                 variants.repository_id,
@@ -107,11 +121,13 @@ export async function getRepositoryVariantsWithIconCount(): Promise<RepositoryVa
         GROUP BY r.id, r.owner, r.name, r.ref, r.created_at, r.last_imported_at, i.icon_count
         ORDER BY r.name ASC
     `;
-    return rows;
+    log('info', `[DB] getRepositoryVariantsWithIconCount - END (${rows.length} rows)`);
+    return rows as unknown as RepositoryVariantsWithIconCount[];
 }
 
 export async function getRepositoryVariantsById(repositoryId: number): Promise<RepositoryVariants | null> {
-    const rows = await dbClient`
+    log('info', '[DB] getRepositoryVariantsById - START', { repositoryId });
+    const rows = await sql`
         SELECT 
             repositories.id,
             repositories.owner,
@@ -134,18 +150,20 @@ export async function getRepositoryVariantsById(repositoryId: number): Promise<R
         WHERE repositories.id = ${repositoryId}
         GROUP BY 1, 2, 3, 4, 5, 6
     `;
-    return rows.length > 0 ? rows[0] : null;
+    log('info', `[DB] getRepositoryVariantsById - END (found: ${rows.length > 0})`);
+    return rows.length > 0 ? (rows[0] as RepositoryVariants) : null;
 }
 
 export async function updateRepository(
     data: Partial<Omit<Repository, 'createdAt' | 'id'>> & { id: number }
 ): Promise<Repository | null> {
-    const rows = await dbClient`
+    log('info', '[DB] updateRepository - START', { id: data.id });
+    const rows = await sql`
         UPDATE repositories
-        SET owner = COALESCE(${data.owner}, owner),
-            name = COALESCE(${data.name}, name),
-            ref = COALESCE(${data.ref}, ref),
-            last_imported_at = COALESCE(${data.lastImportedAt}, last_imported_at)
+        SET owner = COALESCE(${data.owner ?? null}, owner),
+            name = COALESCE(${data.name ?? null}, name),
+            ref = COALESCE(${data.ref ?? null}, ref),
+            last_imported_at = COALESCE(${data.lastImportedAt ?? null}, last_imported_at)
         WHERE id = ${data.id}
         RETURNING 
             id,
@@ -155,5 +173,6 @@ export async function updateRepository(
             created_at AS "createdAt",
             last_imported_at AS "lastImportedAt"
     `;
-    return rows[0] ? rows[0] : null;
+    log('info', `[DB] updateRepository - END (success: ${!!rows[0]})`);
+    return rows[0] ? (rows[0] as Repository) : null;
 }

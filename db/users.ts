@@ -1,7 +1,9 @@
-import { dbClient } from './db.client';
+import { log } from '../utils/log.helpers';
+import { sql } from './db.client';
 
 export async function getUserById(id: number) {
-    const row = await dbClient`
+    log('info', '[DB] getUserById - START', { id });
+    const row = await sql`
         SELECT 
             id,
             email,
@@ -16,11 +18,18 @@ export async function getUserById(id: number) {
             id = ${id}
             AND deleted_at IS NULL
     `;
+    log('info', `[DB] getUserById - END (found: ${!!row[0]})`);
+    if (Bun.env.DEBUG_QUERIES === 'true' && row[0]) {
+        // biome-ignore lint/correctness/noUnusedVariables: Used in destructuring to exclude sensitive data
+        const { hashedPassword, ...safeUser } = row[0] as User;
+        log('info', '[DB] getUserById - RESULT (password hidden)', safeUser);
+    }
     return row[0] ? (row[0] as User) : null;
 }
 
 export async function getUserByEmail(email: string): Promise<User | null> {
-    const row = await dbClient`
+    log('info', '[DB] getUserByEmail - START', { email });
+    const row = await sql`
         SELECT 
             id,
             email,
@@ -35,6 +44,12 @@ export async function getUserByEmail(email: string): Promise<User | null> {
             email = ${email}
             AND deleted_at IS NULL;
     `;
+    log('info', `[DB] getUserByEmail - END (found: ${!!row[0]})`);
+    if (Bun.env.DEBUG_QUERIES === 'true' && row[0]) {
+        // biome-ignore lint/correctness/noUnusedVariables: Used in destructuring to exclude sensitive data
+        const { hashedPassword, ...safeUser } = row[0] as User;
+        log('info', '[DB] getUserByEmail - RESULT (password hidden)', safeUser);
+    }
     return row[0] ? (row[0] as User) : null;
 }
 
@@ -44,7 +59,8 @@ export async function createUser(data: {
     email: string;
     hashedPassword: string;
 }): Promise<User | null> {
-    const row = await dbClient`
+    log('info', '[DB] createUser - START', { email: data.email, name: data.name });
+    const row = await sql`
         INSERT INTO users (
             email,
             name,
@@ -67,5 +83,11 @@ export async function createUser(data: {
             created_at as "createdAt",
             updated_at as "updatedAt";
     `;
-    return row[0];
+    log('info', `[DB] createUser - END (success: ${!!row[0]})`);
+    if (Bun.env.DEBUG_QUERIES === 'true' && row[0]) {
+        // biome-ignore lint/correctness/noUnusedVariables: Used in destructuring to exclude sensitive data
+        const { hashedPassword, ...safeUser } = row[0] as User;
+        log('info', '[DB] createUser - RESULT (password hidden)', safeUser);
+    }
+    return row[0] as User;
 }

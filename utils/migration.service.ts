@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { SQL } from 'bun';
+import postgres, { type Sql } from 'postgres';
 
 interface Migration {
     id: number;
@@ -11,18 +11,20 @@ interface Migration {
 interface MigrationFile {
     version: string;
     name: string;
-    up: (sql: SQL) => Promise<void>;
-    down: (sql: SQL) => Promise<void>;
+    // biome-ignore lint/suspicious/noExplicitAny: Migration functions need to work with both Sql and TransactionSql
+    up: (sql: any) => Promise<void>;
+    // biome-ignore lint/suspicious/noExplicitAny: Migration functions need to work with both Sql and TransactionSql
+    down: (sql: any) => Promise<void>;
 }
 
 const MIGRATION_DIR = './migrations';
 
 export class MigrationService {
-    sql: SQL;
+    sql: Sql;
     private verbose: boolean;
 
     constructor(verbose: boolean = false) {
-        this.sql = new SQL(Bun.env.DATABASE_URL);
+        this.sql = postgres(Bun.env.DATABASE_URL);
         this.verbose = verbose;
     }
 
@@ -58,12 +60,12 @@ export class MigrationService {
     }
 
     async getExecutedMigrations(): Promise<Migration[]> {
-        const result = await this.sql<Migration[]>`
+        const result = await this.sql`
             SELECT id, version, executed_at 
             FROM schema_migrations 
             ORDER BY version ASC
         `;
-        return result;
+        return result as Migration[];
     }
 
     async getPendingMigrations(): Promise<string[]> {
@@ -99,9 +101,10 @@ export class MigrationService {
 
                 this.log(`→ Migrating: ${version}`);
 
-                await this.sql.begin(async (sql: SQL) => {
-                    await migration.up(sql);
-                    await sql`INSERT INTO schema_migrations (version) VALUES (${version})`;
+                // biome-ignore lint/suspicious/noExplicitAny: TransactionSql type varies and needs flexible typing
+                await this.sql.begin(async (txn: any) => {
+                    await migration.up(txn);
+                    await txn`INSERT INTO schema_migrations (version) VALUES (${version})`;
                 });
 
                 this.log(`✓ Migrated: ${version}\n`);
@@ -144,9 +147,10 @@ export class MigrationService {
 
                 this.log(`→ Rolling back: ${version}`);
 
-                await this.sql.begin(async (sql: SQL) => {
-                    await migration.down(sql);
-                    await sql`DELETE FROM schema_migrations WHERE version = ${version}`;
+                // biome-ignore lint/suspicious/noExplicitAny: TransactionSql type varies and needs flexible typing
+                await this.sql.begin(async (txn: any) => {
+                    await migration.down(txn);
+                    await txn`DELETE FROM schema_migrations WHERE version = ${version}`;
                 });
 
                 this.log(`✓ Rolled back: ${version}\n`);
@@ -224,7 +228,7 @@ export async function down(sql: SQL): Promise<void> {
     }
 
     async close(): Promise<void> {
-        // Bun's SQL connection doesn't require explicit closing
+        await this.sql.end();
     }
 }
 
@@ -288,5 +292,6 @@ Environment:
         process.exit(1);
     } finally {
         await service.close();
+        process.exit(0);
     }
 }

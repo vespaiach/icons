@@ -28,19 +28,22 @@ Components unwrap promises using React's `use()` hook. See [app/(external)/icons
 
 ## Database Layer
 
-### Bun SQL Client
+### postgres.js Client
 
-Uses **Bun's native SQL driver** via `new SQL(Bun.env.DATABASE_URL)` (see [db/db.client.ts](db/db.client.ts)). Query syntax uses **tagged templates**:
+Uses **postgres.js** ([github.com/porsager/postgres](https://github.com/porsager/postgres)) as the PostgreSQL client (see [db/db.client.ts](db/db.client.ts)). Query syntax uses **tagged templates**:
 
 ```typescript
-await dbClient`SELECT * FROM icons WHERE variant_id = ${variantId}`;
+await sql`SELECT * FROM icons WHERE variant_id = ${variantId}`;
 ```
 
-Array parameters use `sql.array()` helper from `bun`:
+The client is configured with debug mode support:
 
 ```typescript
-import { sql } from 'bun';
-await dbClient`UPDATE variants SET attributes_to_adjust = ${sql.array(data.attributesToAdjust, 'text')}`;
+import postgres from 'postgres';
+const sql = postgres(DATABASE_URL, {
+    debug: DEBUG_QUERIES,
+    onnotice: DEBUG_QUERIES ? (notice) => console.log('[SQL Notice]', notice) : undefined,
+});
 ```
 
 ### Migration System
@@ -49,7 +52,23 @@ Custom migration system in [utils/migration.service.ts](utils/migration.service.
 
 - `bun run migrate:create` - Generate new timestamped migration
 - `bun run migrate` - Run pending migrations
-- Migrations are TypeScript files with `up()` and `down()` functions (see [migrations/20251228_171007_init_db.ts](migrations/20251228_171007_init_db.ts))
+- Migrations are TypeScript files with `up()` and `down()` functions using any compatible SQL executor (see [migrations/20251228_171007_init_db.ts](migrations/20251228_171007_init_db.ts))
+
+Example migration:
+
+```typescript
+import type { Sql } from 'postgres';
+
+export async function up(sql: any): Promise<void> {
+    await sql`CREATE TABLE example (id SERIAL PRIMARY KEY)`;
+}
+
+export async function down(sql: any): Promise<void> {
+    await sql`DROP TABLE example`;
+}
+```
+
+**Note**: Use `any` type for the `sql` parameter to support both regular queries and transaction contexts.
 
 ### Schema Overview
 

@@ -1,7 +1,9 @@
-import { dbClient } from './db.client';
+import { log } from '../utils/log.helpers';
+import { sql } from './db.client';
 
 export async function getVariants(): Promise<Variant[]> {
-    const rows = await dbClient`
+    log('info', '[DB] getVariants - START');
+    const rows = await sql`
         SELECT 
             id,
             repository_id AS "repositoryId",
@@ -15,11 +17,16 @@ export async function getVariants(): Promise<Variant[]> {
         FROM variants
         ORDER BY id ASC
     `;
-    return rows as Variant[];
+    log('info', `[DB] getVariants - END (${rows.length} rows)`);
+    if (Bun.env.DEBUG_QUERIES === 'true' && rows.length > 0) {
+        log('info', `[DB] getVariants - SAMPLE RESULT (first row)`, rows[0]);
+    }
+    return rows as unknown as Variant[];
 }
 
 export async function getVariantById(id: number): Promise<Variant | null> {
-    const rows = await dbClient`
+    log('info', '[DB] getVariantById - START', { id });
+    const rows = await sql`
         SELECT 
             id,
             repository_id AS "repositoryId",
@@ -34,11 +41,16 @@ export async function getVariantById(id: number): Promise<Variant | null> {
         WHERE id = ${id}
         LIMIT 1
     `;
-    return rows.length > 0 ? (rows[0] as Variant) : null;
+    log('info', `[DB] getVariantById - END (found: ${rows.length > 0})`);
+    if (Bun.env.DEBUG_QUERIES === 'true' && rows[0]) {
+        log('info', '[DB] getVariantById - RESULT', rows[0]);
+    }
+    return rows.length > 0 ? (rows[0] as unknown as Variant) : null;
 }
 
 export async function getVariantsWithRepository(): Promise<VariantWithRepository[]> {
-    const rows = await dbClient`
+    log('info', '[DB] getVariantsWithRepository - START');
+    const rows = await sql`
         SELECT 
             v.id,
             v.repository_id AS "repositoryId",
@@ -55,13 +67,15 @@ export async function getVariantsWithRepository(): Promise<VariantWithRepository
         INNER JOIN repositories r ON v.repository_id = r.id
         ORDER BY v.id ASC
     `;
-    return rows as VariantWithRepository[];
+    log('info', `[DB] getVariantsWithRepository - END (${rows.length} rows)`);
+    return rows as unknown as VariantWithRepository[];
 }
 
 export async function getVariantRepositoryById(
     id: number
 ): Promise<(Variant & { repository: Repository }) | null> {
-    const rows = await dbClient`
+    log('info', '[DB] getVariantRepositoryById - START', { id });
+    const rows = await sql`
         SELECT 
             v.id,
             v.repository_id AS "repositoryId",
@@ -85,18 +99,23 @@ export async function getVariantRepositoryById(
         WHERE v.id = ${id}
         LIMIT 1
     `;
-    return rows.length > 0 ? (rows[0] as Variant & { repository: Repository }) : null;
+    log('info', `[DB] getVariantRepositoryById - END (found: ${rows.length > 0})`);
+    return rows.length > 0 ? (rows[0] as unknown as Variant & { repository: Repository }) : null;
 }
 
 export async function updateVariant(data: Pick<Variant, 'id' | 'path' | 'regex' | 'defaultSvgAttributes'>) {
-    const rows = await dbClient`
+    log('info', '[DB] updateVariant - START', { id: data.id });
+    const rows = await sql`
         UPDATE variants
-        SET 
+        SET
             regex = ${data.regex},
-            default_svg_attributes = ${data.defaultSvgAttributes},
+            default_svg_attributes = ${
+                // biome-ignore lint/suspicious/noExplicitAny: defaultSvgAttributes structure doesn't match JSONValue type exactly
+                sql.json(data.defaultSvgAttributes as any)
+            },
             updated_at = CURRENT_TIMESTAMP
         WHERE id = ${data.id}
-        RETURNING 
+        RETURNING
             id,
             repository_id AS "repositoryId",
             name,
@@ -107,11 +126,16 @@ export async function updateVariant(data: Pick<Variant, 'id' | 'path' | 'regex' 
             created_at AS "createdAt",
             updated_at AS "updatedAt"
     `;
-    return rows.length > 0 ? (rows[0] as Variant) : null;
+    log('info', `[DB] updateVariant - END (success: ${rows.length > 0})`);
+    if (Bun.env.DEBUG_QUERIES === 'true' && rows[0]) {
+        log('info', '[DB] updateVariant - RESULT', rows[0]);
+    }
+    return rows.length > 0 ? (rows[0] as unknown as Variant) : null;
 }
 
 export async function updateVariantIconCount(repositoryId: number) {
-    await dbClient`
+    log('info', '[DB] updateVariantIconCount - START', { repositoryId });
+    await sql`
         UPDATE variants
         SET icon_count = (
             SELECT COUNT(*)
@@ -120,4 +144,5 @@ export async function updateVariantIconCount(repositoryId: number) {
         )
         WHERE repository_id = ${repositoryId}
     `;
+    log('info', '[DB] updateVariantIconCount - END');
 }

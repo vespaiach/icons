@@ -1,8 +1,7 @@
-import type { SQL } from 'bun';
-
 export const version = '20260114_204516_add_icon_count_to_variants';
 
-export async function up(sql: SQL): Promise<void> {
+// biome-ignore lint/suspicious/noExplicitAny: Migration functions need to work with both Sql and TransactionSql
+export async function up(sql: any): Promise<void> {
     // Add icon_count column to variants table
     await sql`
         ALTER TABLE variants
@@ -20,7 +19,8 @@ export async function up(sql: SQL): Promise<void> {
     `;
 }
 
-export async function down(sql: SQL): Promise<void> {
+// biome-ignore lint/suspicious/noExplicitAny: Migration functions need to work with both Sql and TransactionSql
+export async function down(sql: any): Promise<void> {
     // Remove icon_count column from variants table
     await sql`
         ALTER TABLE variants

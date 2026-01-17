@@ -1,9 +1,9 @@
-import type { SQL } from 'bun';
 import repoData from './icon.repositories.yaml';
 
 export const version = '20251228_171007_init_db';
 
-export async function up(sql: SQL): Promise<void> {
+// biome-ignore lint/suspicious/noExplicitAny: Migration functions need to work with both Sql and TransactionSql
+export async function up(sql: any): Promise<void> {
     // Write your migration here
     await sql`
         CREATE TABLE IF NOT EXISTS users (
@@ -80,7 +80,8 @@ export async function up(sql: SQL): Promise<void> {
     `;
 }
 
-export async function down(sql: SQL): Promise<void> {
+// biome-ignore lint/suspicious/noExplicitAny: Migration functions need to work with both Sql and TransactionSql
+export async function down(sql: any): Promise<void> {
     // Write your rollback here
     await sql`
         DROP TABLE IF EXISTS icons;

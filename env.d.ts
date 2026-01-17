@@ -4,5 +4,6 @@ declare module 'bun' {
         PROCESSING_BATCH_SIZE: string;
         COOKIE_SECRET: string;
         COOKIE_MAX_AGE: string;
+        DEBUG_QUERIES?: string;
     }
 }

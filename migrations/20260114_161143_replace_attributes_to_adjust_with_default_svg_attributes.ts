@@ -1,8 +1,7 @@
-import type { SQL } from 'bun';
-
 export const version = '20260114_161143_replace_attributes_to_adjust_with_default_svg_attributes';
 
-export async function up(sql: SQL): Promise<void> {
+// biome-ignore lint/suspicious/noExplicitAny: Migration functions need to work with both Sql and TransactionSql
+export async function up(sql: any): Promise<void> {
     // Remove attributes_to_adjust column and add default_svg_attributes JSONB column
     await sql`
         ALTER TABLE variants
@@ -15,7 +14,8 @@ export async function up(sql: SQL): Promise<void> {
     `;
 }
 
-export async function down(sql: SQL): Promise<void> {
+// biome-ignore lint/suspicious/noExplicitAny: Migration functions need to work with both Sql and TransactionSql
+export async function down(sql: any): Promise<void> {
     // Rollback: remove default_svg_attributes and add back attributes_to_adjust
     await sql`
         ALTER TABLE variants
