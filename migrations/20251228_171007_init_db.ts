@@ -1,4 +1,4 @@
-import repoData from './icon.repositories.yaml';
+import repoData from './icon-repositories.yaml';
 
 export const version = '20251228_171007_init_db';
 
@@ -37,7 +37,8 @@ export async function up(sql: any): Promise<void> {
             name VARCHAR(255) NOT NULL,
             path VARCHAR(1024) NOT NULL,
             regex VARCHAR(255) NOT NULL DEFAULT '\\.svg$',
-            attributes_to_adjust VARCHAR(63)[] DEFAULT '{}',
+            default_svg_attributes JSONB NOT NULL DEFAULT '{}'::jsonb,
+            icon_count INTEGER NOT NULL DEFAULT 0,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         );

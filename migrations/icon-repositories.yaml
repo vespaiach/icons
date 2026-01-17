@@ -1,4 +1,31 @@
 repos:
+  - owner: "twbs"
+    name: "icons"
+    ref: "main"
+    variants:
+      - name: "outline"
+        path: "/icons"
+        regex: "^(?!.*-fill\\.svg$).*$"
+      - name: "filled"
+        path: "/icons"
+        regex: "-fill\\.svg$"
+  - owner: "atisawd"
+    name: "boxicons"
+    ref: "master"
+    variants:
+      - name: logos
+        path: "/svg/logos"
+      - name: regular
+        path: "/svg/regular"
+      - name: solid
+        path: "/svg/solid" 
+  - owner: "danklammer"
+    name: "bytesize-icons"
+    github_id: 39126489
+    ref: "master"
+    variants:
+      - name: default
+        path: "/dist/icons"
   - owner: "feathericons"
     name: "feather"
     ref: "main"
@@ -17,16 +44,6 @@ repos:
         path: "/optimized/24/outline"
       - name: "24"
         path: "/optimized/24/solid"
-  - owner: "ionic-team"
-    name: "ionicons"
-    ref: "main"
-    variants:
-      - name: "outline"
-        path: "/src/svg"
-        regex: "^(?!.*-fill\\.svg$).*$"
-      - name: "filled"
-        path: "/src/svg"
-        regex: "-fill\\.svg$"        
   - owner: "lucide-icons"
     name: "lucide"
     ref: "main"
