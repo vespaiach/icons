@@ -65,7 +65,7 @@ export class MigrationService {
             FROM schema_migrations 
             ORDER BY version ASC
         `;
-        return result as Migration[];
+        return result as unknown as Migration[];
     }
 
     async getPendingMigrations(): Promise<string[]> {
