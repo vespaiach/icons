@@ -232,7 +232,9 @@ function santizeSvgAttributeKey(rawKey: string): string | null {
         'transform',
         'offset',
         'stop-color',
-        'stop-opacity'
+        'stop-opacity',
+        'points',
+        'pathLength'
     ]);
 
     if (!allowedKeys.has(key)) {
