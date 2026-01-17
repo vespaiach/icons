@@ -4,7 +4,7 @@ import { ExternalLink, Info, Settings } from 'lucide-react';
 import { usePageContext } from '../PageContext';
 
 export default function SectionHeader({ repository }: { repository: RepositoryVariants }) {
-    const { setSelectedRepository } = usePageContext();
+    const { setSelectedRepositoryId } = usePageContext();
 
     return (
         <h2 className="font-semibold text-lg capitalize flex items-center">
@@ -21,7 +21,7 @@ export default function SectionHeader({ repository }: { repository: RepositoryVa
                 className="d-btn d-btn-ghost d-btn-sm d-btn-square cursor-pointer"
                 aria-label="Repository Information"
                 onClick={() => {
-                    setSelectedRepository(repository);
+                    setSelectedRepositoryId(repository.id);
                 }}>
                 <Info className="w-4 h-4" />
             </button>
@@ -30,7 +30,7 @@ export default function SectionHeader({ repository }: { repository: RepositoryVa
                 className="d-btn d-btn-ghost d-btn-sm d-btn-square cursor-pointer"
                 aria-label="Repository Settings"
                 onClick={() => {
-                    setSelectedRepository(repository);
+                    setSelectedRepositoryId(repository.id);
                 }}>
                 <Settings className="w-4 h-4" />
             </button>

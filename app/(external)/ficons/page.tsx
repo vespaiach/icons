@@ -13,7 +13,7 @@ export default async function PageIcons() {
 
     return (
         <div className="d-drawer">
-            <PageContextProvider repositoriesVariants={repositoriesVariants}>
+            <PageContextProvider>
                 <DrawerToggler />
                 <div className="d-drawer-content">
                     <Navbar repositories={repositoriesVariants} />
@@ -28,7 +28,7 @@ export default async function PageIcons() {
                     <AboutModal />
                     <IconDetailsModal repositories={repositoriesVariants} />
                 </div>
-                <Drawer />
+                <Drawer repositories={repositoriesVariants} />
             </PageContextProvider>
         </div>
     );

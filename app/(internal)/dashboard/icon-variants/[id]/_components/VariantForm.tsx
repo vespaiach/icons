@@ -21,20 +21,20 @@ export default function VariantForm({
     isPending: boolean;
     formAction: (formData: FormData) => void;
 }) {
-    const [enableSize, setEnableSize] = useState(formState.values.defaultSvgAttributes.size !== undefined);
-    const [size, setSize] = useState(formState.values.defaultSvgAttributes.size ?? 24);
+    const [enableSize, setEnableSize] = useState(formState.values.defaultSvgAttributes.width !== undefined);
+    const [size, setSize] = useState(formState.values.defaultSvgAttributes.width ?? 24);
 
     const [enableStrokeColor, setEnableStrokeColor] = useState(
-        formState.values.defaultSvgAttributes.strokeColor !== undefined
+        formState.values.defaultSvgAttributes.stroke!== undefined
     );
     const [strokeColor, setStrokeColor] = useState(
-        formState.values.defaultSvgAttributes.strokeColor ?? '#000000'
+        formState.values.defaultSvgAttributes.stroke?? '#000000'
     );
 
     const [enableFillColor, setEnableFillColor] = useState(
-        formState.values.defaultSvgAttributes.fillColor !== undefined
+        formState.values.defaultSvgAttributes.fill !== undefined
     );
-    const [fillColor, setFillColor] = useState(formState.values.defaultSvgAttributes.fillColor ?? '#000000');
+    const [fillColor, setFillColor] = useState(formState.values.defaultSvgAttributes.fill ?? '#000000');
 
     const [enableStrokeWidth, setEnableStrokeWidth] = useState(
         formState.values.defaultSvgAttributes.strokeWidth !== undefined
@@ -145,7 +145,7 @@ export default function VariantForm({
                         <div className="flex-1">
                             {enableStrokeColor && (
                                 <>
-                                    <input type="hidden" name="strokeColor" value={strokeColor} />
+                                    <input type="hidden" name="stroke" value={strokeColor} />
                                     <StrokeColorAdjuster
                                         strokeColor={strokeColor}
                                         onStrokeColorChange={setStrokeColor}
@@ -169,7 +169,7 @@ export default function VariantForm({
                         <div className="flex-1">
                             {enableFillColor && (
                                 <>
-                                    <input type="hidden" name="fillColor" value={fillColor} />
+                                    <input type="hidden" name="fill" value={fillColor} />
                                     <FillColorAdjuster
                                         fillColor={fillColor}
                                         onFillColorChange={setFillColor}

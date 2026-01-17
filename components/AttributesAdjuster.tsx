@@ -5,8 +5,8 @@ import StrokeColorAdjuster from './StrokeColorAdjuster';
 import StrokeWidthAdjuster from './StrokeWidthAdjuster';
 
 interface AttributeValues {
-    width: number;
-    height: number;
+    width?: number;
+    height?: number;
     strokeWidth?: number;
     stroke?: string;
     fill?: string;
@@ -21,10 +21,13 @@ export default function AttributesAdjuster({ value, onChange }: AttributesAdjust
     return (
         <>
             {/* Size Control */}
-            <SizeAdjuster
-                size={value.width}
-                onSizeChange={(newSize) => onChange({ ...value, width: newSize, height: newSize })}
-            />
+            {assertNumber(value.width) && (
+                <SizeAdjuster
+                    size={value.width}
+                    onSizeChange={(newSize) => onChange({ ...value, width: newSize, height: newSize })}
+                />
+            )}
+
             {/* Stroke Width Control */}
             {assertNumber(value.strokeWidth) && (
                 <StrokeWidthAdjuster

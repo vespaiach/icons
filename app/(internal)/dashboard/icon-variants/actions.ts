@@ -27,12 +27,7 @@ interface UpdateVariantParams {
         id: number;
         regex: string;
         path: string;
-        defaultSvgAttributes: {
-            fillColor?: string;
-            strokeColor?: string;
-            strokeWidth?: number;
-            size?: number;
-        };
+        defaultSvgAttributes: SvgAdjustableAttributes;
     };
 }
 
@@ -49,9 +44,9 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
         enableSize,
         size,
         enableStrokeColor,
-        strokeColor,
+        stroke,
         enableFillColor,
-        fillColor,
+        fill,
         enableStrokeWidth,
         strokeWidth
     } = payload;
@@ -61,21 +56,17 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
         notFound();
     }
 
-    const defaultSvgAttributes: {
-        fillColor?: string;
-        strokeColor?: string;
-        strokeWidth?: number;
-        size?: number;
-    } = {};
+    const defaultSvgAttributes: SvgAdjustableAttributes = {};
 
     if (enableSize && size !== undefined) {
-        defaultSvgAttributes.size = size;
+        defaultSvgAttributes.width = size;
+        defaultSvgAttributes.height = size;
     }
-    if (enableStrokeColor && strokeColor) {
-        defaultSvgAttributes.strokeColor = strokeColor;
+    if (enableStrokeColor && stroke) {
+        defaultSvgAttributes.stroke = stroke;
     }
-    if (enableFillColor && fillColor) {
-        defaultSvgAttributes.fillColor = fillColor;
+    if (enableFillColor && fill) {
+        defaultSvgAttributes.fill = fill;
     }
     if (enableStrokeWidth && strokeWidth !== undefined) {
         defaultSvgAttributes.strokeWidth = strokeWidth;

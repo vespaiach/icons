@@ -1,50 +1,41 @@
 'use client';
 
 import { useIsClient } from '@uidotdev/usehooks';
-import {
-    createContext,
-    type Dispatch,
-    type ReactNode,
-    type SetStateAction,
-    useCallback,
-    useContext,
-    useEffect,
-    useState
-} from 'react';
+import type { ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 interface IconContextType {
     selectedIcon: IconWithRelativeData | null;
-    selectedRepository: Repository | null;
-    repositories: RepositoryVariants[];
+    selectedRepositoryId: number | null;
+    svgAttributeAdjustments: Record<number, SvgAdjustableAttributes>;
     setSelectedIcon: (icon: IconWithRelativeData | null) => void;
-    setSelectedRepository: (repo: Repository | null) => void;
-    setRepositoriesVariants: Dispatch<SetStateAction<RepositoryVariants[]>>;
-    getVariantsByRepositoryId: (repoId: number) => Variant[];
-    updatedVariant: (updatedVariant: Variant) => void;
+    setSelectedRepositoryId: (repoId: number | null) => void;
+    setSvgAttributeAdjustments: (variantId: number, adjustments: SvgAdjustableAttributes) => void;
 }
 
 const IconContext = createContext<IconContextType | undefined>(undefined);
 
-export function PageContextProvider({
-    children,
-    repositoriesVariants
-}: {
-    children: ReactNode;
-    repositoriesVariants: RepositoryVariants[];
-}) {
+export function PageContextProvider({ children }: { children: ReactNode }) {
     const isClient = useIsClient();
     const [selectedIcon, setSelectedIcon] = useState<IconWithRelativeData | null>(null);
-    const [selectedRepository, setSelectedRepository] = useState<Repository | null>(null);
-    const [_repositoriesVariants, setRepositoriesVariants] = useState<RepositoryVariants[]>([
-        ...repositoriesVariants
-    ]);
+    const [selectedRepositoryId, setSelectedRepositoryId] = useState<number | null>(null);
+    const [svgAttributeAdjustments, _setVariantAdjustments] = useState<
+        Record<number, SvgAdjustableAttributes>
+    >({});
+
+    const setSvgAttributeAdjustments = useCallback(
+        (variantId: number, adjustments: SvgAdjustableAttributes) => {
+            _setVariantAdjustments((prev) => ({ ...prev, [variantId]: adjustments }));
+        },
+        []
+    );
 
     useEffect(() => {
         if (isClient) {
             const modalElement = document.getElementById('bottom_panel') as HTMLDialogElement | null;
             if (!modalElement) return;
 
-            if (selectedIcon) {
+            if (selectedIcon !== null) {
                 modalElement.showModal();
             } else {
                 modalElement.close();
@@ -52,34 +43,15 @@ export function PageContextProvider({
         }
     }, [selectedIcon, isClient]);
 
-    const getVariantsByRepositoryId = useCallback(
-        (repoId: number) => {
-            const repository = _repositoriesVariants.find((repo) => repo.id === repoId);
-            return repository?.variants || [];
-        },
-        [_repositoriesVariants]
-    );
-
-    const updatedVariant = useCallback((updatedVariant: Variant) => {
-        setRepositoriesVariants((repos) =>
-            repos.map((repo) => ({
-                ...repo,
-                variants: repo.variants.map((v) => (v.id === updatedVariant.id ? updatedVariant : v))
-            }))
-        );
-    }, []);
-
     return (
         <IconContext.Provider
             value={{
                 selectedIcon,
-                selectedRepository,
-                repositories: _repositoriesVariants,
+                selectedRepositoryId,
+                svgAttributeAdjustments,
                 setSelectedIcon,
-                setSelectedRepository,
-                setRepositoriesVariants,
-                getVariantsByRepositoryId,
-                updatedVariant
+                setSelectedRepositoryId,
+                setSvgAttributeAdjustments
             }}>
             {children}
         </IconContext.Provider>

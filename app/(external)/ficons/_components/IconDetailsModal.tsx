@@ -13,12 +13,13 @@ import RepositoryInfo from './RepositoryInfo';
 const gridLineNumber = new Array(24).fill(0);
 
 export default function IconDetailsModal({ repositories }: { repositories: RepositoryVariants[] }) {
-    const { selectedIcon, setSelectedIcon } = usePageContext();
+    const { selectedIcon, svgAttributeAdjustments, setSelectedIcon } = usePageContext();
     const repository = selectedIcon
         ? repositories.find((repo) => repo.id === selectedIcon.repositoryId)
         : null;
     const variant =
         selectedIcon && repository ? repository.variants.find((v) => v.id === selectedIcon.variantId) : null;
+    const adjustment = variant ? svgAttributeAdjustments[variant.id] || {} : {};
 
     const handleClose = () => {
         setSelectedIcon(null);
@@ -32,6 +33,7 @@ export default function IconDetailsModal({ repositories }: { repositories: Repos
                         selectedIcon={selectedIcon}
                         repository={repository}
                         variant={variant}
+                        adjustment={adjustment}
                     />
                 )}
             </div>
@@ -48,42 +50,36 @@ export default function IconDetailsModal({ repositories }: { repositories: Repos
 function SelectedIconDetails({
     selectedIcon,
     repository,
-    variant
+    variant,
+    adjustment
 }: {
     selectedIcon: IconWithRelativeData;
     repository: Repository;
     variant: Variant;
+    adjustment: SvgAdjustableAttributes;
 }) {
     const [copied, setCopied] = useState(false);
     const handleDownloadTSX = useDownloadIconTsx(selectedIcon);
     const handleDownloadRawIcon = useDownloadRawIcon(selectedIcon);
 
     // State for adjustable properties - use defaultSvgAttributes as initial values
-    const [attributes, setAttributes] = useState<{
-        width: number;
-        height: number;
-        stroke?: string;
-        fill?: string;
-        strokeWidth?: number;
-    }>({
-        width: variant.defaultSvgAttributes.size ?? 24,
-        height: variant.defaultSvgAttributes.size ?? 24,
-        stroke: variant.defaultSvgAttributes.strokeColor,
-        fill: variant.defaultSvgAttributes.fillColor,
-        strokeWidth: variant.defaultSvgAttributes.strokeWidth
+    const [attributes, setAttributes] = useState<SvgAdjustableAttributes>({
+        width: adjustment.width ?? variant.defaultSvgAttributes.width ?? 24,
+        height: adjustment.height ?? variant.defaultSvgAttributes.height ?? 24,
+        stroke: adjustment.stroke ?? variant.defaultSvgAttributes.stroke,
+        fill: adjustment.fill ?? variant.defaultSvgAttributes.fill,
+        strokeWidth: adjustment.strokeWidth ?? variant.defaultSvgAttributes.strokeWidth
     });
 
     const getAdjustedAttributes = () => {
-        const { width: iconSize, stroke: strokeColor, fill: fillColor, strokeWidth } = attributes;
-
         return Object.fromEntries(
             [
-                ['width', iconSize],
-                ['height', iconSize],
-                ['stroke', strokeColor],
-                ['fill', fillColor],
-                ['strokeWidth', strokeWidth]
-            ].filter(([_, value]) => value !== undefined)
+                ['width', attributes.width],
+                ['height', attributes.height],
+                ['stroke', attributes.stroke],
+                ['fill', attributes.fill],
+                ['strokeWidth', attributes.strokeWidth]
+            ].filter(([_, value]) => value !== undefined && value !== null)
         );
     };
 
@@ -117,7 +113,7 @@ function SelectedIconDetails({
                         stroke={attributes.stroke}
                         strokeWidth={attributes.strokeWidth}
                         width={attributes.width}
-                        height={attributes.width}
+                        height={attributes.height}
                         className="z-10"
                     />
                 </div>

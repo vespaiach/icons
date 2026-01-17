@@ -4,19 +4,20 @@ import AttributesAdjuster from '@/components/AttributesAdjuster';
 import { usePageContext } from './PageContext';
 import RepositoryInfo from './RepositoryInfo';
 
-export default function Drawer() {
-    const { selectedRepository } = usePageContext();
+export default function Drawer({ repositories }: { repositories: RepositoryVariants[] }) {
+    const { selectedRepositoryId } = usePageContext();
+    const repository = repositories.find((repo) => repo.id === selectedRepositoryId);
 
     return (
         <div className="d-drawer-side">
             <label htmlFor="drawer_toggler" aria-label="close sidebar" className="d-drawer-overlay" />
             <div className="bg-white dark:bg-base-200 w-80 p-5 min-h-full">
-                {selectedRepository && (
+                {repository && (
                     <>
-                        <h2 className="font-semibold text-xl capitalize mb-3">{selectedRepository.name}</h2>
-                        <RepositoryInfo selectedRepository={selectedRepository} />
+                        <h2 className="font-semibold text-xl capitalize mb-3">{repository.name}</h2>
+                        <RepositoryInfo selectedRepository={repository} />
                         <h2 className="font-semibold text-xl capitalize mt-8 mb-2">Settings</h2>
-                        <SettingForm repository={selectedRepository} />
+                        <SettingForm repository={repository} />
                     </>
                 )}
             </div>
@@ -24,9 +25,9 @@ export default function Drawer() {
     );
 }
 
-function SettingForm({ repository }: { repository: Repository }) {
-    const { getVariantsByRepositoryId, updatedVariant } = usePageContext();
-    const variants = getVariantsByRepositoryId(repository.id);
+function SettingForm({ repository }: { repository: RepositoryVariants }) {
+    const { svgAttributeAdjustments, setSvgAttributeAdjustments } = usePageContext();
+    const variants = repository.variants;
 
     return (
         <>
@@ -40,22 +41,11 @@ function SettingForm({ repository }: { repository: Repository }) {
                         <h3 className="font-semibold text-lg capitalize mt-6 mb-2">{variant.name}</h3>
                         <AttributesAdjuster
                             value={{
-                                width: variant.defaultSvgAttributes.size ?? 24,
-                                height: variant.defaultSvgAttributes.size ?? 24,
-                                stroke: variant.defaultSvgAttributes.strokeColor,
-                                fill: variant.defaultSvgAttributes.fillColor,
-                                strokeWidth: variant.defaultSvgAttributes.strokeWidth
+                                ...variant.defaultSvgAttributes,
+                                ...svgAttributeAdjustments[variant.id]
                             }}
                             onChange={(attrs) => {
-                                updatedVariant({
-                                    ...variant,
-                                    defaultSvgAttributes: {
-                                        size: attrs.width,
-                                        strokeColor: attrs.stroke,
-                                        fillColor: attrs.fill,
-                                        strokeWidth: attrs.strokeWidth
-                                    }
-                                });
+                                setSvgAttributeAdjustments(variant.id, attrs);
                             }}
                         />
                     </div>

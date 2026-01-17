@@ -23,14 +23,14 @@ export const variantUpdateFormSchema = v.object({
             v.transform((val) => val === 'on')
         )
     ),
-    strokeColor: v.optional(v.string()),
+    stroke: v.optional(v.string()),
     enableFillColor: v.optional(
         v.pipe(
             v.string(),
             v.transform((val) => val === 'on')
         )
     ),
-    fillColor: v.optional(v.string()),
+    fill: v.optional(v.string()),
     enableStrokeWidth: v.optional(
         v.pipe(
             v.string(),

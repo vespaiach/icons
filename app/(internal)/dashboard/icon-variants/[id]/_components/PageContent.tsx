@@ -51,19 +51,19 @@ export default function PageContent({ variant }: { variant: Variant & { reposito
                     <div className="col-span-2">
                         <strong>Default SVG Attributes:</strong>
                         <ul className="list-disc pl-6 mt-4">
-                            {formState.values.defaultSvgAttributes.fillColor && (
+                            {formState.values.defaultSvgAttributes.fill && (
                                 <li>
                                     Fill color:{' '}
                                     <code className="bg-base-300 px-2 py-1 rounded">
-                                        {formState.values.defaultSvgAttributes.fillColor}
+                                        {formState.values.defaultSvgAttributes.fill}
                                     </code>
                                 </li>
                             )}
-                            {formState.values.defaultSvgAttributes.strokeColor && (
+                            {formState.values.defaultSvgAttributes.stroke && (
                                 <li>
                                     Stroke color:{' '}
                                     <code className="bg-base-300 px-2 py-1 rounded">
-                                        {formState.values.defaultSvgAttributes.strokeColor}
+                                        {formState.values.defaultSvgAttributes.stroke}
                                     </code>
                                 </li>
                             )}
@@ -75,11 +75,11 @@ export default function PageContent({ variant }: { variant: Variant & { reposito
                                     </code>
                                 </li>
                             )}
-                            {formState.values.defaultSvgAttributes.size !== undefined && (
+                            {formState.values.defaultSvgAttributes.width !== undefined && (
                                 <li>
                                     Size (width & height):{' '}
                                     <code className="bg-base-300 px-2 py-1 rounded">
-                                        {formState.values.defaultSvgAttributes.size}px
+                                        {formState.values.defaultSvgAttributes.width}px
                                     </code>
                                 </li>
                             )}

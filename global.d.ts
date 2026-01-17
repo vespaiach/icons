@@ -12,18 +12,21 @@ declare global {
         iconCount: number;
     }
 
+    interface SvgAdjustableAttributes {
+        fill?: string;
+        stroke?: string;
+        strokeWidth?: number;
+        height?: number;
+        width?: number;
+    }
+
     interface Variant {
         id: number;
         repositoryId: number;
         path: string;
         name: string;
         regex: string;
-        defaultSvgAttributes: {
-            fillColor?: string;
-            strokeColor?: string;
-            strokeWidth?: number;
-            size?: number;
-        };
+        defaultSvgAttributes: SvgAdjustableAttributes;
         iconCount: number;
         createdAt: Date;
         updatedAt: Date;
