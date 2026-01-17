@@ -25,11 +25,9 @@ export default function VariantForm({
     const [size, setSize] = useState(formState.values.defaultSvgAttributes.width ?? 24);
 
     const [enableStrokeColor, setEnableStrokeColor] = useState(
-        formState.values.defaultSvgAttributes.stroke!== undefined
+        formState.values.defaultSvgAttributes.stroke !== undefined
     );
-    const [strokeColor, setStrokeColor] = useState(
-        formState.values.defaultSvgAttributes.stroke?? '#000000'
-    );
+    const [strokeColor, setStrokeColor] = useState(formState.values.defaultSvgAttributes.stroke ?? '#000000');
 
     const [enableFillColor, setEnableFillColor] = useState(
         formState.values.defaultSvgAttributes.fill !== undefined

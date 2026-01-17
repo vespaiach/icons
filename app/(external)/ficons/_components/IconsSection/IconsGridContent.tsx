@@ -16,6 +16,8 @@ export default function IconsGridContent({
     isIntersecting: boolean;
 }) {
     const icons = use(iconsPromise);
+    const { svgAttributeAdjustments } = usePageContext();
+
     const searchParams = useSearchParams();
     const query = (searchParams.get('q') || '').toLowerCase();
     const filteredIcons = useMemo(
@@ -32,18 +34,43 @@ export default function IconsGridContent({
             <div className="icons-grid" ref={ref}>
                 {isIntersecting &&
                     filteredIcons.length > 0 &&
-                    filteredIcons.map((icon) => <IconButton key={icon.id} icon={icon} />)}
+                    filteredIcons.map((icon) => (
+                        <IconButton
+                            key={icon.id}
+                            icon={icon}
+                            variant={selectedVariant}
+                            svgAttributeAdjustment={svgAttributeAdjustments?.[selectedVariant.id] ?? {}}
+                        />
+                    ))}
                 {isIntersecting && filteredIcons.length === 0 && <p>No icons found.</p>}
             </div>
         </div>
     );
 }
 
-function IconButton({ icon }: { icon: IconWithRelativeData }) {
+function IconButton({
+    icon,
+    variant,
+    svgAttributeAdjustment
+}: {
+    icon: IconWithRelativeData;
+    variant: Variant;
+    svgAttributeAdjustment: SvgAdjustableAttributes;
+}) {
     const { setSelectedIcon } = usePageContext();
+
     const iconElement = useMemo(() => {
-        return <AstToSvg svgAst={icon.svgAst} width={20} height={20} />;
-    }, [icon.svgAst]);
+        return (
+            <AstToSvg
+                svgAst={icon.svgAst}
+                fill={svgAttributeAdjustment.fill ?? variant.defaultSvgAttributes.fill}
+                stroke={svgAttributeAdjustment.stroke ?? variant.defaultSvgAttributes.stroke}
+                strokeWidth={svgAttributeAdjustment.strokeWidth ?? variant.defaultSvgAttributes.strokeWidth}
+                width={20}
+                height={20}
+            />
+        );
+    }, [icon.svgAst, svgAttributeAdjustment, variant.defaultSvgAttributes]);
 
     return (
         <div className="icon" data-tip={icon.name}>
