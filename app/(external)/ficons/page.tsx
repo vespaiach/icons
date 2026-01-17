@@ -8,9 +8,6 @@ import { PageContextProvider } from './_components/PageContext';
 import SearchModal from './_components/SearchModal';
 import { getRepositoriesAction } from './actions';
 
-// Enable stale-while-revalidate caching: revalidate every 60 seconds
-export const revalidate = 60;
-
 export default async function PageIcons() {
     const repositoriesVariants = await getRepositoriesAction();
 
