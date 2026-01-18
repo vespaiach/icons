@@ -1,5 +1,6 @@
 'use client';
 
+import { BookmarkPlus, HeartPlus } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { use, useMemo } from 'react';
 import AstToSvg from '@/components/AstToSvg';
@@ -31,7 +32,7 @@ export default function IconsGridContent({
 
     return (
         <div className="d-tab-content bg-base-100 border-base-300 p-2">
-            <div className="icons-grid" ref={ref}>
+            <div className="ic-grid" ref={ref}>
                 {isIntersecting &&
                     filteredIcons.length > 0 &&
                     filteredIcons.map((icon) => (
@@ -66,20 +67,25 @@ function IconButton({
                 fill={svgAttributeAdjustment.fill ?? variant.defaultSvgAttributes.fill}
                 stroke={svgAttributeAdjustment.stroke ?? variant.defaultSvgAttributes.stroke}
                 strokeWidth={svgAttributeAdjustment.strokeWidth ?? variant.defaultSvgAttributes.strokeWidth}
-                width={20}
-                height={20}
+                width={38}
+                height={38}
             />
         );
     }, [icon.svgAst, svgAttributeAdjustment, variant.defaultSvgAttributes]);
 
     return (
-        <div className="icon" data-tip={icon.name}>
+        <div className="icon group">
             <button
+                className="btn"
                 onClick={() => {
                     setSelectedIcon(icon);
                 }}
                 type="button">
                 {iconElement}
+                <span>{icon.name}</span>
+            </button>
+            <button className="cart invisible group-hover:visible" type="button" aria-label="Add to Favorites">
+                <HeartPlus size={16} />
             </button>
         </div>
     );

@@ -34,7 +34,7 @@ export default function IconsGrid({
                         <input
                             key={variant.id}
                             type="radio"
-                            className="d-tab"
+                            className="d-tab after:capitalize after:font-semibold"
                             name={`icon-variant-tab-${repositoryId}`}
                             aria-label={`${variant.name} (${variant.iconCount})`}
                             defaultChecked={index === 0}

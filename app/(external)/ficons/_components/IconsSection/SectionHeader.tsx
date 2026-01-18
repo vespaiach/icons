@@ -7,7 +7,7 @@ export default function SectionHeader({ repository }: { repository: RepositoryVa
     const { setSelectedRepositoryId } = usePageContext();
 
     return (
-        <h2 className="font-semibold text-lg capitalize flex items-center">
+        <h2 className="font-semibold text-2xl capitalize flex items-center mb-2">
             {repository.owner}/{repository.name}
             <a
                 href={`https://github.com/${repository.owner}/${repository.name}`}
