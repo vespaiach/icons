@@ -2,14 +2,21 @@
 
 export default function SizeAdjuster({
     size,
+    className,
+    disabled,
     onSizeChange
 }: {
     size: number;
+    className?: string;
+    disabled?: boolean;
     onSizeChange: (newSize: number) => void;
 }) {
     return (
-        <fieldset className="d-fieldset">
-            <legend className="d-fieldset-legend flex items-center gap-2">Size: {size}px</legend>
+        <div className={className}>
+            <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold">Size</p>
+                <p className="text-sm text-base-content/60">{size}px</p>
+            </div>
             <input
                 type="range"
                 name="size"
@@ -20,7 +27,8 @@ export default function SizeAdjuster({
                     onSizeChange(Number.parseInt(e.target.value, 10));
                 }}
                 className="d-range d-range-xs disabled:opacity-50"
+                disabled={disabled}
             />
-        </fieldset>
+        </div>
     );
 }

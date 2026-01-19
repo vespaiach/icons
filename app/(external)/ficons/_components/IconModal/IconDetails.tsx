@@ -1,0 +1,134 @@
+'use client';
+
+import { Copy, HeartPlus } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import AstToSvg from '@/components/AstToSvg';
+import ColorAdjuster from '@/components/ColorAdjuster';
+import SizeAdjuster from '@/components/SizeAdjuster';
+import { cx } from '@/utils/common-helpers';
+import CopyButton from './CopyButton';
+import DownloadButton from './DownloadButton';
+
+const gridLineNumber = new Array(24).fill(0);
+
+export default function IconDetails({
+    selectedIcon,
+    variant,
+    adjustment
+}: {
+    selectedIcon: IconWithRelativeData;
+    variant: Variant;
+    adjustment: SvgAdjustableAttributes;
+}) {
+    const [copied, setCopied] = useState(false);
+
+    // State for adjustable properties - use defaultSvgAttributes as initial values
+    const [attributes, setAttributes] = useState({
+        width: adjustment.width ?? variant.defaultSvgAttributes.width ?? 24,
+        height: adjustment.height ?? variant.defaultSvgAttributes.height ?? 24,
+        stroke: adjustment.stroke ?? variant.defaultSvgAttributes.stroke,
+        fill: adjustment.fill ?? variant.defaultSvgAttributes.fill,
+        strokeWidth: adjustment.strokeWidth ?? variant.defaultSvgAttributes.strokeWidth
+    });
+
+    const addjustedIcon = useMemo(() => {
+        const attrs = Object.fromEntries(
+            [
+                ['width', attributes.width],
+                ['height', attributes.height],
+                ['stroke', attributes.stroke],
+                ['fill', attributes.fill],
+                ['strokeWidth', attributes.strokeWidth]
+            ].filter(([_, value]) => value !== undefined && value !== null)
+        ) as Record<string, string | number>;
+
+        return {
+            ...selectedIcon,
+            svgAst: {
+                ...selectedIcon.svgAst,
+                attrs: {
+                    ...selectedIcon.svgAst.attrs,
+                    ...attrs
+                }
+            }
+        } as IconWithRelativeData;
+    }, [attributes, selectedIcon]);
+
+    const handleCopyName = () => {
+        navigator.clipboard.writeText(selectedIcon.name);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 3000);
+    };
+
+    return (
+        <>
+            <div className="flex items-center gap-3">
+                <button
+                    className={cx(
+                        'd-btn d-btn-ghost d-btn-sm d-btn-secondary -ml-2 px-2 border-none group shadow-none',
+                        copied && 'd-tooltip d-tooltip-right d-tooltip-open'
+                    )}
+                    data-tip={copied ? 'Copied!' : undefined}
+                    type="button"
+                    onClick={handleCopyName}>
+                    <span className="font-bold text-xl font-mono">{selectedIcon.name}</span>
+                    <Copy className="w-4 h-4 opacity-0 group-has-hover:opacity-100 text-white" />
+                </button>
+                <button
+                    className="d-btn d-btn-circle d-btn-xs d-btn-secondary d-btn-ghost"
+                    type="button"
+                    title="Add to Favorites"
+                    aria-label="Add to Favorites">
+                    <HeartPlus size={16} />
+                </button>
+            </div>
+            <div className="mt-3 flex justify-between">
+                <div className="shrink-0">
+                    <div className="w-50 h-50 bg-base-200 flex items-center justify-center rounded relative">
+                        <svg
+                            className="absolute top-0 left-0 w-full h-full stroke-base-300 opacity-60 z-0"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            strokeWidth="0.1"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <title>Grid Lines</title>
+                            {gridLineNumber.map((_, index) => (
+                                <g key={index}>
+                                    <line x1="0" y1={index} x2="24" y2={index}></line>
+                                    <line x1={index} y1="0" x2={index} y2="24"></line>
+                                </g>
+                            ))}
+                        </svg>
+                        <AstToSvg
+                            svgAst={selectedIcon.svgAst}
+                            fill={attributes.fill}
+                            stroke={attributes.stroke}
+                            strokeWidth={attributes.strokeWidth}
+                            width="80%"
+                            height="80%"
+                            className="z-10"
+                        />
+                    </div>
+                </div>
+                <div className="shrink-0">
+                    <SizeAdjuster
+                        size={attributes.width}
+                        onSizeChange={(newSize) =>
+                            setAttributes({ ...attributes, width: newSize, height: newSize })
+                        }
+                    />
+                    <ColorAdjuster
+                        className="mt-5 space-y-5"
+                        color={attributes.fill}
+                        onColorChange={(newColor) => setAttributes({ ...attributes, fill: newColor })}
+                    />
+
+                    <div className="flex gap-3 mt-8">
+                        <CopyButton icon={addjustedIcon} />
+                        <DownloadButton icon={addjustedIcon} />
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}

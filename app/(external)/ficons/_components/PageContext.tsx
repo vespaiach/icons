@@ -32,11 +32,11 @@ export function PageContextProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         if (isClient) {
-            const modalElement = document.getElementById('bottom_panel') as HTMLDialogElement | null;
+            const modalElement = document.getElementById('icon_modal') as HTMLDialogElement | null;
             if (!modalElement) return;
 
             if (selectedIcon !== null) {
-                modalElement.showModal();
+                modalElement.show();
             } else {
                 modalElement.close();
             }

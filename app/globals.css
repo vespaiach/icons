@@ -43,6 +43,10 @@
     .icon-skeleton {
         @apply w-14 h-14 bg-gray-200 rounded-md animate-pulse;
     }
+
+    .d-none-modal {
+        @apply d-modal;
+    }
 }
 
 body {

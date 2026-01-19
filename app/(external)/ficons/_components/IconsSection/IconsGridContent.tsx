@@ -1,6 +1,6 @@
 'use client';
 
-import { BookmarkPlus, HeartPlus } from 'lucide-react';
+import { HeartPlus } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { use, useMemo } from 'react';
 import AstToSvg from '@/components/AstToSvg';
@@ -84,7 +84,10 @@ function IconButton({
                 {iconElement}
                 <span>{icon.name}</span>
             </button>
-            <button className="cart invisible group-hover:visible" type="button" aria-label="Add to Favorites">
+            <button
+                className="cart invisible group-hover:visible"
+                type="button"
+                aria-label="Add to Favorites">
                 <HeartPlus size={16} />
             </button>
         </div>

@@ -1,7 +1,7 @@
 import AboutModal from './_components/AboutModal';
 import Drawer from './_components/Drawer';
 import DrawerToggler from './_components/DrawerToggler';
-import IconDetailsModal from './_components/IconDetailsModal';
+import IconModal from './_components/IconModal';
 import IconSection from './_components/IconsSection';
 import Navbar from './_components/Navbar';
 import { PageContextProvider } from './_components/PageContext';
@@ -26,7 +26,7 @@ export default async function PageIcons() {
 
                     <SearchModal repositories={repositoriesVariants} />
                     <AboutModal />
-                    <IconDetailsModal repositories={repositoriesVariants} />
+                    <IconModal repositories={repositoriesVariants} />
                 </div>
                 <Drawer repositories={repositoriesVariants} />
             </PageContextProvider>
