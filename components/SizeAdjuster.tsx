@@ -26,7 +26,7 @@ export default function SizeAdjuster({
                 onChange={(e) => {
                     onSizeChange(Number.parseInt(e.target.value, 10));
                 }}
-                className="d-range d-range-xs disabled:opacity-50"
+                className="d-range d-range-xs disabled:opacity-50 w-full"
                 disabled={disabled}
             />
         </div>
