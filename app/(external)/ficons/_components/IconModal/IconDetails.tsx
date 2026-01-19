@@ -24,20 +24,22 @@ export default function IconDetails({
 
     // State for adjustable properties - use defaultSvgAttributes as initial values
     const [attributes, setAttributes] = useState({
-        width: adjustment.width ?? variant.defaultSvgAttributes.width ?? 24,
-        height: adjustment.height ?? variant.defaultSvgAttributes.height ?? 24,
-        stroke: adjustment.stroke ?? variant.defaultSvgAttributes.stroke,
-        fill: adjustment.fill ?? variant.defaultSvgAttributes.fill,
+        size: adjustment.width ?? variant.defaultSvgAttributes.width ?? 24,
+        color:
+            adjustment.fill ??
+            adjustment.stroke ??
+            variant.defaultSvgAttributes.fill ??
+            variant.defaultSvgAttributes.stroke,
         strokeWidth: adjustment.strokeWidth ?? variant.defaultSvgAttributes.strokeWidth
     });
 
     const addjustedIcon = useMemo(() => {
         const attrs = Object.fromEntries(
             [
-                ['width', attributes.width],
-                ['height', attributes.height],
-                ['stroke', attributes.stroke],
-                ['fill', attributes.fill],
+                ['width', attributes.size],
+                ['height', attributes.size],
+                ['stroke', variant.defaultSvgAttributes.stroke ? attributes.color : undefined],
+                ['fill', variant.defaultSvgAttributes.fill ? attributes.color : undefined],
                 ['strokeWidth', attributes.strokeWidth]
             ].filter(([_, value]) => value !== undefined && value !== null)
         ) as Record<string, string | number>;
@@ -84,7 +86,7 @@ export default function IconDetails({
             </div>
             <div className="mt-3 flex justify-between">
                 <div className="shrink-0">
-                    <div className="w-50 h-50 bg-base-200 flex items-center justify-center rounded relative">
+                    <div className="w-44.5 h-44.5 bg-base-200 flex items-center justify-center rounded relative">
                         <svg
                             className="absolute top-0 left-0 w-full h-full stroke-base-300 opacity-60 z-0"
                             viewBox="0 0 24 24"
@@ -101,8 +103,8 @@ export default function IconDetails({
                         </svg>
                         <AstToSvg
                             svgAst={selectedIcon.svgAst}
-                            fill={attributes.fill}
-                            stroke={attributes.stroke}
+                            fill={variant.defaultSvgAttributes.fill ? attributes.color : undefined}
+                            stroke={variant.defaultSvgAttributes.stroke ? attributes.color : undefined}
                             strokeWidth={attributes.strokeWidth}
                             width="80%"
                             height="80%"
@@ -112,18 +114,16 @@ export default function IconDetails({
                 </div>
                 <div className="shrink-0">
                     <SizeAdjuster
-                        size={attributes.width}
-                        onSizeChange={(newSize) =>
-                            setAttributes({ ...attributes, width: newSize, height: newSize })
-                        }
+                        size={attributes.size}
+                        onSizeChange={(newSize) => setAttributes({ ...attributes, size: newSize })}
                     />
                     <ColorAdjuster
-                        className="mt-5 space-y-5"
-                        color={attributes.fill}
-                        onColorChange={(newColor) => setAttributes({ ...attributes, fill: newColor })}
+                        className="mt-3 space-y-3"
+                        color={attributes.color}
+                        onColorChange={(newColor) => setAttributes({ ...attributes, color: newColor })}
                     />
 
-                    <div className="flex gap-3 mt-8">
+                    <div className="flex gap-3 mt-6">
                         <CopyButton icon={addjustedIcon} />
                         <DownloadButton icon={addjustedIcon} />
                     </div>

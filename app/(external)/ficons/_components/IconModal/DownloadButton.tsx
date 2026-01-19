@@ -1,9 +1,11 @@
 import { ChevronDown, Download } from 'lucide-react';
 import { useState } from 'react';
 import { astToHtml, astToTsx } from '@/utils/client-side/svg-helpers';
+import { cx } from '@/utils/common-helpers';
 
 export default function DownloadButton({ icon }: { icon: IconWithRelativeData }) {
     const [text, setText] = useState('Raw SVG');
+    const [open, setOpen] = useState(false);
 
     const download = (format: string) => {
         let svgContent = '';
@@ -28,6 +30,7 @@ export default function DownloadButton({ icon }: { icon: IconWithRelativeData })
         (format: string) =>
         (e: { preventDefault: () => void }): void => {
             e.preventDefault();
+            setOpen(false);
             setText(format);
             download(format);
         };
@@ -43,15 +46,18 @@ export default function DownloadButton({ icon }: { icon: IconWithRelativeData })
                 <Download size={18} />
                 {text}
             </button>
-            <div className="d-dropdown d-dropdown-end">
+            <div className={cx('d-dropdown d-dropdown-end', open ? 'd-dropdown-open' : 'd-dropdown-close')}>
                 <button
                     type="button"
+                    onClick={() => {
+                        setOpen((v) => !v);
+                    }}
                     className="d-btn d-btn-soft d-btn-secondary d-btn-sm px-1 rounded-tl-none rounded-bl-none">
                     <ChevronDown size={20} />
                 </button>
                 <ul
                     tabIndex={-1}
-                    className="d-dropdown-content d-menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                    className="d-dropdown-content d-menu bg-base-100 text-base-content rounded-box z-1 w-52 p-2 shadow-sm fixed bottom-14 right-5">
                     <li>
                         <button type="button" onClick={handleSelection('Raw SVG')}>
                             Raw SVG

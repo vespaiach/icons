@@ -18,8 +18,8 @@ export default function IconModal({ repositories }: { repositories: RepositoryVa
     };
 
     return (
-        <dialog id="icon_modal" className="d-modal">
-            <div className="d-modal-box w-138 max-w-138 relative">
+        <dialog id="icon_modal" className="fixed bottom-10 left-1/2 z-50 -translate-x-1/2 w-133 max-w-133 rounded-3xl">
+            <div className="relative bg-gray-200 rounded-3xl p-5 shadow-lg">
                 <button
                     type="button"
                     className="absolute top-1 right-1 d-btn d-btn-sm d-btn-ghost d-btn-circle"
@@ -30,12 +30,6 @@ export default function IconModal({ repositories }: { repositories: RepositoryVa
                     <IconDetails selectedIcon={selectedIcon} variant={variant} adjustment={adjustment} />
                 )}
             </div>
-
-            <form method="dialog" className="d-modal-backdrop">
-                <button type="button" onClick={handleClose}>
-                    close
-                </button>
-            </form>
         </dialog>
     );
 }
