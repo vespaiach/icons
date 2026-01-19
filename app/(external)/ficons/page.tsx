@@ -1,3 +1,4 @@
+import { Provider } from 'jotai';
 import AboutModal from './_components/AboutModal';
 import Drawer from './_components/Drawer';
 import DrawerToggler from './_components/DrawerToggler';
@@ -13,23 +14,25 @@ export default async function PageIcons() {
 
     return (
         <div className="d-drawer">
-            <PageContextProvider>
-                <DrawerToggler />
-                <div className="d-drawer-content">
-                    <Navbar repositories={repositoriesVariants} />
+            <Provider>
+                <PageContextProvider repositories={repositoriesVariants}>
+                    <DrawerToggler />
+                    <div className="d-drawer-content">
+                        <Navbar repositories={repositoriesVariants} />
 
-                    <div className="mt-6">
-                        {repositoriesVariants.map((repository) => (
-                            <IconSection key={repository.id} repository={repository} />
-                        ))}
+                        <div className="mt-6">
+                            {repositoriesVariants.map((repository) => (
+                                <IconSection key={repository.id} repository={repository} />
+                            ))}
+                        </div>
+
+                        <SearchModal repositories={repositoriesVariants} />
+                        <AboutModal />
+                        <IconModal repositories={repositoriesVariants} />
                     </div>
-
-                    <SearchModal repositories={repositoriesVariants} />
-                    <AboutModal />
-                    <IconModal repositories={repositoriesVariants} />
-                </div>
-                <Drawer repositories={repositoriesVariants} />
-            </PageContextProvider>
+                    <Drawer repositories={repositoriesVariants} />
+                </PageContextProvider>
+            </Provider>
         </div>
     );
 }

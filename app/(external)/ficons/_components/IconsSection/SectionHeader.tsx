@@ -1,20 +1,28 @@
 'use client';
 
-import { Info, Settings, X } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { Info, RotateCcw, Settings, X } from 'lucide-react';
+import { useRef, useTransition } from 'react';
 import ColorAdjuster from '@/components/ColorAdjuster';
 import SizeAdjuster from '@/components/SizeAdjuster';
+import { adjustmentsByRepoIdAtom } from '../PageContext';
 import RepositoryInfo from '../RepositoryInfo';
 
 export default function SectionHeader({ repository }: { repository: RepositoryVariants }) {
+    const [_, startTransition] = useTransition();
     const infoDialogRef = useRef<HTMLDialogElement>(null);
-    const variants = repository.variants;
+    const adjustments = useAtomValue(adjustmentsByRepoIdAtom);
+    const setAdjustment = useSetAtom(adjustmentsByRepoIdAtom);
+    const adjustment = adjustments[repository.id];
 
-    const [attributes, setAttributes] = useState({
-        size: 24,
-        color:
-            variants[0].defaultSvgAttributes.fill ?? variants[0].defaultSvgAttributes.stroke ?? 'currentColor'
-    });
+    const adjust = ({ color, size }: { color?: string; size?: number }) => {
+        startTransition(() => {
+            setAdjustment((prev) => ({
+                ...prev,
+                [repository.id]: { color: color ?? adjustment.color, size: size ?? adjustment.size }
+            }));
+        });
+    };
 
     return (
         <>
@@ -42,22 +50,31 @@ export default function SectionHeader({ repository }: { repository: RepositoryVa
             <dialog ref={infoDialogRef} className="d-modal">
                 <div className="d-modal-box relative">
                     <form method="dialog">
-                        <button className="absolute top-2 right-2 d-btn d-btn-sm d-btn-ghost d-btn-circle">
+                        <button className="absolute top-1 right-1 d-btn d-btn-ghost d-btn-sm d-btn-circle">
                             <X />
                         </button>
                     </form>
                     <h2 className="font-semibold text-xl capitalize mb-4">{repository.name}</h2>
                     <RepositoryInfo selectedRepository={repository} />
-                    <h2 className="font-semibold text-xl capitalize mb-4 mt-6">Customizer</h2>
+                    <div className="flex items-center justify-between mb-4 mt-6">
+                        <h2 className="font-semibold text-xl capitalize">Customizer</h2>
+                        <button
+                            type="button"
+                            aria-label="Reset"
+                            className="d-btn d-btn-ghost d-btn-sm d-btn-circle"
+                            onClick={() => adjust({ color: 'currentColor', size: 24 })}>
+                            <RotateCcw size={18} />
+                        </button>
+                    </div>
                     <div className="shrink-0">
                         <SizeAdjuster
-                            size={attributes.size}
-                            onSizeChange={(newSize) => setAttributes({ ...attributes, size: newSize })}
+                            size={adjustment?.size}
+                            onSizeChange={(newSize) => adjust({ size: newSize })}
                         />
                         <ColorAdjuster
                             className="mt-5 flex items-center justify-between"
-                            color={attributes.color}
-                            onColorChange={(newColor) => setAttributes({ ...attributes, color: newColor })}
+                            color={adjustment.color}
+                            onColorChange={(newColor) => adjust({ color: newColor, size: adjustment.size })}
                         />
                     </div>
                 </div>

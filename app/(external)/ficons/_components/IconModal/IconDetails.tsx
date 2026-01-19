@@ -18,20 +18,12 @@ export default function IconDetails({
 }: {
     selectedIcon: IconWithRelativeData;
     variant: Variant;
-    adjustment: SvgAdjustableAttributes;
+    adjustment: { color: string; size: number };
 }) {
     const [copied, setCopied] = useState(false);
 
     // State for adjustable properties - use defaultSvgAttributes as initial values
-    const [attributes, setAttributes] = useState({
-        size: adjustment.width ?? variant.defaultSvgAttributes.width ?? 24,
-        color:
-            adjustment.fill ??
-            adjustment.stroke ??
-            variant.defaultSvgAttributes.fill ??
-            variant.defaultSvgAttributes.stroke,
-        strokeWidth: adjustment.strokeWidth ?? variant.defaultSvgAttributes.strokeWidth
-    });
+    const [attributes, setAttributes] = useState({ size: adjustment.size, color: adjustment.color });
 
     const addjustedIcon = useMemo(() => {
         const attrs = Object.fromEntries(
@@ -39,8 +31,7 @@ export default function IconDetails({
                 ['width', attributes.size],
                 ['height', attributes.size],
                 ['stroke', variant.defaultSvgAttributes.stroke ? attributes.color : undefined],
-                ['fill', variant.defaultSvgAttributes.fill ? attributes.color : undefined],
-                ['strokeWidth', attributes.strokeWidth]
+                ['fill', variant.defaultSvgAttributes.fill ? attributes.color : undefined]
             ].filter(([_, value]) => value !== undefined && value !== null)
         ) as Record<string, string | number>;
 
@@ -105,7 +96,6 @@ export default function IconDetails({
                             svgAst={selectedIcon.svgAst}
                             fill={variant.defaultSvgAttributes.fill ? attributes.color : undefined}
                             stroke={variant.defaultSvgAttributes.stroke ? attributes.color : undefined}
-                            strokeWidth={attributes.strokeWidth}
                             width="80%"
                             height="80%"
                             className="z-10"

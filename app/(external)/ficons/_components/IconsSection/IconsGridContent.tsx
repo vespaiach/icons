@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { use, useMemo } from 'react';
 import AstToSvg from '@/components/AstToSvg';
 import useTrackMinHeight from '@/hooks/useTrackMinHeight';
-import { usePageContext } from '../PageContext';
+import { useAdjustment, usePageContext } from '../PageContext';
 
 export default function IconsGridContent({
     iconsPromise,
@@ -17,7 +17,7 @@ export default function IconsGridContent({
     isIntersecting: boolean;
 }) {
     const icons = use(iconsPromise);
-    const { svgAttributeAdjustments } = usePageContext();
+    const adjustment = useAdjustment(selectedVariant.repositoryId);
 
     const searchParams = useSearchParams();
     const query = (searchParams.get('q') || '').toLowerCase();
@@ -40,7 +40,7 @@ export default function IconsGridContent({
                             key={icon.id}
                             icon={icon}
                             variant={selectedVariant}
-                            svgAttributeAdjustment={svgAttributeAdjustments?.[selectedVariant.id] ?? {}}
+                            adjustment={adjustment}
                         />
                     ))}
                 {isIntersecting && filteredIcons.length === 0 && <p>No icons found.</p>}
@@ -52,11 +52,11 @@ export default function IconsGridContent({
 function IconButton({
     icon,
     variant,
-    svgAttributeAdjustment
+    adjustment
 }: {
     icon: IconWithRelativeData;
     variant: Variant;
-    svgAttributeAdjustment: SvgAdjustableAttributes;
+    adjustment: { color: string; size: number };
 }) {
     const { setSelectedIcon } = usePageContext();
 
@@ -64,14 +64,13 @@ function IconButton({
         return (
             <AstToSvg
                 svgAst={icon.svgAst}
-                fill={svgAttributeAdjustment.fill ?? variant.defaultSvgAttributes.fill}
-                stroke={svgAttributeAdjustment.stroke ?? variant.defaultSvgAttributes.stroke}
-                strokeWidth={svgAttributeAdjustment.strokeWidth ?? variant.defaultSvgAttributes.strokeWidth}
+                fill={variant.defaultSvgAttributes.fill ? adjustment.color : undefined}
+                stroke={variant.defaultSvgAttributes.stroke ? adjustment.color : undefined}
                 width={38}
                 height={38}
             />
         );
-    }, [icon.svgAst, svgAttributeAdjustment, variant.defaultSvgAttributes]);
+    }, [icon.svgAst, adjustment, variant.defaultSvgAttributes]);
 
     return (
         <div className="icon group">
