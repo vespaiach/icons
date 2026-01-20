@@ -1,21 +1,18 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { useAdjustment, usePageContext } from '../PageContext';
+import { useAdjustment, useIconAcion, useIconValue } from '../PageContext';
 import IconDetails from './IconDetails';
 
 export default function IconModal({ repositories }: { repositories: RepositoryVariants[] }) {
-    const { selectedIcon, setSelectedIcon } = usePageContext();
+    const selectedIcon = useIconValue();
+    const [_, clearSelectedIcon] = useIconAcion();
     const repository = selectedIcon
         ? repositories.find((repo) => repo.id === selectedIcon.repositoryId)
         : null;
     const adjustment = useAdjustment(repository?.id);
     const variant =
         selectedIcon && repository ? repository.variants.find((v) => v.id === selectedIcon.variantId) : null;
-
-    const handleClose = () => {
-        setSelectedIcon(null);
-    };
 
     return (
         <dialog
@@ -25,7 +22,7 @@ export default function IconModal({ repositories }: { repositories: RepositoryVa
                 <button
                     type="button"
                     className="absolute top-1 right-1 d-btn d-btn-sm d-btn-ghost d-btn-circle"
-                    onClick={handleClose}>
+                    onClick={clearSelectedIcon}>
                     <X size={20} />
                 </button>
                 {selectedIcon && variant && (

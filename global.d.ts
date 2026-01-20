@@ -80,6 +80,12 @@ declare global {
         userName: string;
         userProfilePictureUrl: string | null;
     }
+
+    interface Favorite {
+        iconId: string;
+        color: string;
+        size: number;
+    }
 }
 
 export {};

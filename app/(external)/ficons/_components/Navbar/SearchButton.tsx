@@ -1,12 +1,15 @@
 'use client';
 
 import { useIsClient } from '@uidotdev/usehooks';
-import { Search } from 'lucide-react';
+import { HeartPlus, Search } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useState } from 'react';
+import { useFavoritesValue } from '../PageContext';
 
 export default function SearchButton() {
     const isClient = useIsClient();
+    const { ids } = useFavoritesValue();
+    const hasIconInFavorites = ids.size > 0;
 
     const [isMac, setIsMac] = useState<boolean | null>(null);
 
@@ -41,26 +44,35 @@ export default function SearchButton() {
     }, [openModel, isClient]);
 
     return (
-        <button
-            type="button"
-            className="mr-auto ml-8 hidden md:flex d-input d-input-ghost hover:bg-base-200 focus-visible:bg-base-200 cursor-pointer transition-colors focus:outline-none"
-            onClick={openModel}>
-            <Search className="size-4 shrink-0 opacity-60" />
-            <Suspense>
-                <SearchText />
-            </Suspense>
-            {isMac !== null && (
-                <kbd className="d-kbd d-kbd-sm font-mono opacity-50">
-                    {isMac ? (
-                        <>
-                            <span className="me-1 text-sm">⌘</span>K
-                        </>
-                    ) : (
-                        'Ctrl K'
-                    )}
-                </kbd>
+        <>
+            <button
+                type="button"
+                className="ml-8 hidden md:flex d-input d-input-ghost hover:border-secondary focus-visible:border-secondary bg-base-200 cursor-pointer transition-colors focus:outline-none"
+                onClick={openModel}>
+                <Search className="size-4 shrink-0 opacity-60" />
+                <Suspense>
+                    <SearchText />
+                </Suspense>
+                {isMac !== null && (
+                    <kbd className="d-kbd d-kbd-sm font-mono opacity-50">
+                        {isMac ? (
+                            <>
+                                <span className="me-1 text-sm">⌘</span>K
+                            </>
+                        ) : (
+                            'Ctrl K'
+                        )}
+                    </kbd>
+                )}
+            </button>
+            {hasIconInFavorites && (
+                <label className="d-btn d-btn-sm d-btn-ghost d-btn-secondary ml-2">
+                    <HeartPlus size={16} />
+                    <span className="d-badge d-badge-secondary d-badge-xs">{ids.size}</span>
+                    <input id="drawer_toggler" type="checkbox" readOnly className="d-drawer-toggle" />
+                </label>
             )}
-        </button>
+        </>
     );
 }
 

@@ -30,7 +30,7 @@ export default async function PageIcons() {
                         <AboutModal />
                         <IconModal repositories={repositoriesVariants} />
                     </div>
-                    <Drawer repositories={repositoriesVariants} />
+                    <Drawer />
                 </PageContextProvider>
             </Provider>
         </div>

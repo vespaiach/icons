@@ -29,7 +29,7 @@
     }
 
     .icon button.cart {
-        @apply absolute top-2 right-3 d-btn d-btn-circle d-btn-xs d-btn-secondary d-btn-ghost;
+        @apply absolute top-2 right-3 d-btn d-btn-circle d-btn-xs d-btn-secondary;
     }
 
     .icon span {

@@ -1,11 +1,11 @@
 'use client';
 
-import { HeartPlus } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { use, useMemo } from 'react';
 import AstToSvg from '@/components/AstToSvg';
 import useTrackMinHeight from '@/hooks/useTrackMinHeight';
-import { useAdjustment, usePageContext } from '../PageContext';
+import FavoriteButton from '../FavoriteButton';
+import { useAdjustment, useIconAcion } from '../PageContext';
 
 export default function IconsGridContent({
     iconsPromise,
@@ -58,8 +58,7 @@ function IconButton({
     variant: Variant;
     adjustment: { color: string; size: number };
 }) {
-    const { setSelectedIcon } = usePageContext();
-
+    const [setIcon] = useIconAcion();
     const iconElement = useMemo(() => {
         return (
             <AstToSvg
@@ -77,18 +76,13 @@ function IconButton({
             <button
                 className="btn"
                 onClick={() => {
-                    setSelectedIcon(icon);
+                    setIcon(icon);
                 }}
                 type="button">
                 {iconElement}
                 <span>{icon.name}</span>
             </button>
-            <button
-                className="cart invisible group-hover:visible"
-                type="button"
-                aria-label="Add to Favorites">
-                <HeartPlus size={16} />
-            </button>
+            <FavoriteButton icon={icon} className="absolute top-2 right-2" defaultHide />
         </div>
     );
 }

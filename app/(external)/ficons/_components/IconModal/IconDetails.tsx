@@ -1,11 +1,12 @@
 'use client';
 
-import { Copy, HeartPlus } from 'lucide-react';
+import { Copy } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import AstToSvg from '@/components/AstToSvg';
 import ColorAdjuster from '@/components/ColorAdjuster';
 import SizeAdjuster from '@/components/SizeAdjuster';
 import { cx } from '@/utils/common-helpers';
+import FavoriteButton from '../FavoriteButton';
 import CopyButton from './CopyButton';
 import DownloadButton from './DownloadButton';
 
@@ -67,13 +68,7 @@ export default function IconDetails({
                     <span className="font-bold text-xl font-mono">{selectedIcon.name}</span>
                     <Copy className="w-4 h-4 opacity-0 group-has-hover:opacity-100 text-white" />
                 </button>
-                <button
-                    className="d-btn d-btn-circle d-btn-xs d-btn-secondary d-btn-ghost"
-                    type="button"
-                    title="Add to Favorites"
-                    aria-label="Add to Favorites">
-                    <HeartPlus size={16} />
-                </button>
+                <FavoriteButton icon={selectedIcon} />
             </div>
             <div className="mt-3 flex justify-between">
                 <div className="shrink-0">
