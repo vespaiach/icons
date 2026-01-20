@@ -4,11 +4,12 @@ import { useIsClient } from '@uidotdev/usehooks';
 import { HeartPlus, Search } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useState } from 'react';
-import { useFavoritesValue } from '../PageContext';
+import { useDrawerAction, useFavoritesValue } from '../PageContext';
 
 export default function SearchButton() {
     const isClient = useIsClient();
     const { ids } = useFavoritesValue();
+    const [openDrawer] = useDrawerAction();
     const hasIconInFavorites = ids.size > 0;
 
     const [isMac, setIsMac] = useState<boolean | null>(null);
@@ -66,11 +67,13 @@ export default function SearchButton() {
                 )}
             </button>
             {hasIconInFavorites && (
-                <label className="d-btn d-btn-sm d-btn-ghost d-btn-secondary ml-2">
+                <button
+                    type="button"
+                    onClick={openDrawer}
+                    className="d-btn d-btn-sm d-btn-ghost d-btn-secondary ml-2">
                     <HeartPlus size={16} />
                     <span className="d-badge d-badge-secondary d-badge-xs">{ids.size}</span>
-                    <input id="drawer_toggler" type="checkbox" readOnly className="d-drawer-toggle" />
-                </label>
+                </button>
             )}
         </>
     );

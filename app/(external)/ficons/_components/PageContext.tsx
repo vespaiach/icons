@@ -4,7 +4,7 @@ import { useIsClient } from '@uidotdev/usehooks';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useMemo } from 'react';
+import { use, useCallback, useEffect, useMemo } from 'react';
 
 export const adjustmentsByRepoIdAtom = atom<Record<number, { color: string; size: number }>>({});
 export const iconAtom = atom<IconWithRelativeData | null>(null);
@@ -78,13 +78,15 @@ export function useFavoritesAction() {
     const set = useSetAtom(favoritesAtom);
     return [
         useCallback(
-            (id: string, color: string, size: number) => {
+            (icon: { id: string; svgAst: SvgNode }) => {
                 set((prev) => {
-                    const exists = prev.find((fav) => fav.iconId === id);
+                    const exists = prev.find((fav) => fav.iconId === icon.id);
                     if (exists) {
-                        return prev.map((fav) => (fav.iconId === id ? { iconId: id, color, size } : fav));
+                        return prev.map((fav) =>
+                            fav.iconId === icon.id ? { iconId: icon.id, svgAst: icon.svgAst } : fav
+                        );
                     } else {
-                        return [...prev, { iconId: id, color, size }];
+                        return [...prev, { iconId: icon.id, svgAst: icon.svgAst }];
                     }
                 });
             },
@@ -95,7 +97,10 @@ export function useFavoritesAction() {
                 set((prev) => prev.filter((fav) => fav.iconId !== id));
             },
             [set]
-        )
+        ),
+        useCallback(() => {
+            set([]);
+        }, [set])
     ] as const;
 }
 

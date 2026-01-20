@@ -10,7 +10,7 @@ export default function FavoriteButton({
 }: {
     className?: string;
     defaultHide?: boolean;
-    icon: { id: string; repositoryId: number };
+    icon: { id: string; repositoryId: number; svgAst: SvgNode };
 }) {
     const { ids } = useFavoritesValue();
     const adjustment = useAdjustment(icon.repositoryId);
@@ -21,9 +21,9 @@ export default function FavoriteButton({
         if (ids.has(icon.id)) {
             removeFromFavorites(icon.id);
         } else {
-            addToFavorites(icon.id, adjustment.color, adjustment.size);
+            addToFavorites(icon, adjustment.color, adjustment.size);
         }
-    }, [ids, icon.id, addToFavorites, removeFromFavorites, adjustment]);
+    }, [ids, icon, addToFavorites, removeFromFavorites, adjustment]);
 
     return (
         <button

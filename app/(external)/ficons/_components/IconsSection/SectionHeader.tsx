@@ -50,7 +50,9 @@ export default function SectionHeader({ repository }: { repository: RepositoryVa
             <dialog ref={infoDialogRef} className="d-modal">
                 <div className="d-modal-box relative">
                     <form method="dialog">
-                        <button className="absolute top-1 right-1 d-btn d-btn-ghost d-btn-sm d-btn-circle">
+                        <button
+                            type="submit"
+                            className="absolute top-1 right-1 d-btn d-btn-ghost d-btn-sm d-btn-circle">
                             <X />
                         </button>
                     </form>
@@ -79,7 +81,7 @@ export default function SectionHeader({ repository }: { repository: RepositoryVa
                     </div>
                 </div>
                 <form method="dialog" className="d-modal-backdrop">
-                    <button>close</button>
+                    <button type="submit">close</button>
                 </form>
             </dialog>
         </>

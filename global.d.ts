@@ -83,8 +83,7 @@ declare global {
 
     interface Favorite {
         iconId: string;
-        color: string;
-        size: number;
+        svgAst: SvgNode;
     }
 }
 

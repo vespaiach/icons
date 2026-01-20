@@ -1,5 +1,18 @@
 'use client';
 
+import { useDrawerAction, useDrawerValue } from './PageContext';
+
 export default function DrawerToggler() {
-    return <input id="drawer_toggler" type="checkbox" readOnly className="d-drawer-toggle" />;
+    const drawerOpen = useDrawerValue();
+    const [_, close] = useDrawerAction();
+    return (
+        <input
+            id="drawer_toggler"
+            type="checkbox"
+            checked={drawerOpen}
+            onChange={close}
+            readOnly
+            className="d-drawer-toggle"
+        />
+    );
 }

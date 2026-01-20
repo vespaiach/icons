@@ -46,7 +46,7 @@ export default function IconDetails({
                 }
             }
         } as IconWithRelativeData;
-    }, [attributes, selectedIcon]);
+    }, [attributes, selectedIcon, variant]);
 
     const handleCopyName = () => {
         navigator.clipboard.writeText(selectedIcon.name);
