@@ -19,10 +19,10 @@ export default function IconsGridSkeleton({
                 disabled={!checked}
             />
             <div className="d-tab-content bg-base-100 border-base-300 p-2">
-                <div className="icons-grid">
+                <div className="ic-grid">
                     {checked
                         ? Array.from({ length: variant.iconCount }, (_, index) => (
-                              <div key={index} className="icon-skeleton" />
+                              <div key={index} className="ic-skeleton" />
                           ))
                         : null}
                 </div>

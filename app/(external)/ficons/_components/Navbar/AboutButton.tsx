@@ -11,10 +11,7 @@ export default function AboutButton() {
     };
 
     return (
-        <button
-            type="button"
-            className="d-btn d-btn-ghost d-btn-sm flex items-center gap-2"
-            onClick={openModal}>
+        <button type="button" className="d-btn d-btn-ghost flex items-center gap-2" onClick={openModal}>
             <BadgeInfo className="size-4" />
         </button>
     );

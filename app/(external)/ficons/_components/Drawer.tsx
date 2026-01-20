@@ -11,6 +11,58 @@ export default function Drawer() {
     const { ids, byIds } = useFavoritesValue();
     const [_, removeFromFavorites, removeAll] = useFavoritesAction();
     const [attributes, setAttributes] = useState({ size: 24, color: 'currentColor' });
+    const [isDownloading, setIsDownloading] = useState(false);
+
+    useEffect(() => {
+        if (ids.size === 0) {
+            document.getElementById('drawer_toggler')?.click();
+        }
+    }, [ids]);
+
+    const handleDownload = async () => {
+        if (isDownloading) return;
+
+        setIsDownloading(true);
+        try {
+            const iconIds = Array.from(ids);
+
+            // Call the API route instead of server action
+            const response = await fetch('/ficons/download', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ iconIds, attributes })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Download failed');
+            }
+
+            // Get the blob from response
+            const blob = await response.blob();
+
+            // Create download link
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `icons-${Date.now()}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // Clear favorites after successful download
+            removeAll();
+            document.getElementById('drawer_toggler')?.click();
+        } catch (error) {
+            console.error('Download error:', error);
+            alert(`Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
+            setIsDownloading(false);
+        }
+    };
 
     useEffect(() => {
         if (ids.size === 0) {
@@ -66,11 +118,16 @@ export default function Drawer() {
                 <button
                     type="button"
                     className="d-btn d-btn-secondary d-btn-sm w-full"
-                    onClick={() => {
-                        Array.from(ids).forEach((id) => removeFromFavorites(id));
-                    }}>
+                    onClick={handleDownload}
+                    disabled={isDownloading}>
                     <Download size={18} />
-                    Download
+                    {isDownloading ? (
+                        <span className="flex items-center gap-1">
+                            Download<span className="d-loading d-loading-dots d-loading-xs"></span>
+                        </span>
+                    ) : (
+                        'Download'
+                    )}
                 </button>
             </div>
         </div>

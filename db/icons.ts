@@ -49,3 +49,32 @@ export async function getIconsByRepositoryId(repositoryId: number) {
     }
     return rows as unknown as IconWithRelativeData[];
 }
+
+export async function getIconsByIds(iconIds: string[]) {
+    log('info', '[DB] getIconsByIds - START', { count: iconIds.length });
+    const rows = await sql`
+        SELECT 
+            i.id,
+            i.variant_id AS "variantId",
+            i.name,
+            i.svg_ast AS "svgAst",
+            i.created_at AS "createdAt",
+            v.name AS "variantName",
+            v.default_svg_attributes AS "defaultSvgAttributes"
+        FROM icons i
+        INNER JOIN variants v ON i.variant_id = v.id
+        WHERE i.id = ANY(${iconIds})
+        ORDER BY i.name ASC
+    `;
+    log('info', `[DB] getIconsByIds - END (${rows.length} rows)`);
+    if (Bun.env.DEBUG_QUERIES === 'true' && rows.length > 0) {
+        log('info', `[DB] getIconsByIds - SAMPLE RESULT (first row)`, rows[0]);
+    }
+    return rows as unknown as Array<
+        Icon & {
+            variantId: number;
+            variantName: string;
+            defaultSvgAttributes: SvgAdjustableAttributes;
+        }
+    >;
+}

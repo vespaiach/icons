@@ -4,7 +4,7 @@ import { useIsClient } from '@uidotdev/usehooks';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import type { ReactNode } from 'react';
-import { use, useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 export const adjustmentsByRepoIdAtom = atom<Record<number, { color: string; size: number }>>({});
 export const iconAtom = atom<IconWithRelativeData | null>(null);

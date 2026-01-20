@@ -1,7 +1,7 @@
 import { HeartPlus } from 'lucide-react';
 import { useCallback } from 'react';
 import { cx } from '@/utils/common-helpers';
-import { useAdjustment, useFavoritesAction, useFavoritesValue } from './PageContext';
+import { useFavoritesAction, useFavoritesValue } from './PageContext';
 
 export default function FavoriteButton({
     icon,
@@ -13,7 +13,6 @@ export default function FavoriteButton({
     icon: { id: string; repositoryId: number; svgAst: SvgNode };
 }) {
     const { ids } = useFavoritesValue();
-    const adjustment = useAdjustment(icon.repositoryId);
     const [addToFavorites, removeFromFavorites] = useFavoritesAction();
     const inFavorites = ids.has(icon.id);
 
@@ -21,9 +20,9 @@ export default function FavoriteButton({
         if (ids.has(icon.id)) {
             removeFromFavorites(icon.id);
         } else {
-            addToFavorites(icon, adjustment.color, adjustment.size);
+            addToFavorites(icon);
         }
-    }, [ids, icon, addToFavorites, removeFromFavorites, adjustment]);
+    }, [ids, icon, addToFavorites, removeFromFavorites]);
 
     return (
         <button

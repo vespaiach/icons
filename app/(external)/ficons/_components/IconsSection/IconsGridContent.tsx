@@ -4,8 +4,9 @@ import { useSearchParams } from 'next/navigation';
 import { use, useMemo } from 'react';
 import AstToSvg from '@/components/AstToSvg';
 import useTrackMinHeight from '@/hooks/useTrackMinHeight';
+import { cx } from '@/utils/common-helpers';
 import FavoriteButton from '../FavoriteButton';
-import { useAdjustment, useIconAcion } from '../PageContext';
+import { useAdjustment, useIconAcion, useIconValue } from '../PageContext';
 
 export default function IconsGridContent({
     iconsPromise,
@@ -59,6 +60,7 @@ function IconButton({
     adjustment: { color: string; size: number };
 }) {
     const [setIcon] = useIconAcion();
+    const selectedIcon = useIconValue();
     const iconElement = useMemo(() => {
         return (
             <AstToSvg
@@ -72,7 +74,7 @@ function IconButton({
     }, [icon.svgAst, adjustment, variant.defaultSvgAttributes]);
 
     return (
-        <div className="icon group">
+        <div className={cx('icon group rounded-md', selectedIcon?.id === icon.id && 'ring-2 ring-secondary')}>
             <button
                 className="btn"
                 onClick={() => {

@@ -190,6 +190,49 @@ export function astToSvgString(ast: SvgNode): string {
     return `<svg${attrs ? ` ${attrs}` : ''}>${innerHtml}</svg>`;
 }
 
+export function astToTsx(icon: { name: string; svgAst: SvgNode }): string {
+    const componentName = icon.name
+        .split('-')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join('');
+    const title = `${icon.name.replace(/-/g, ' ')} icon`;
+    const { width, height, ...rest } = icon.svgAst.attrs;
+
+    const innerHtml = astToInnerHtml(icon.svgAst);
+    const restAttrs = Object.entries(rest)
+        .filter(([key]) => ['width', 'height', 'fill', 'stroke'].indexOf(key) === -1)
+        .map(([key, value]) => `${key}="${value}"`)
+        .join('\n            ');
+    const fill = icon.svgAst.attrs.fill;
+    const stroke = icon.svgAst.attrs.stroke;
+
+    const content = `import type { SVGProps } from 'react';
+
+interface IconProps extends SVGProps<SVGSVGElement> {
+    title?: string;
+}
+
+export default function ${componentName}({
+    title = "${title}",
+    width = ${width || 24},
+    height = ${height || 24},${fill ? `\n    fill = "${fill}",` : ''}${stroke ? `\n    stroke = "${stroke}",` : ''}
+    ...rest
+}: IconProps): React.ReactNode {
+    return (
+        <svg
+            ${restAttrs}
+            {...rest}
+            width={width}
+            height={height}${fill ? `\n            fill={fill}` : ''}${stroke ? `\n            stroke={stroke}` : ''}>
+            <title>{title}</title>
+            ${innerHtml}
+        </svg>
+    );
+}
+`;
+    return content;
+}
+
 function santizeSvgAttributeKey(rawKey: string): string | null {
     // Remove @_ prefix from fast-xml-parser
     const key = rawKey.trim().replace(/^@_/, '');
