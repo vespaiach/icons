@@ -55,7 +55,7 @@ export function useAdjustment(repositoryId?: number) {
     return repositoryId ? adjustments[repositoryId] : { color: 'currentColor', size: 24 };
 }
 
-export function useIconAcion() {
+export function useIconAction() {
     const set = useSetAtom(iconAtom);
     return [
         useCallback(

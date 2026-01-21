@@ -67,7 +67,10 @@ export default function SearchButton() {
                 )}
             </button>
             {hasIconInFavorites && (
-                <button type="button" onClick={openDrawer} className="hidden md:flex d-btn d-btn-ghost d-btn-secondary ml-2">
+                <button
+                    type="button"
+                    onClick={openDrawer}
+                    className="hidden md:flex d-btn d-btn-ghost d-btn-secondary ml-2">
                     <HeartPlus size={16} />
                     <span className="d-badge d-badge-secondary d-badge-xs">{ids.size}</span>
                 </button>

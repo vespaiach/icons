@@ -1,12 +1,12 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { useAdjustment, useIconAcion, useIconValue } from '../PageContext';
+import { useAdjustment, useIconAction, useIconValue } from '../PageContext';
 import IconDetails from './IconDetails';
 
 export default function IconModal({ repositories }: { repositories: RepositoryVariants[] }) {
     const selectedIcon = useIconValue();
-    const [_, clearSelectedIcon] = useIconAcion();
+    const [_, clearSelectedIcon] = useIconAction();
     const repository = selectedIcon
         ? repositories.find((repo) => repo.id === selectedIcon.repositoryId)
         : null;
