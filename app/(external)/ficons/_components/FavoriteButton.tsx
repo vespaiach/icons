@@ -27,7 +27,7 @@ export default function FavoriteButton({
     return (
         <button
             className={cx(
-                'd-btn d-btn-circle d-btn-xs d-btn-secondary d-btn-ghost',
+                'hidden md:flex d-btn d-btn-circle d-btn-xs d-btn-secondary d-btn-ghost',
                 inFavorites && 'd-btn-active',
                 defaultHide && !inFavorites && 'invisible group-hover:visible',
                 className

@@ -14,21 +14,24 @@ export default function IconModal({ repositories }: { repositories: RepositoryVa
     const variant =
         selectedIcon && repository ? repository.variants.find((v) => v.id === selectedIcon.variantId) : null;
 
+    if (!selectedIcon || !variant) {
+        return null;
+    }
+
     return (
-        <dialog
-            id="icon_modal"
-            className="fixed bottom-10 left-1/2 z-50 -translate-x-1/2 w-133 max-w-133 rounded-3xl">
-            <div className="relative bg-gray-200 rounded-3xl p-5 shadow-lg">
+        <dialog id="icon_modal" className="d-modal">
+            <div className="d-modal-box relative w-70 max-w-70 md:w-130 md:max-w-130">
                 <button
                     type="button"
                     className="absolute top-1 right-1 d-btn d-btn-sm d-btn-ghost d-btn-circle"
                     onClick={clearSelectedIcon}>
                     <X size={20} />
                 </button>
-                {selectedIcon && variant && (
-                    <IconDetails selectedIcon={selectedIcon} variant={variant} adjustment={adjustment} />
-                )}
+                <IconDetails selectedIcon={selectedIcon} variant={variant} adjustment={adjustment} />
             </div>
+            <form method="dialog" onSubmit={clearSelectedIcon} className="d-modal-backdrop">
+                <button type="submit">Close</button>
+            </form>
         </dialog>
     );
 }

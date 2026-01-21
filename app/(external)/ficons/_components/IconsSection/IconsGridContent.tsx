@@ -3,7 +3,6 @@
 import { useSearchParams } from 'next/navigation';
 import { use, useEffect, useMemo, useRef } from 'react';
 import AstToSvg from '@/components/AstToSvg';
-import useTrackMinHeight from '@/hooks/useTrackMinHeight';
 import { cx } from '@/utils/common-helpers';
 import FavoriteButton from '../FavoriteButton';
 import { useAdjustment, useIconAcion, useIconValue } from '../PageContext';
