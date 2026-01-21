@@ -42,9 +42,9 @@ export default function DownloadButton({ icon }: { icon: IconWithRelativeData })
                 onClick={() => {
                     download(text);
                 }}
-                className="d-btn d-btn-soft d-btn-sm d-btn-secondary rounded-tr-none rounded-br-none">
+                className="d-btn d-btn-sm d-btn-secondary rounded-tr-none rounded-br-none">
                 <Download size={18} />
-                {text}
+                <span className="hidden md:inline">{text}</span>
             </button>
             <div className={cx('d-dropdown d-dropdown-end', open ? 'd-dropdown-open' : 'd-dropdown-close')}>
                 <button
@@ -52,12 +52,12 @@ export default function DownloadButton({ icon }: { icon: IconWithRelativeData })
                     onClick={() => {
                         setOpen((v) => !v);
                     }}
-                    className="d-btn d-btn-soft d-btn-secondary d-btn-sm px-1 rounded-tl-none rounded-bl-none">
+                    className="d-btn d-btn-secondary d-btn-sm px-1 rounded-tl-none rounded-bl-none">
                     <ChevronDown size={20} />
                 </button>
                 <ul
                     tabIndex={-1}
-                    className="d-dropdown-content d-menu bg-base-100 text-base-content rounded-box z-1 w-52 p-2 shadow-sm fixed bottom-14 right-5">
+                    className="d-dropdown-content d-menu bg-secondary text-secondary-content rounded-box z-1 w-52 p-2 shadow-sm fixed bottom-14 right-5">
                     <li>
                         <button type="button" onClick={handleSelection('Raw SVG')}>
                             Raw SVG

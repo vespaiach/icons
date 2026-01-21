@@ -70,9 +70,9 @@ export default function IconDetails({
                 </button>
                 <FavoriteButton icon={selectedIcon} />
             </div>
-            <div className="mt-3 flex justify-between">
+            <div className="mt-3 flex flex-col md:flex-row gap-4 justify-between">
                 <div className="shrink-0">
-                    <div className="w-44.5 h-44.5 bg-base-200 flex items-center justify-center rounded relative">
+                    <div className="w-full aspect-square md:w-44.5 md:h-44.5 bg-base-200 flex items-center justify-center rounded relative">
                         <svg
                             className="absolute top-0 left-0 w-full h-full stroke-base-300 opacity-60 z-0"
                             viewBox="0 0 24 24"
