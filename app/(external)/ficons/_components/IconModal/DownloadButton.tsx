@@ -57,7 +57,7 @@ export default function DownloadButton({ icon }: { icon: IconWithRelativeData })
                 </button>
                 <ul
                     tabIndex={-1}
-                    className="d-dropdown-content d-menu bg-secondary text-secondary-content rounded-box z-1 w-52 p-2 shadow-sm fixed bottom-14 right-5">
+                    className="d-dropdown-content d-menu bg-secondary text-secondary-content rounded-box z-10 w-52 p-2 shadow-sm fixed bottom-14 right-5">
                     <li>
                         <button type="button" onClick={handleSelection('Raw SVG')}>
                             Raw SVG

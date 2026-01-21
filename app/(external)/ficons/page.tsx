@@ -7,10 +7,11 @@ import IconSection from './_components/IconsSection';
 import Navbar from './_components/Navbar';
 import { PageContextProvider } from './_components/PageContext';
 import SearchModal from './_components/SearchModal';
-import { getRepositoriesAction } from './actions';
+import { ensureCsrfToken, getRepositoriesAction } from './actions';
 
 export default async function PageIcons() {
     const repositoriesVariants = await getRepositoriesAction();
+    const csrfToken = await ensureCsrfToken();
 
     return (
         <div className="d-drawer">
@@ -22,7 +23,11 @@ export default async function PageIcons() {
 
                         <div className="mt-6">
                             {repositoriesVariants.map((repository) => (
-                                <IconSection key={repository.id} repository={repository} />
+                                <IconSection
+                                    key={repository.id}
+                                    repository={repository}
+                                    csrfToken={csrfToken}
+                                />
                             ))}
                         </div>
 

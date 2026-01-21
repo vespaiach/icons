@@ -53,16 +53,25 @@ export default function IconsSectionLinks({ repositories }: { repositories: Repo
 
                                 const element = document.getElementById(id);
                                 if (element) {
-                                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    // Get navbar height for proper offset
+                                    const navbarHeight = 80; // Matches the -80px rootMargin in useTrackingVisibleSections
+                                    const elementPosition = element.getBoundingClientRect().top;
+                                    const offsetPosition = elementPosition + window.scrollY - navbarHeight;
+
+                                    window.scrollTo({
+                                        top: offsetPosition,
+                                        behavior: 'smooth'
+                                    });
                                 }
 
                                 // Close dropdown
                                 setIsDropdownOpen(false);
 
-                                // A workaround to ensure the visible section is updated after scrolling but intersection observer doesn't fire immediately
+                                // Update visible section after scroll completes
+                                // Use longer timeout for mobile smooth scrolling
                                 setTimeout(() => {
                                     setVisibleSectionId(id);
-                                }, 1000);
+                                }, 1500);
                             }}>
                             {repo.owner}/{repo.name}
                         </a>
