@@ -48,7 +48,7 @@ export default function SectionHeader({ repository }: { repository: RepositoryVa
                 </button>
             </h2>
             <dialog ref={infoDialogRef} className="d-modal">
-                <div className="d-modal-box relative">
+                <div className="d-modal-box relative w-72 max-w-72">
                     <form method="dialog">
                         <button
                             type="submit"
@@ -74,7 +74,7 @@ export default function SectionHeader({ repository }: { repository: RepositoryVa
                             onSizeChange={(newSize) => adjust({ size: newSize })}
                         />
                         <ColorAdjuster
-                            className="mt-5 flex items-center justify-between"
+                            className="mt-5 flex flex-col items-start gap-3"
                             color={adjustment.color}
                             onColorChange={(newColor) => adjust({ color: newColor, size: adjustment.size })}
                         />
