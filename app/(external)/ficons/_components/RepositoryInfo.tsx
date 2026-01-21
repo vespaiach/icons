@@ -9,7 +9,7 @@ export default function RepositoryInfo({ selectedRepository }: { selectedReposit
     const githubUrl = `https://github.com/${selectedRepository.owner}/${selectedRepository.name}`;
 
     return (
-        <div className="flex justify-between">
+        <div className="flex flex-col justify-between">
             <div>
                 <div className="flex gap-2">
                     <span className="text-sm shrink-0 font-semibold">Github:</span>
