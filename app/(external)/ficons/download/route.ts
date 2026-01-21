@@ -7,7 +7,7 @@ import { astToSvgString, astToTsx } from '@/utils/svg-helpers';
 
 const downloadRequestSchema = v.object({
     iconIds: v.pipe(
-        v.array(v.string()),
+        v.array(v.number()),
         v.minLength(1, 'At least one icon must be selected'),
         v.maxLength(500, 'Maximum 500 icons per download')
     ),

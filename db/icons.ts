@@ -9,7 +9,7 @@ export async function createIcon(variantId: number, name: string, svgAst: SvgNod
             // biome-ignore lint/suspicious/noExplicitAny: SvgNode structure doesn't match JSONValue type exactly
             sql.json(svgAst as any)
         })
-        RETURNING *;
+        RETURNING id, name, svg_ast AS "svgAst";
     `;
     log('info', `[DB] createIcon - END (success: ${!!rows[0]})`);
     if (Bun.env.DEBUG_QUERIES === 'true' && rows[0]) {
@@ -37,8 +37,7 @@ export async function getIconsByRepositoryId(repositoryId: number) {
             i.variant_id AS "variantId",
             v.repository_id AS "repositoryId",
             i.name,
-            i.svg_ast AS "svgAst",
-            i.created_at AS "createdAt"
+            i.svg_ast AS "svgAst"
         FROM icons i INNER JOIN variants v ON i.variant_id = v.id
         WHERE v.repository_id = ${repositoryId}
         ORDER BY i.name ASC
@@ -50,7 +49,7 @@ export async function getIconsByRepositoryId(repositoryId: number) {
     return rows as unknown as IconWithRelativeData[];
 }
 
-export async function getIconsByIds(iconIds: string[]) {
+export async function getIconsByIds(iconIds: number[]) {
     log('info', '[DB] getIconsByIds - START', { count: iconIds.length });
     const rows = await sql`
         SELECT 
@@ -58,7 +57,6 @@ export async function getIconsByIds(iconIds: string[]) {
             i.variant_id AS "variantId",
             i.name,
             i.svg_ast AS "svgAst",
-            i.created_at AS "createdAt",
             v.name AS "variantName",
             v.default_svg_attributes AS "defaultSvgAttributes"
         FROM icons i

@@ -46,7 +46,7 @@ export async function up(sql: any): Promise<void> {
 
     await sql`
         CREATE TABLE IF NOT EXISTS icons (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            id SERIAL PRIMARY KEY,
             variant_id INTEGER REFERENCES variants(id) ON DELETE CASCADE,
             name VARCHAR(255) NOT NULL,
             svg_ast JSONB NOT NULL,

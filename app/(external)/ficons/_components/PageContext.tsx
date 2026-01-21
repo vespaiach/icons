@@ -78,7 +78,7 @@ export function useFavoritesAction() {
     const set = useSetAtom(favoritesAtom);
     return [
         useCallback(
-            (icon: { id: string; svgAst: SvgNode }) => {
+            (icon: { id: number; svgAst: SvgNode }) => {
                 set((prev) => {
                     const exists = prev.find((fav) => fav.iconId === icon.id);
                     if (exists) {
@@ -93,7 +93,7 @@ export function useFavoritesAction() {
             [set]
         ),
         useCallback(
-            (id: string) => {
+            (id: number) => {
                 set((prev) => prev.filter((fav) => fav.iconId !== id));
             },
             [set]

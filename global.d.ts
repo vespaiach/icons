@@ -45,10 +45,9 @@ declare global {
     }
 
     interface Icon {
-        id: string;
+        id: number;
         name: string;
         svgAst: SvgNode;
-        createdAt: Date;
     }
 
     interface IconWithRelativeData extends Icon {
@@ -82,7 +81,7 @@ declare global {
     }
 
     interface Favorite {
-        iconId: string;
+        iconId: number;
         svgAst: SvgNode;
     }
 }
