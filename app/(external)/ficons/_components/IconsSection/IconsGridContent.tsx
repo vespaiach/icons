@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { use, useMemo } from 'react';
+import { use, useEffect, useMemo, useRef } from 'react';
 import AstToSvg from '@/components/AstToSvg';
 import useTrackMinHeight from '@/hooks/useTrackMinHeight';
 import { cx } from '@/utils/common-helpers';
@@ -11,12 +11,13 @@ import { useAdjustment, useIconAcion, useIconValue } from '../PageContext';
 export default function IconsGridContent({
     iconsPromise,
     selectedVariant,
-    isIntersecting
+    isIntersecting,
 }: {
     iconsPromise: Promise<IconWithRelativeData[]>;
     selectedVariant: Variant;
     isIntersecting: boolean;
 }) {
+    const gridRef = useRef<HTMLDivElement>(null);
     const icons = use(iconsPromise);
     const adjustment = useAdjustment(selectedVariant.repositoryId);
 
@@ -29,11 +30,17 @@ export default function IconsGridContent({
             ),
         [icons, selectedVariant.id, query]
     );
-    const ref = useTrackMinHeight<HTMLDivElement>(filteredIcons.length);
+
+    useEffect(() => {
+        if (gridRef.current && isIntersecting) {
+            const rect = gridRef.current.getBoundingClientRect();
+            gridRef.current.style.minHeight = `${rect.height}px`;
+        }
+    }, [isIntersecting]);
 
     return (
-        <div className="d-tab-content bg-base-100 border-base-300 p-2">
-            <div className="ic-grid" ref={ref}>
+        <div className="d-tab-content bg-base-100 border-base-300 p-2" ref={gridRef}>
+            <div className="ic-grid">
                 {isIntersecting &&
                     filteredIcons.length > 0 &&
                     filteredIcons.map((icon) => (
