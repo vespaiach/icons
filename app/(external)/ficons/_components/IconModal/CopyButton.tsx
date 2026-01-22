@@ -52,7 +52,7 @@ export default function CopyButton({ icon }: { icon: { name: string; svgAst: Svg
                 <ul
                     tabIndex={-1}
                     className={cx(
-                        'd-dropdown-content d-menu bg-secondary text-secondary-content rounded-box z-1 w-52 p-2 shadow-sm',
+                        'd-dropdown-content d-menu bg-secondary text-secondary-content rounded-box z-10 w-52 p-2 shadow-sm',
                         'fixed bottom-15 right-15 md:right-37'
                     )}>
                     <li>
