@@ -1,18 +1,8 @@
-import { cookies } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 import { getIconsByRepositoryId } from '@/db/icons';
 
 export async function POST(request: NextRequest) {
     try {
-        // Validate CSRF token
-        const cookieStore = await cookies();
-        const csrfTokenFromCookie = cookieStore.get('csrf-token')?.value;
-        const csrfTokenFromHeader = request.headers.get('x-csrf-token');
-
-        if (!csrfTokenFromCookie || !csrfTokenFromHeader || csrfTokenFromCookie !== csrfTokenFromHeader) {
-            return NextResponse.json({ error: 'Error' }, { status: 400 });
-        }
-
         // Validate request origin
         const referer = request.headers.get('referer');
         const origin = request.headers.get('origin');
