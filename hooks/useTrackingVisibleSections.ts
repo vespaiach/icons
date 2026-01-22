@@ -1,47 +1,53 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-const observerOptions = {
-    root: null,
-    rootMargin: '0px 0px 0px 0px',
-    threshold: [
-        0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9,
-        0.95, 1.0
-    ]
-};
+interface SectionEntry {
+    id: string;
+    ratio: number;
+    boundingTop: number;
+}
 
 /*
- * Because observered element's height are different, so that callback fires with different intersectionRatio values.
- * Example: 0.1 of a tall element is larger than 0.5 of a short element.
- * Example: We want to fire callback every 5% of visibility change, But with a tall element, frequency of callback fires is slower than a short element.
- * So this hook doesn't work well with different height elements.
+ * Tracks which section is most visible in the viewport.
+ * Optimized for mobile devices with improved viewport detection and performance.
  */
 export default function useTrackingVisibleSections(ids: string[]) {
-    const [ratios, setRatios] = useState<Array<[string, number]>>(ids.map((id) => [id, 0]));
+    const [entries, setEntries] = useState<SectionEntry[]>(ids.map((id) => ({ id, ratio: 0, boundingTop: 0 })));
     const [visibleId, setVisibleId] = useState<string | null>(null);
+    const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        const observerCallback = (entries: IntersectionObserverEntry[]) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    setRatios((prevRatios) => {
-                        return prevRatios.map(([prevId, prevRatio]) => {
-                            if (prevId === entry.target.id) {
-                                return [entry.target.id, entry.intersectionRatio];
-                            }
-                            return [prevId, prevRatio];
-                        });
+        const observerOptions = {
+            root: null,
+            // Negative top margin means section becomes "active" before reaching the top
+            // This provides better UX on mobile where navbar takes space
+            rootMargin: '-80px 0px -20% 0px',
+            threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+        };
+
+        const observerCallback = (observerEntries: IntersectionObserverEntry[]) => {
+            // Debounce updates to reduce re-renders on mobile scroll
+            if (updateTimeoutRef.current) {
+                clearTimeout(updateTimeoutRef.current);
+            }
+
+            updateTimeoutRef.current = setTimeout(() => {
+                setEntries((prevEntries) => {
+                    const newEntries = [...prevEntries];
+
+                    observerEntries.forEach((entry) => {
+                        const index = newEntries.findIndex((e) => e.id === entry.target.id);
+                        if (index !== -1) {
+                            newEntries[index] = {
+                                id: entry.target.id,
+                                ratio: entry.isIntersecting ? entry.intersectionRatio : 0,
+                                boundingTop: entry.boundingClientRect.top
+                            };
+                        }
                     });
-                } else {
-                    setRatios((prevRatios) => {
-                        return prevRatios.map(([prevId, prevRatio]) => {
-                            if (prevId === entry.target.id) {
-                                return [prevId, 0];
-                            }
-                            return [prevId, prevRatio];
-                        });
-                    });
-                }
-            });
+
+                    return newEntries;
+                });
+            }, 50); // 50ms debounce for smooth mobile scrolling
         };
 
         const observer = new IntersectionObserver(observerCallback, observerOptions);
@@ -55,23 +61,37 @@ export default function useTrackingVisibleSections(ids: string[]) {
         });
 
         return () => {
+            if (updateTimeoutRef.current) {
+                clearTimeout(updateTimeoutRef.current);
+            }
             observer.disconnect();
         };
     }, [ids]);
 
     useEffect(() => {
-        let maxRatio = 0;
+        let maxScore = -1;
         let currentVisibleId: string | null = null;
 
-        ratios.forEach(([id, ratio]) => {
-            if (ratio > maxRatio) {
-                maxRatio = ratio;
-                currentVisibleId = id;
+        // Score based on both visibility ratio and position
+        // Prioritize sections that are:
+        // 1. More visible (higher ratio)
+        // 2. Closer to the top of viewport (lower boundingTop)
+        entries.forEach(({ id, ratio, boundingTop }) => {
+            if (ratio > 0) {
+                // Calculate score: prioritize visible sections near the top
+                // The closer to top (lower boundingTop) and higher ratio, the better
+                const positionScore = boundingTop < 200 ? 2 : boundingTop < 400 ? 1.5 : 1;
+                const score = ratio * positionScore;
+
+                if (score > maxScore) {
+                    maxScore = score;
+                    currentVisibleId = id;
+                }
             }
         });
 
         setVisibleId(currentVisibleId);
-    }, [ratios]);
+    }, [entries]);
 
     return [visibleId, setVisibleId] as const;
 }
