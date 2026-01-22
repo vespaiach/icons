@@ -74,17 +74,6 @@ export async function clearAuthCookie() {
     }
 }
 
-export async function dropCsrfTokenCookie(csrfToken: string, maxAge = 60 * 60 * 24) {
-    const cookieStore = await cookies();
-    cookieStore.set('csrf-token', csrfToken, {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge,
-        path: '/'
-    });
-}
-
 export async function dropReturnToCookie(returnTo: string) {
     try {
         const session = await getIronSession<{ returnTo: string }>(await cookies(), {

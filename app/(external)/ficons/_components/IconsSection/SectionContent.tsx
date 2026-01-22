@@ -6,13 +6,7 @@ import { Fragment, startTransition, useEffect, useMemo, useState } from 'react';
 import IconsGrid from './IconsGrid';
 import IconsGridSkeleton from './IconsGridSkeleton';
 
-export default function SectionContent({
-    repository,
-    csrfToken
-}: {
-    repository: RepositoryVariants;
-    csrfToken: string;
-}) {
+export default function SectionContent({ repository }: { repository: RepositoryVariants }) {
     const [icons, setIcons] = useState<IconWithRelativeData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -25,8 +19,7 @@ export default function SectionContent({
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-ficons-request': 'true',
-                        'x-csrf-token': csrfToken
+                        'x-ficons-request': 'true'
                     },
                     body: JSON.stringify({ repositoryId: repository.id })
                 });
@@ -49,7 +42,7 @@ export default function SectionContent({
         return () => {
             cancelled = true;
         };
-    }, [repository.id, csrfToken]);
+    }, [repository.id]);
 
     const [ref, entry] = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px', threshold: 0 });
 
