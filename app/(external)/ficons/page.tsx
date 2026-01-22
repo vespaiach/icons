@@ -1,5 +1,4 @@
 import { Provider } from 'jotai';
-import { cookies } from 'next/headers';
 import AboutModal from './_components/AboutModal';
 import Drawer from './_components/Drawer';
 import DrawerToggler from './_components/DrawerToggler';
@@ -12,14 +11,7 @@ import { ensureCsrfToken, getRepositoriesAction } from './actions';
 
 export default async function PageIcons() {
     const repositoriesVariants = await getRepositoriesAction();
-
-    // Generate CSRF token (must be done in Server Action)
-    const cookieStore = await cookies();
-    let csrfToken = cookieStore.get('csrf-token')?.value;
-
-    if (!csrfToken) {
-        csrfToken = await ensureCsrfToken();
-    }
+    const csrfToken = await ensureCsrfToken();
 
     return (
         <div className="d-drawer">

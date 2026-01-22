@@ -11,7 +11,9 @@ interface SectionEntry {
  * Optimized for mobile devices with improved viewport detection and performance.
  */
 export default function useTrackingVisibleSections(ids: string[]) {
-    const [entries, setEntries] = useState<SectionEntry[]>(ids.map((id) => ({ id, ratio: 0, boundingTop: 0 })));
+    const [entries, setEntries] = useState<SectionEntry[]>(
+        ids.map((id) => ({ id, ratio: 0, boundingTop: 0 }))
+    );
     const [visibleId, setVisibleId] = useState<string | null>(null);
     const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
