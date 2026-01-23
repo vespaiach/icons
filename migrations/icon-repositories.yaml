@@ -89,9 +89,12 @@ repos:
       - name: brands
         path: "/svgs-full/brands"
         colorOnChildren: true
+        fill: "currentColor"
       - name: regular
         path: "/svgs-full/regular"
         colorOnChildren: true
+        fill: "currentColor"
       - name: solid
         path: "/svgs-full/solid"
         colorOnChildren: true
+        fill: "currentColor"
