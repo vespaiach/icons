@@ -82,7 +82,7 @@ function VariantGrid({
     }, [icons, searchParams, variant]);
 
     const [minHeight, setMinHeight] = useState<number | undefined>(() => {
-        const rows = Math.ceil(variant.iconCount / 10);
+        const rows = Math.ceil(filteredIcons.length / 10);
         return rows * 102 + (rows - 1) * 20; // initial minHeight based on 10 icons per row and 102px height per icon and 20px gap
     });
     const gridStyle = useMemo(() => ({ minHeight }), [minHeight]);
@@ -102,7 +102,10 @@ function VariantGrid({
             {checked && (
                 <div className="d-tab-content bg-base-100 p-2 border-base-300" style={gridStyle}>
                     {isIntersecting && (
-                        <IconsGrid icons={filteredIcons} variant={variant} onHeightChange={setMinHeight} />
+                        <IconsGrid icons={filteredIcons} variant={variant} onHeightChange={(v) => {
+                            console.log('Height changed-->:', v);
+                            setMinHeight(v);
+                        }} />
                     )}
                 </div>
             )}
