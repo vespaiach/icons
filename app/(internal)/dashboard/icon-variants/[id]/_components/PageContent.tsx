@@ -51,41 +51,35 @@ export default function PageContent({ variant }: { variant: Variant & { reposito
                     <div className="col-span-2">
                         <strong>Default SVG Attributes:</strong>
                         <ul className="list-disc pl-6 mt-4">
-                            {formState.values.defaultSvgAttributes.fill && (
+                            {formState.values.fill && (
                                 <li>
                                     Fill color:{' '}
                                     <code className="bg-base-300 px-2 py-1 rounded">
-                                        {formState.values.defaultSvgAttributes.fill}
+                                        {formState.values.fill}
                                     </code>
                                 </li>
                             )}
-                            {formState.values.defaultSvgAttributes.stroke && (
+                            {formState.values.stroke && (
                                 <li>
                                     Stroke color:{' '}
                                     <code className="bg-base-300 px-2 py-1 rounded">
-                                        {formState.values.defaultSvgAttributes.stroke}
+                                        {formState.values.stroke}
                                     </code>
                                 </li>
                             )}
-                            {formState.values.defaultSvgAttributes.strokeWidth !== undefined && (
+                            {formState.values.strokeWidth && (
                                 <li>
                                     Stroke width:{' '}
                                     <code className="bg-base-300 px-2 py-1 rounded">
-                                        {formState.values.defaultSvgAttributes.strokeWidth}
+                                        {formState.values.strokeWidth}
                                     </code>
                                 </li>
                             )}
-                            {formState.values.defaultSvgAttributes.width !== undefined && (
-                                <li>
-                                    Size (width & height):{' '}
-                                    <code className="bg-base-300 px-2 py-1 rounded">
-                                        {formState.values.defaultSvgAttributes.width}px
-                                    </code>
-                                </li>
-                            )}
-                            {Object.keys(formState.values.defaultSvgAttributes).length === 0 && (
-                                <li className="text-base-content/50">None configured</li>
-                            )}
+                            {!formState.values.fill &&
+                                !formState.values.stroke &&
+                                !formState.values.strokeWidth && (
+                                    <li className="text-base-content/50">None configured</li>
+                                )}
                         </ul>
                     </div>
                 </div>

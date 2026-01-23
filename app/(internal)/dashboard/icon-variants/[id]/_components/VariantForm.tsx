@@ -3,7 +3,6 @@
 import { Regex } from 'lucide-react';
 import { useState } from 'react';
 import FillColorAdjuster from '@/components/FillColorAdjuster';
-import SizeAdjuster from '@/components/SizeAdjuster';
 import StrokeColorAdjuster from '@/components/StrokeColorAdjuster';
 import StrokeWidthAdjuster from '@/components/StrokeWidthAdjuster';
 import { assertArray } from '@/utils/assert-helpers';
@@ -21,23 +20,16 @@ export default function VariantForm({
     isPending: boolean;
     formAction: (formData: FormData) => void;
 }) {
-    const [enableSize, setEnableSize] = useState(formState.values.defaultSvgAttributes.width !== undefined);
-    const [size, setSize] = useState(formState.values.defaultSvgAttributes.width ?? 24);
+    const [enableStrokeColor, setEnableStrokeColor] = useState(formState.values.stroke !== null);
+    const [strokeColor, setStrokeColor] = useState(formState.values.stroke ?? '#000000');
 
-    const [enableStrokeColor, setEnableStrokeColor] = useState(
-        formState.values.defaultSvgAttributes.stroke !== undefined
-    );
-    const [strokeColor, setStrokeColor] = useState(formState.values.defaultSvgAttributes.stroke ?? '#000000');
+    const [enableFillColor, setEnableFillColor] = useState(formState.values.fill !== null);
+    const [fillColor, setFillColor] = useState(formState.values.fill ?? '#000000');
 
-    const [enableFillColor, setEnableFillColor] = useState(
-        formState.values.defaultSvgAttributes.fill !== undefined
+    const [enableStrokeWidth, setEnableStrokeWidth] = useState(formState.values.strokeWidth !== null);
+    const [strokeWidth, setStrokeWidth] = useState(
+        formState.values.strokeWidth ? Number(formState.values.strokeWidth) : 2
     );
-    const [fillColor, setFillColor] = useState(formState.values.defaultSvgAttributes.fill ?? '#000000');
-
-    const [enableStrokeWidth, setEnableStrokeWidth] = useState(
-        formState.values.defaultSvgAttributes.strokeWidth !== undefined
-    );
-    const [strokeWidth, setStrokeWidth] = useState(formState.values.defaultSvgAttributes.strokeWidth ?? 2);
 
     return (
         <form action={formAction} className="space-y-6">
@@ -108,27 +100,6 @@ export default function VariantForm({
             <fieldset className="d-fieldset flex-1">
                 <legend className="d-fieldset-legend">Default SVG Attributes</legend>
                 <div className="space-y-4 mt-4">
-                    <div className="flex items-start gap-4">
-                        <label className="flex items-center gap-2 w-48 pt-2">
-                            <input
-                                type="checkbox"
-                                className="d-checkbox d-checkbox-md"
-                                checked={enableSize}
-                                onChange={(e) => setEnableSize(e.target.checked)}
-                                name="enableSize"
-                            />
-                            <span>Size (width & height)</span>
-                        </label>
-                        <div className="flex-1">
-                            {enableSize && (
-                                <>
-                                    <input type="hidden" name="size" value={size} />
-                                    <SizeAdjuster size={size} onSizeChange={setSize} />
-                                </>
-                            )}
-                        </div>
-                    </div>
-
                     <div className="flex items-start gap-4">
                         <label className="flex items-center gap-2 w-48 pt-2">
                             <input

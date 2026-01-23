@@ -1,7 +1,7 @@
 'use client';
 
 import { useAtomValue, useSetAtom } from 'jotai';
-import { Info, RotateCcw, Settings, X } from 'lucide-react';
+import { RotateCcw, Settings, X } from 'lucide-react';
 import { useRef, useTransition } from 'react';
 import ColorAdjuster from '@/components/ColorAdjuster';
 import SizeAdjuster from '@/components/SizeAdjuster';

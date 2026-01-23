@@ -27,7 +27,9 @@ interface UpdateVariantParams {
         id: number;
         regex: string;
         path: string;
-        defaultSvgAttributes: SvgAdjustableAttributes;
+        stroke: string | null;
+        fill: string | null;
+        strokeWidth: string | null;
     };
 }
 
@@ -41,8 +43,6 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
         id,
         regex,
         path,
-        enableSize,
-        size,
         enableStrokeColor,
         stroke,
         enableFillColor,
@@ -56,23 +56,14 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
         notFound();
     }
 
-    const defaultSvgAttributes: SvgAdjustableAttributes = {};
-
-    if (enableSize && size !== undefined) {
-        defaultSvgAttributes.width = size;
-        defaultSvgAttributes.height = size;
-    }
-    if (enableStrokeColor && stroke) {
-        defaultSvgAttributes.stroke = stroke;
-    }
-    if (enableFillColor && fill) {
-        defaultSvgAttributes.fill = fill;
-    }
-    if (enableStrokeWidth && strokeWidth !== undefined) {
-        defaultSvgAttributes.strokeWidth = strokeWidth;
-    }
-
-    const updatedVariant = await updateVariant({ id, regex, defaultSvgAttributes, path });
+    const updatedVariant = await updateVariant({
+        id,
+        regex,
+        path,
+        stroke: enableStrokeColor && stroke ? stroke : null,
+        fill: enableFillColor && fill ? fill : null,
+        strokeWidth: enableStrokeWidth && strokeWidth !== undefined ? String(strokeWidth) : null
+    });
     if (!updatedVariant) {
         return { ...prevState, errors: { global: ['Failed to update variant.'] } };
     }
@@ -82,7 +73,9 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
             id: updatedVariant.id,
             regex: updatedVariant.regex,
             path: updatedVariant.path,
-            defaultSvgAttributes: updatedVariant.defaultSvgAttributes
+            stroke: updatedVariant.stroke,
+            fill: updatedVariant.fill,
+            strokeWidth: updatedVariant.strokeWidth
         },
         errors: {}
     };

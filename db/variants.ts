@@ -10,7 +10,9 @@ export async function getVariants(): Promise<Variant[]> {
             name,
             path,
             regex,
-            default_svg_attributes AS "defaultSvgAttributes",
+            stroke,
+            fill,
+            stroke_width AS "strokeWidth",
             icon_count AS "iconCount",
             created_at AS "createdAt",
             updated_at AS "updatedAt"
@@ -33,7 +35,9 @@ export async function getVariantById(id: number): Promise<Variant | null> {
             name,
             path,
             regex,
-            default_svg_attributes AS "defaultSvgAttributes",
+            stroke,
+            fill,
+            stroke_width AS "strokeWidth",
             icon_count AS "iconCount",
             created_at AS "createdAt",
             updated_at AS "updatedAt"
@@ -57,7 +61,9 @@ export async function getVariantsWithRepository(): Promise<VariantWithRepository
             v.name,
             v.path,
             v.regex,
-            v.default_svg_attributes AS "defaultSvgAttributes",
+            v.stroke,
+            v.fill,
+            v.stroke_width AS "strokeWidth",
             v.icon_count AS "iconCount",
             v.created_at AS "createdAt",
             v.updated_at AS "updatedAt",
@@ -82,7 +88,9 @@ export async function getVariantRepositoryById(
             v.name,
             v.path,
             v.regex,
-            v.default_svg_attributes AS "defaultSvgAttributes",
+            v.stroke,
+            v.fill,
+            v.stroke_width AS "strokeWidth",
             v.icon_count AS "iconCount",
             v.created_at AS "createdAt",
             v.updated_at AS "updatedAt",
@@ -103,16 +111,17 @@ export async function getVariantRepositoryById(
     return rows.length > 0 ? (rows[0] as unknown as Variant & { repository: Repository }) : null;
 }
 
-export async function updateVariant(data: Pick<Variant, 'id' | 'path' | 'regex' | 'defaultSvgAttributes'>) {
+export async function updateVariant(
+    data: Pick<Variant, 'id' | 'path' | 'regex' | 'stroke' | 'fill' | 'strokeWidth'>
+) {
     log('info', '[DB] updateVariant - START', { id: data.id });
     const rows = await sql`
         UPDATE variants
         SET
             regex = ${data.regex},
-            default_svg_attributes = ${
-                // biome-ignore lint/suspicious/noExplicitAny: defaultSvgAttributes structure doesn't match JSONValue type exactly
-                sql.json(data.defaultSvgAttributes as any)
-            },
+            stroke = ${data.stroke},
+            fill = ${data.fill},
+            stroke_width = ${data.strokeWidth},
             updated_at = CURRENT_TIMESTAMP
         WHERE id = ${data.id}
         RETURNING
@@ -121,7 +130,9 @@ export async function updateVariant(data: Pick<Variant, 'id' | 'path' | 'regex' 
             name,
             path,
             regex,
-            default_svg_attributes AS "defaultSvgAttributes",
+            stroke,
+            fill,
+            stroke_width AS "strokeWidth",
             icon_count AS "iconCount",
             created_at AS "createdAt",
             updated_at AS "updatedAt"

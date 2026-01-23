@@ -51,11 +51,13 @@ export default async function VariantsManagementPage() {
                                     </td>
                                     <td>
                                         <div className="flex flex-wrap gap-1">
-                                            {Object.entries(variant.defaultSvgAttributes).length > 0
-                                                ? Object.entries(variant.defaultSvgAttributes)
-                                                      .map(([key, value]) => `${key}: ${value}`)
-                                                      .join(', ')
-                                                : 'None'}
+                                            {[
+                                                variant.stroke && `stroke: ${variant.stroke}`,
+                                                variant.fill && `fill: ${variant.fill}`,
+                                                variant.strokeWidth && `strokeWidth: ${variant.strokeWidth}`
+                                            ]
+                                                .filter(Boolean)
+                                                .join(', ') || 'None'}
                                         </div>
                                     </td>
                                     <td>

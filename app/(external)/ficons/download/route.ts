@@ -12,7 +12,7 @@ const downloadRequestSchema = v.object({
         v.maxLength(500, 'Maximum 500 icons per download')
     ),
     attributes: v.object({
-        color: v.pipe(v.string(), v.minLength(1, 'Color is required')),
+        color: v.pipe(v.string(), v.minLength(1, 'Color is required'), v.maxLength(16, 'Color is too long')),
         size: v.pipe(
             v.number(),
             v.minValue(1, 'Size must be at least 1'),
@@ -55,7 +55,6 @@ export async function POST(request: NextRequest) {
             // Generate SVG files and React components with applied attributes
             for (const icon of icons) {
                 const svgAst = icon.svgAst as SvgNode;
-                const defaultAttrs = icon.defaultSvgAttributes;
 
                 // Apply size and color attributes
                 const modifiedAst: SvgNode = {
@@ -67,12 +66,17 @@ export async function POST(request: NextRequest) {
                     }
                 };
 
-                // Apply fill if variant has fill in default attributes
-                if (defaultAttrs.fill !== undefined) {
+                // Apply fill if variant has fill defined
+                if (icon.fill === 'none') {
+                    modifiedAst.attrs.fill = 'none';
+                } else if (icon.fill) {
                     modifiedAst.attrs.fill = attributes.color;
                 }
-                // Apply stroke if variant has stroke in default attributes
-                if (defaultAttrs.stroke !== undefined) {
+
+                // Apply stroke if variant has stroke defined
+                if (icon.stroke === 'none') {
+                    modifiedAst.attrs.stroke = 'none';
+                } else if (icon.stroke) {
                     modifiedAst.attrs.stroke = attributes.color;
                 }
 

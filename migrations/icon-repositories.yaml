@@ -6,19 +6,24 @@ repos:
       - name: "outline"
         path: "/icons"
         regex: "^(?!.*-fill\\.svg$).*$"
+        fill: "currentColor"
       - name: "filled"
         path: "/icons"
         regex: "-fill\\.svg$"
+        fill: "currentColor"
   - owner: "atisawd"
     name: "boxicons"
     ref: "master"
     variants:
       - name: logos
         path: "/svg/logos"
+        fill: "currentColor"
       - name: regular
         path: "/svg/regular"
+        fill: "currentColor"
       - name: solid
-        path: "/svg/solid" 
+        path: "/svg/solid"
+        fill: "currentColor"
   - owner: "danklammer"
     name: "bytesize-icons"
     github_id: 39126489
@@ -26,35 +31,54 @@ repos:
     variants:
       - name: default
         path: "/dist/icons"
+        fill: "none"
+        stroke: "currentColor"
+        strokeWidth: "2"
   - owner: "feathericons"
     name: "feather"
     ref: "main"
     variants:
       - name: default
         path: "/icons"
+        fill: "none"
+        stroke: "currentColor"
+        strokeWidth: "2"
   - owner: "tailwindlabs"
     name: "heroicons"
     ref: "master"
     variants:
       - name: "16/solid"
         path: "/optimized/16/solid"
+        fill: "currentColor"
       - name: "20/solid" 
         path: "/optimized/20/solid"
+        fill: "currentColor"
       - name: "24"
         path: "/optimized/24/outline"
+        fill: "none"
+        stroke: "currentColor"
+        strokeWidth: "1.5"
       - name: "24"
         path: "/optimized/24/solid"
+        fill: "currentColor"
   - owner: "lucide-icons"
     name: "lucide"
     ref: "main"
     variants:
       - name: default
         path: "/icons"
+        fill: "none"
+        stroke: "currentColor"
+        strokeWidth: "2"
   - owner: "tabler"
     name: "tabler-icons"
     ref: "main"
     variants:
       - name: filled
         path: "/icons/filled"
+        fill: "currentColor"
       - name: outline
         path: "/icons/outline"
+        fill: "none"
+        stroke: "currentColor"
+        strokeWidth: "2"
