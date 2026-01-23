@@ -2,7 +2,8 @@ import { $ } from 'bun';
 import { type NextRequest, NextResponse } from 'next/server';
 import * as v from 'valibot';
 import { getIconsByIds } from '@/db/icons';
-import { astToSvgString, astToTsx, mergeAttributes } from '@/utils/client-side/svg-helpers';
+import { astToSvgString, prepareAst } from '@/utils/ast-2-html';
+import { astToTsx } from '@/utils/ast-2-tsx';
 import { log } from '@/utils/log.helpers';
 
 const downloadRequestSchema = v.object({
@@ -54,60 +55,16 @@ export async function POST(request: NextRequest) {
         try {
             // Generate SVG files and React components with applied attributes
             for (const icon of icons) {
-                const svgAst = icon.svgAst as SvgNode;
-
-                // Apply size and color attributes
-                const modifiedAst: SvgNode = {
-                    ...svgAst,
-                    attrs: {
-                        ...svgAst.attrs,
-                        width: String(attributes.size),
-                        height: String(attributes.size)
-                    }
-                };
-
-                // Apply fill if variant has fill defined
-                if (!icon.colorOnChildren) {
-                    if (icon.fill === 'none') {
-                        modifiedAst.attrs.fill = 'none';
-                    } else if (icon.fill) {
-                        modifiedAst.attrs.fill = attributes.color;
-                    }
-                }
-
-                // Apply stroke if variant has stroke defined
-                if (!icon.colorOnChildren) {
-                    if (icon.stroke === 'none') {
-                        modifiedAst.attrs.stroke = 'none';
-                    } else if (icon.stroke) {
-                        modifiedAst.attrs.stroke = attributes.color;
-                    }
-                }
-
                 // Generate raw SVG file
-                const svgContent = astToSvgString(
-                    modifiedAst,
-                    icon.colorOnChildren
-                        ? {
-                              fill: mergeAttributes(icon.fill, attributes.color),
-                              stroke: mergeAttributes(icon.stroke, attributes.color)
-                          }
-                        : undefined
-                );
+                const prepareedAst = prepareAst(icon.svgAst, icon, attributes);
+                const svgContent = astToSvgString(prepareedAst);
                 const svgFileName = `${icon.name}.svg`;
                 const svgFilePath = `${rawDir}/${svgFileName}`;
                 await Bun.write(svgFilePath, svgContent);
 
                 // Generate React component file
-                const tsxContent = astToTsx(
-                    { name: icon.name, svgAst: modifiedAst },
-                    icon.colorOnChildren
-                        ? {
-                              fill: mergeAttributes(icon.fill, attributes.color),
-                              stroke: mergeAttributes(icon.stroke, attributes.color)
-                          }
-                        : undefined
-                );
+                const preparedAstToTsx = prepareAst(icon.svgAst, icon, attributes);
+                const tsxContent = astToTsx({ name: icon.name, svgAst: preparedAstToTsx });
                 const tsxFileName = `${icon.name
                     .split('-')
                     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))

@@ -1,4 +1,4 @@
-import { astToInnerHtml, mergeAttributes } from '@/utils/client-side/svg-helpers';
+import { astToInnerHtml, prepareAst } from '@/utils/ast-2-html';
 
 interface AstToSvgProps {
     svgAst: SvgNode;
@@ -8,24 +8,17 @@ interface AstToSvgProps {
 }
 
 export default function AstToSvg({ svgAst, adjustment, variant, className }: AstToSvgProps) {
-    const innerHtml = astToInnerHtml(
-        svgAst,
-        variant.colorOnChildren
-            ? {
-                  fill: mergeAttributes(variant.fill, adjustment?.color),
-                  stroke: mergeAttributes(variant.stroke, adjustment?.color)
-              }
-            : undefined
-    );
+    const preparedAst = prepareAst(svgAst, variant, adjustment);
+    const innerHtml = astToInnerHtml(preparedAst);
 
     return (
         <svg
             {...svgAst.attrs}
-            fill={mergeAttributes(variant.fill, adjustment?.color)}
-            stroke={mergeAttributes(variant.stroke, adjustment?.color)}
+            fill={preparedAst.attrs.fill as string | undefined}
+            stroke={preparedAst.attrs.stroke as string | undefined}
             strokeWidth={variant.strokeWidth ? variant.strokeWidth : undefined}
-            width={adjustment?.size || 24}
-            height={adjustment?.size || 24}
+            width={preparedAst.attrs.width as string | number | undefined}
+            height={preparedAst.attrs.height as string | number | undefined}
             // biome-ignore lint/security/noDangerouslySetInnerHtml: we need this to render SVG from AST
             dangerouslySetInnerHTML={{ __html: innerHtml }}
             className={className}

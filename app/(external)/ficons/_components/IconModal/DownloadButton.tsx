@@ -1,18 +1,33 @@
 import { ChevronDown, Download } from 'lucide-react';
 import { useState } from 'react';
-import { astToHtml, astToTsx } from '@/utils/client-side/svg-helpers';
+import { astToHtml, prepareAst } from '@/utils/ast-2-html';
+import { astToTsx, preparedAstToTsx } from '@/utils/ast-2-tsx';
 import { cx } from '@/utils/common-helpers';
 
-export default function DownloadButton({ icon }: { icon: IconWithRelativeData }) {
+export default function DownloadButton({
+    icon,
+    variant,
+    adjustment
+}: {
+    icon: IconWithRelativeData;
+    variant: Variant;
+    adjustment?: Adjustment;
+}) {
     const [text, setText] = useState('Raw SVG');
     const [open, setOpen] = useState(false);
 
     const download = (format: string) => {
         let svgContent = '';
         if (format === 'Raw SVG') {
-            svgContent = astToHtml(icon.svgAst);
+            const preparedAst = prepareAst(icon.svgAst, variant, adjustment);
+            svgContent = astToHtml(preparedAst);
         } else if (format === 'React TSX') {
-            svgContent = astToTsx({ name: icon.name, svgAst: icon.svgAst });
+            const preparedAst = preparedAstToTsx(icon.svgAst, variant, adjustment);
+            svgContent = astToTsx({
+                name: icon.name,
+                svgAst: preparedAst,
+                colorOnChildren: variant.colorOnChildren
+            });
         }
 
         const blob = new Blob([svgContent], { type: format === 'Raw SVG' ? 'image/svg+xml' : 'text/plain' });

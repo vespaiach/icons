@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import { astToInnerHtml } from '@/utils/client-side/svg-helpers';
+import { astToInnerHtml } from '@/utils/ast-2-html';
 
 export default function useDownloadIconTsx(icon: Icon) {
     return useCallback(

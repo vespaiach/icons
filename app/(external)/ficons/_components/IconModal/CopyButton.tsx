@@ -1,9 +1,18 @@
 import { ChevronDown, Copy } from 'lucide-react';
 import { useState } from 'react';
-import { astToHtml, astToTsx } from '@/utils/client-side/svg-helpers';
+import { astToHtml, prepareAst } from '@/utils/ast-2-html';
+import { astToTsx, preparedAstToTsx } from '@/utils/ast-2-tsx';
 import { cx } from '@/utils/common-helpers';
 
-export default function CopyButton({ icon }: { icon: { name: string; svgAst: SvgNode } }) {
+export default function CopyButton({
+    icon,
+    variant,
+    adjustment
+}: {
+    icon: { name: string; svgAst: SvgNode };
+    variant: Variant;
+    adjustment?: Adjustment;
+}) {
     const [open, setOpen] = useState(false);
     const [copied, setCopied] = useState(false);
     const [text, setText] = useState('Raw SVG');
@@ -11,9 +20,11 @@ export default function CopyButton({ icon }: { icon: { name: string; svgAst: Svg
     const copy = (format: string) => {
         let contentToCopy = '';
         if (format === 'Raw SVG') {
-            contentToCopy = astToHtml(icon.svgAst);
+            const preparedAst = prepareAst(icon.svgAst, variant, adjustment);
+            contentToCopy = astToHtml(preparedAst);
         } else if (format === 'React TSX') {
-            contentToCopy = astToTsx({ name: icon.name, svgAst: icon.svgAst });
+            const preparedAst = preparedAstToTsx(icon.svgAst, variant, adjustment);
+            contentToCopy = astToTsx({ name: icon.name, svgAst: preparedAst });
         }
         navigator.clipboard.writeText(contentToCopy);
         setCopied(true);

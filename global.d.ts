@@ -48,7 +48,7 @@ declare global {
     interface SvgNode {
         id: string;
         type: string;
-        attrs: Record<string, string | number | boolean>;
+        attrs: Record<string, string | number | boolean | undefined | null>;
         children?: SvgNode[];
     }
 

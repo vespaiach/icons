@@ -27,31 +27,6 @@ export default function IconDetails({
     const [attributes, setAttributes] = useState({ size: adjustment.size, color: adjustment.color });
     const adjustmentForDisplay = useMemo(() => ({ color: attributes.color, size: '80%' }), [attributes]);
 
-    const addjustedIcon = useMemo(() => {
-        const attrs = Object.fromEntries(
-            [
-                ['width', attributes.size],
-                ['height', attributes.size],
-                [
-                    'stroke',
-                    variant.stroke === 'none' ? 'none' : variant.stroke ? attributes.color : undefined
-                ],
-                ['fill', variant.fill === 'none' ? 'none' : variant.fill ? attributes.color : undefined]
-            ].filter(([_, value]) => value !== undefined && value !== null)
-        ) as Record<string, string | number>;
-
-        return {
-            ...selectedIcon,
-            svgAst: {
-                ...selectedIcon.svgAst,
-                attrs: {
-                    ...selectedIcon.svgAst.attrs,
-                    ...attrs
-                }
-            }
-        } as IconWithRelativeData;
-    }, [attributes, selectedIcon, variant]);
-
     const handleCopyName = () => {
         navigator.clipboard.writeText(selectedIcon.name);
         setCopied(true);
@@ -111,8 +86,8 @@ export default function IconDetails({
                     />
 
                     <div className="flex gap-3 mt-6">
-                        <CopyButton icon={addjustedIcon} />
-                        <DownloadButton icon={addjustedIcon} />
+                        <CopyButton icon={selectedIcon} variant={variant} adjustment={attributes} />
+                        <DownloadButton icon={selectedIcon} variant={variant} adjustment={attributes} />
                     </div>
                 </div>
             </div>

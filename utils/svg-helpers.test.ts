@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { astToInnerHtml, astToSvgString } from './client-side/svg-helpers';
+import { astToInnerHtml, astToSvgString } from './ast-2-html';
 import { parseSvgToAst } from './svg-parser';
 
 describe('svg-helpers', () => {
