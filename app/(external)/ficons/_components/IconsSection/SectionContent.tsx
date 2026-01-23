@@ -3,6 +3,7 @@
 import { useIntersectionObserver } from '@uidotdev/usehooks';
 import { useSearchParams } from 'next/navigation';
 import { Fragment, startTransition, useEffect, useMemo, useState } from 'react';
+import { getIconsByRepositoryIdAction } from '../../actions';
 import IconsGrid from './IconsGrid';
 import IconsGridSkeleton from './IconsGridSkeleton';
 
@@ -11,37 +12,20 @@ export default function SectionContent({ repository }: { repository: RepositoryV
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        let cancelled = false;
-
         async function fetchIcons() {
             try {
-                const response = await fetch('/ficons/icons', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-ficons-request': 'true'
-                    },
-                    body: JSON.stringify({ repositoryId: repository.id })
-                });
-                if (!response.ok) throw new Error('Failed to fetch icons');
-                const data = await response.json();
-                if (!cancelled) {
-                    setIcons(data);
-                    setIsLoading(false);
-                }
+                const icons = await getIconsByRepositoryIdAction(repository.id);
+                setIcons(icons);
+                setIsLoading(false);
             } catch (error) {
                 console.error('Error fetching icons:', error);
-                if (!cancelled) {
-                    setIsLoading(false);
-                }
+                setIsLoading(false);
+            } finally {
+                setIsLoading(false);
             }
         }
 
         fetchIcons();
-
-        return () => {
-            cancelled = true;
-        };
     }, [repository.id]);
 
     const [ref, entry] = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px', threshold: 0 });
