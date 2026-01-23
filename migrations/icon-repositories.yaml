@@ -82,3 +82,16 @@ repos:
         fill: "none"
         stroke: "currentColor"
         strokeWidth: "2"
+  - owner: "FortAwesome"
+    name: "Font-Awesome"
+    ref: "7.x"
+    variants:
+      - name: brands
+        path: "/svgs-full/brands"
+        colorOnChildren: true
+      - name: regular
+        path: "/svgs-full/regular"
+        colorOnChildren: true
+      - name: solid
+        path: "/svgs-full/solid"
+        colorOnChildren: true

@@ -21,6 +21,7 @@ export async function getRepositoriesWithVariants(): Promise<RepositoryVariants[
                     'stroke', variants.stroke,
                     'fill', variants.fill,
                     'strokeWidth', variants.stroke_width,
+                    'colorOnChildren', variants.color_on_children,
                     'iconCount', variants.icon_count,
                     'createdAt', variants.created_at,
                     'updatedAt', variants.updated_at
@@ -116,6 +117,7 @@ export async function getRepositoryVariantsWithIconCount(): Promise<RepositoryVa
                     'stroke', v.stroke,
                     'fill', v.fill,
                     'strokeWidth', v.stroke_width,
+                    'colorOnChildren', v.color_on_children,
                     'createdAt', v.created_at,
                     'updatedAt', v.updated_at
                 )
@@ -148,6 +150,7 @@ export async function getRepositoryVariantsById(repositoryId: number): Promise<R
                     'stroke', variants.stroke,
                     'fill', variants.fill,
                     'strokeWidth', variants.stroke_width,
+                    'colorOnChildren', variants.color_on_children,
                     'createdAt', variants.created_at,
                     'updatedAt', variants.updated_at
                 )

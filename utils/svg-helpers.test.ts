@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test';
-import { astToInnerHtml, astToSvgString, parseSvgToAst } from './svg-helpers';
+import { astToInnerHtml, astToSvgString } from './client-side/svg-helpers';
+import { parseSvgToAst } from './svg-parser';
 
 describe('svg-helpers', () => {
     describe('parseSvgToAst', () => {
@@ -36,15 +37,15 @@ describe('svg-helpers', () => {
             expect(ast.children?.[1].attrs.d).toBe('M17 7v10H7');
         });
 
-        test('should convert stroke-width to camelCase', () => {
+        test('should preserve hyphenated attributes like stroke-width', () => {
             const svgWithHyphenAttrs = `<svg stroke-width="2" stroke-linecap="round">
                 <path d="M0 0"/>
             </svg>`;
 
             const ast = parseSvgToAst(svgWithHyphenAttrs);
 
-            expect(ast.attrs.strokeWidth).toBe('2');
-            expect(ast.attrs.strokeLinecap).toBe('round');
+            expect(ast.attrs['stroke-width']).toBe('2');
+            expect(ast.attrs['stroke-linecap']).toBe('round');
         });
 
         test('should preserve data- attributes with hyphens', () => {

@@ -35,6 +35,7 @@ declare global {
         fill: string | null;
         strokeWidth: string | null;
         iconCount: number;
+        colorOnChildren: boolean;
         createdAt: Date;
         updatedAt: Date;
     }
@@ -47,7 +48,7 @@ declare global {
     interface SvgNode {
         id: string;
         type: string;
-        attrs: Record<string, string>;
+        attrs: Record<string, string | number | boolean>;
         children?: SvgNode[];
     }
 
