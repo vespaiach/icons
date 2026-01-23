@@ -25,6 +25,7 @@ export default function IconDetails({
 
     // State for adjustable properties
     const [attributes, setAttributes] = useState({ size: adjustment.size, color: adjustment.color });
+    const adjustmentForDisplay = useMemo(() => ({ color: attributes.color, size: '80%' }), [attributes]);
 
     const addjustedIcon = useMemo(() => {
         const attrs = Object.fromEntries(
@@ -90,7 +91,12 @@ export default function IconDetails({
                                 </g>
                             ))}
                         </svg>
-                        <AstToSvg svgAst={addjustedIcon.svgAst} width="80%" height="80%" className="z-10" />
+                        <AstToSvg
+                            svgAst={selectedIcon.svgAst}
+                            variant={variant}
+                            adjustment={adjustmentForDisplay}
+                            className="z-10"
+                        />
                     </div>
                 </div>
                 <div className="shrink-0">

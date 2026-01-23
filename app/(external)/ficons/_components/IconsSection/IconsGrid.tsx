@@ -60,16 +60,8 @@ function IconButton({
     const [setIcon] = useIconAction();
     const selectedIcon = useIconValue();
     const iconElement = useMemo(() => {
-        return (
-            <AstToSvg
-                svgAst={icon.svgAst}
-                fill={variant.fill === 'none' ? 'none' : variant.fill ? adjustment.color : undefined}
-                stroke={variant.stroke === 'none' ? 'none' : variant.stroke ? adjustment.color : undefined}
-                width={38}
-                height={38}
-            />
-        );
-    }, [icon.svgAst, adjustment, variant.fill, variant.stroke]);
+        return <AstToSvg svgAst={icon.svgAst} variant={variant} adjustment={{ ...adjustment, size: 38 }} />;
+    }, [icon.svgAst, adjustment, variant]);
 
     return (
         <div className={cx('icon group rounded-md', selectedIcon?.id === icon.id && 'ring-2 ring-secondary')}>

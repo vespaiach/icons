@@ -102,10 +102,14 @@ function VariantGrid({
             {checked && (
                 <div className="d-tab-content bg-base-100 p-2 border-base-300" style={gridStyle}>
                     {isIntersecting && (
-                        <IconsGrid icons={filteredIcons} variant={variant} onHeightChange={(v) => {
-                            console.log('Height changed-->:', v);
-                            setMinHeight(v);
-                        }} />
+                        <IconsGrid
+                            icons={filteredIcons}
+                            variant={variant}
+                            onHeightChange={(v) => {
+                                console.log('Height changed-->:', v);
+                                setMinHeight(v);
+                            }}
+                        />
                     )}
                 </div>
             )}

@@ -7,11 +7,23 @@ import ColorAdjuster from '@/components/ColorAdjuster';
 import SizeAdjuster from '@/components/SizeAdjuster';
 import { useFavoritesAction, useFavoritesValue } from './PageContext';
 
-export default function Drawer() {
+export default function Drawer({ repositories }: { repositories: RepositoryVariants[] }) {
     const { ids, byIds } = useFavoritesValue();
     const [_, removeFromFavorites, removeAll] = useFavoritesAction();
     const [attributes, setAttributes] = useState({ size: 24, color: 'currentColor' });
     const [isDownloading, setIsDownloading] = useState(false);
+
+    const getVariant = (iconId: number) => {
+        const favorite = byIds[iconId];
+
+        const repository = repositories.find((repo) => repo.id === favorite.repositoryId);
+        if (!repository) return null;
+
+        const variant = repository.variants.find((v) => v.id === favorite.variantId);
+        if (!variant) return null;
+
+        return variant;
+    };
 
     useEffect(() => {
         if (ids.size === 0) {
@@ -90,6 +102,9 @@ export default function Drawer() {
                 <div className="flex gap-2 flex-wrap flex-1 overflow-auto">
                     {Array.from(ids).map((id) => {
                         const favorite = byIds[id];
+                        const variant = getVariant(favorite.id);
+                        if (!variant) return null;
+
                         return (
                             <button
                                 aria-label="Click to remove from favorites"
@@ -97,7 +112,7 @@ export default function Drawer() {
                                 key={id}
                                 onClick={() => removeFromFavorites(id)}
                                 className="d-btn d-btn-sm d-btn-error d-btn-ghost p-1 relative group">
-                                <AstToSvg svgAst={favorite.svgAst} width={28} height={28} />
+                                <AstToSvg svgAst={favorite.svgAst} variant={variant} />
                             </button>
                         );
                     })}

@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 
 export const adjustmentsByRepoIdAtom = atom<Record<number, { color: string; size: number }>>({});
 export const iconAtom = atom<IconWithRelativeData | null>(null);
-export const favoritesAtom = atom<Favorite[]>([]);
+export const favoritesAtom = atom<IconWithRelativeData[]>([]);
 export const drawerOpenAtom = atom<boolean>(false);
 
 export function PageContextProvider({
@@ -78,15 +78,13 @@ export function useFavoritesAction() {
     const set = useSetAtom(favoritesAtom);
     return [
         useCallback(
-            (icon: { id: number; svgAst: SvgNode }) => {
+            (icon: IconWithRelativeData) => {
                 set((prev) => {
-                    const exists = prev.find((fav) => fav.iconId === icon.id);
+                    const exists = prev.find((fav) => fav.id === icon.id);
                     if (exists) {
-                        return prev.map((fav) =>
-                            fav.iconId === icon.id ? { iconId: icon.id, svgAst: icon.svgAst } : fav
-                        );
+                        return prev.map((fav) => (fav.id === icon.id ? icon : fav));
                     } else {
-                        return [...prev, { iconId: icon.id, svgAst: icon.svgAst }];
+                        return [...prev, icon];
                     }
                 });
             },
@@ -94,7 +92,7 @@ export function useFavoritesAction() {
         ),
         useCallback(
             (id: number) => {
-                set((prev) => prev.filter((fav) => fav.iconId !== id));
+                set((prev) => prev.filter((fav) => fav.id !== id));
             },
             [set]
         ),
@@ -108,8 +106,8 @@ export function useFavoritesValue() {
     const favs = useAtomValue(favoritesAtom);
     return useMemo(() => {
         return {
-            ids: new Set(favs.map((fav) => fav.iconId)),
-            byIds: Object.fromEntries(favs.map((fav) => [fav.iconId, fav]))
+            ids: new Set(favs.map((fav) => fav.id)),
+            byIds: Object.fromEntries(favs.map((fav) => [fav.id, fav]))
         };
     }, [favs]);
 }

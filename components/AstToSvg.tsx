@@ -1,44 +1,38 @@
-import type { Ref } from 'react';
 import { astToInnerHtml } from '@/utils/client-side/svg-helpers';
 
-interface AstToSvgProps
-    extends Pick<
-        React.SVGAttributes<SVGSVGElement>,
-        'fill' | 'stroke' | 'strokeWidth' | 'width' | 'height' | 'className' | 'viewBox' | 'xmlns'
-    > {
+interface AstToSvgProps {
     svgAst: SvgNode;
-    dataVariantId?: string;
-    ref?: Ref<SVGSVGElement>;
+    variant: Variant;
+    adjustment?: Adjustment;
+    className?: string;
 }
 
-export default function AstToSvg({
-    svgAst,
-    dataVariantId,
-    ref,
-    fill,
-    stroke,
-    strokeWidth,
-    ...rest
-}: AstToSvgProps) {
+export default function AstToSvg({ svgAst, adjustment, variant, className }: AstToSvgProps) {
     const innerHtml = astToInnerHtml(svgAst);
 
     return (
         <svg
-            {...Object.assign(
-                {},
-                svgAst.attrs,
-                Object.fromEntries(
-                    [
-                        ['fill', fill],
-                        ['stroke', stroke],
-                        ['strokeWidth', strokeWidth]
-                    ].filter(([, v]) => v !== undefined)
-                )
-            )}
-            {...rest}
-            ref={ref}
+            {...svgAst.attrs}
+            fill={
+                variant.fill === 'none'
+                    ? 'none'
+                    : variant.fill
+                      ? adjustment?.color || variant.fill || undefined
+                      : undefined
+            }
+            stroke={
+                variant.stroke === 'none'
+                    ? 'none'
+                    : variant.stroke
+                      ? adjustment?.color || variant.stroke || undefined
+                      : undefined
+            }
+            strokeWidth={variant.strokeWidth ? variant.strokeWidth : undefined}
+            width={adjustment?.size || svgAst.attrs.width}
+            height={adjustment?.size || svgAst.attrs.height}
             // biome-ignore lint/security/noDangerouslySetInnerHtml: we need this to render SVG from AST
             dangerouslySetInnerHTML={{ __html: innerHtml }}
+            className={className}
         />
     );
 }

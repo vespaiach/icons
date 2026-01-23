@@ -10,7 +10,7 @@ export default function FavoriteButton({
 }: {
     className?: string;
     defaultHide?: boolean;
-    icon: { id: number; repositoryId: number; svgAst: SvgNode };
+    icon: IconWithRelativeData;
 }) {
     const { ids } = useFavoritesValue();
     const [addToFavorites, removeFromFavorites] = useFavoritesAction();
