@@ -23,14 +23,14 @@ export default function IconModal({ repositories }: { repositories: RepositoryVa
             <div className="d-modal-box relative w-70 max-w-70 md:w-130 md:max-w-130">
                 <button
                     type="button"
-                    className="absolute top-1 right-1 d-btn d-btn-sm d-btn-ghost d-btn-circle"
+                    className="absolute top-1 right-1 d-btn d-btn-sm d-btn-ghost d-btn-circle outline-none"
                     onClick={clearSelectedIcon}>
                     <X size={20} />
                 </button>
                 <IconDetails selectedIcon={selectedIcon} variant={variant} adjustment={adjustment} />
             </div>
             <form method="dialog" onSubmit={clearSelectedIcon} className="d-modal-backdrop">
-                <button type="submit">Close</button>
+                <button type="submit" className="outline-none">Close</button>
             </form>
         </dialog>
     );

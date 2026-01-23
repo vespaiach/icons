@@ -31,15 +31,6 @@ export default function SectionHeader({ repository }: { repository: RepositoryVa
                 <button
                     type="button"
                     className="d-btn d-btn-ghost d-btn-sm d-btn-square cursor-pointer ml-2"
-                    aria-label="Repository Information"
-                    onClick={() => {
-                        infoDialogRef.current?.showModal();
-                    }}>
-                    <Info className="w-4 h-4" />
-                </button>
-                <button
-                    type="button"
-                    className="d-btn d-btn-ghost d-btn-sm d-btn-square cursor-pointer"
                     aria-label="Repository Settings"
                     onClick={() => {
                         infoDialogRef.current?.showModal();
