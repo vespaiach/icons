@@ -1,5 +1,4 @@
 import { Provider } from 'jotai';
-import AboutModal from './_components/AboutModal';
 import Drawer from './_components/Drawer';
 import DrawerToggler from './_components/DrawerToggler';
 import IconModal from './_components/IconModal';
@@ -27,7 +26,6 @@ export default async function PageIcons() {
                         </div>
 
                         <SearchModal repositories={repositoriesVariants} />
-                        <AboutModal />
                         <IconModal repositories={repositoriesVariants} />
                     </div>
                     <Drawer />
