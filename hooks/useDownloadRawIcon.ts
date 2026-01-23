@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import { astToInnerHtml } from '@/utils/svg-helpers';
+import { astToInnerHtml } from '@/utils/client-side/svg-helpers';
 
 export default function useDownloadRawIcon(icon: Icon) {
     return useCallback(

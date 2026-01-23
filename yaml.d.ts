@@ -10,6 +10,7 @@ declare module '*/icon.repositories.yaml' {
             fill?: string;
             stroke?: string;
             strokeWidth?: string;
+            colorOnChildren?: boolean;
         }[];
     }
 

@@ -11,7 +11,7 @@ import {
 } from '@/db/repositories';
 import { updateVariantIconCount } from '@/db/variants';
 import { log } from '@/utils/log.helpers';
-import { parseSvgToAst } from '@/utils/svg-helpers';
+import { parseSvgToAst } from '@/utils/svg-parser';
 import { parseRepositoryForm } from './validation';
 
 export async function loadRepositoriesAction() {

@@ -60,7 +60,8 @@ export async function getIconsByIds(iconIds: number[]) {
             v.name AS "variantName",
             v.stroke,
             v.fill,
-            v.stroke_width AS "strokeWidth"
+            v.stroke_width AS "strokeWidth",
+            v.color_on_children AS "colorOnChildren"
         FROM icons i
         INNER JOIN variants v ON i.variant_id = v.id
         WHERE i.id = ANY(${iconIds})
@@ -77,6 +78,7 @@ export async function getIconsByIds(iconIds: number[]) {
             stroke: string | null;
             fill: string | null;
             strokeWidth: string | null;
+            colorOnChildren: boolean;
         }
     >;
 }
