@@ -7,6 +7,9 @@ declare module '*/icon.repositories.yaml' {
             name: string;
             path: string;
             regex?: string;
+            fill?: string;
+            stroke?: string;
+            strokeWidth?: string;
         }[];
     }
 

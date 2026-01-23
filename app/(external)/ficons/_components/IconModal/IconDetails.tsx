@@ -23,7 +23,7 @@ export default function IconDetails({
 }) {
     const [copied, setCopied] = useState(false);
 
-    // State for adjustable properties - use defaultSvgAttributes as initial values
+    // State for adjustable properties
     const [attributes, setAttributes] = useState({ size: adjustment.size, color: adjustment.color });
 
     const addjustedIcon = useMemo(() => {
@@ -31,8 +31,11 @@ export default function IconDetails({
             [
                 ['width', attributes.size],
                 ['height', attributes.size],
-                ['stroke', variant.defaultSvgAttributes.stroke ? attributes.color : undefined],
-                ['fill', variant.defaultSvgAttributes.fill ? attributes.color : undefined]
+                [
+                    'stroke',
+                    variant.stroke === 'none' ? 'none' : variant.stroke ? attributes.color : undefined
+                ],
+                ['fill', variant.fill === 'none' ? 'none' : variant.fill ? attributes.color : undefined]
             ].filter(([_, value]) => value !== undefined && value !== null)
         ) as Record<string, string | number>;
 
@@ -87,14 +90,7 @@ export default function IconDetails({
                                 </g>
                             ))}
                         </svg>
-                        <AstToSvg
-                            svgAst={selectedIcon.svgAst}
-                            fill={variant.defaultSvgAttributes.fill ? attributes.color : undefined}
-                            stroke={variant.defaultSvgAttributes.stroke ? attributes.color : undefined}
-                            width="80%"
-                            height="80%"
-                            className="z-10"
-                        />
+                        <AstToSvg svgAst={addjustedIcon.svgAst} width="80%" height="80%" className="z-10" />
                     </div>
                 </div>
                 <div className="shrink-0">

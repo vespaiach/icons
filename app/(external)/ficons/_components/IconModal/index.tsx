@@ -30,7 +30,9 @@ export default function IconModal({ repositories }: { repositories: RepositoryVa
                 <IconDetails selectedIcon={selectedIcon} variant={variant} adjustment={adjustment} />
             </div>
             <form method="dialog" onSubmit={clearSelectedIcon} className="d-modal-backdrop">
-                <button type="submit" className="outline-none">Close</button>
+                <button type="submit" className="outline-none">
+                    Close
+                </button>
             </form>
         </dialog>
     );

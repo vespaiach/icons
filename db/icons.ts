@@ -58,7 +58,9 @@ export async function getIconsByIds(iconIds: number[]) {
             i.name,
             i.svg_ast AS "svgAst",
             v.name AS "variantName",
-            v.default_svg_attributes AS "defaultSvgAttributes"
+            v.stroke,
+            v.fill,
+            v.stroke_width AS "strokeWidth"
         FROM icons i
         INNER JOIN variants v ON i.variant_id = v.id
         WHERE i.id = ANY(${iconIds})
@@ -72,7 +74,9 @@ export async function getIconsByIds(iconIds: number[]) {
         Icon & {
             variantId: number;
             variantName: string;
-            defaultSvgAttributes: SvgAdjustableAttributes;
+            stroke: string | null;
+            fill: string | null;
+            strokeWidth: string | null;
         }
     >;
 }

@@ -21,6 +21,7 @@ export default function AstToSvg({
     ...rest
 }: AstToSvgProps) {
     const innerHtml = astToInnerHtml(svgAst);
+
     return (
         <svg
             {...Object.assign(

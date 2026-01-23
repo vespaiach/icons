@@ -26,7 +26,9 @@ declare global {
         path: string;
         name: string;
         regex: string;
-        defaultSvgAttributes: SvgAdjustableAttributes;
+        stroke: string | null;
+        fill: string | null;
+        strokeWidth: string | null;
         iconCount: number;
         createdAt: Date;
         updatedAt: Date;

@@ -63,13 +63,13 @@ function IconButton({
         return (
             <AstToSvg
                 svgAst={icon.svgAst}
-                fill={variant.defaultSvgAttributes.fill ? adjustment.color : undefined}
-                stroke={variant.defaultSvgAttributes.stroke ? adjustment.color : undefined}
+                fill={variant.fill === 'none' ? 'none' : variant.fill ? adjustment.color : undefined}
+                stroke={variant.stroke === 'none' ? 'none' : variant.stroke ? adjustment.color : undefined}
                 width={38}
                 height={38}
             />
         );
-    }, [icon.svgAst, adjustment, variant.defaultSvgAttributes]);
+    }, [icon.svgAst, adjustment, variant.fill, variant.stroke]);
 
     return (
         <div className={cx('icon group rounded-md', selectedIcon?.id === icon.id && 'ring-2 ring-secondary')}>
