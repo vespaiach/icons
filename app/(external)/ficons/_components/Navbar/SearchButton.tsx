@@ -48,7 +48,7 @@ export default function SearchButton() {
         <>
             <button
                 type="button"
-                className="ml-8 hidden md:flex d-input d-input-ghost d-input-sm hover:border-secondary focus-visible:border-secondary bg-base-200 cursor-pointer transition-colors focus:outline-none"
+                className="ml-2 md:ml-8 flex d-input d-input-ghost d-input-sm hover:border-secondary focus-visible:border-secondary bg-base-200 cursor-pointer transition-colors focus:outline-none"
                 onClick={openModel}>
                 <Search className="size-4 shrink-0 opacity-60" />
                 <Suspense>
