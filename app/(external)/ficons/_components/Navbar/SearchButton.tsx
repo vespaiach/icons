@@ -48,7 +48,7 @@ export default function SearchButton() {
         <>
             <button
                 type="button"
-                className="ml-8 hidden md:flex d-input d-input-ghost hover:border-secondary focus-visible:border-secondary bg-base-200 cursor-pointer transition-colors focus:outline-none"
+                className="ml-8 hidden md:flex d-input d-input-ghost d-input-sm hover:border-secondary focus-visible:border-secondary bg-base-200 cursor-pointer transition-colors focus:outline-none"
                 onClick={openModel}>
                 <Search className="size-4 shrink-0 opacity-60" />
                 <Suspense>
@@ -70,7 +70,7 @@ export default function SearchButton() {
                 <button
                     type="button"
                     onClick={openDrawer}
-                    className="hidden md:flex d-btn d-btn-ghost d-btn-secondary ml-2">
+                    className="hidden md:flex d-btn d-btn-ghost d-btn-sm d-btn-secondary ml-1 px-2">
                     <HeartPlus size={16} />
                     <span className="d-badge d-badge-secondary d-badge-xs">{ids.size}</span>
                 </button>
