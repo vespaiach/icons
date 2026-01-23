@@ -12,6 +12,11 @@ declare global {
         iconCount: number;
     }
 
+    interface Adjustment {
+        size?: string | number;
+        color?: string;
+    }
+
     interface SvgAdjustableAttributes {
         fill?: string;
         stroke?: string;
