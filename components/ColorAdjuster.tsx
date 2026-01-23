@@ -37,7 +37,7 @@ export default function ColorAdjuster({
                             const value = e.target.value;
                             onColorChange(value);
                         }}
-                        className="leading-normal border-none p-0 text-sm outline-none text-base-content/60 grow"
+                        className="leading-normal border-none p-0 text-sm outline-none text-base-content/60 w-32"
                         placeholder="#000000"
                         disabled={disabled}
                     />
