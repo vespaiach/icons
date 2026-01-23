@@ -98,3 +98,11 @@ repos:
         path: "/svgs-full/solid"
         colorOnChildren: true
         fill: "currentColor"
+  - owner: "astrit"
+    name: "css.gg"
+    ref: "main"
+    variants:
+      - name: default
+        path: "/icons/svg"        
+        fill: "currentColor"
+        colorOnChildren: true
