@@ -86,11 +86,6 @@ function VariantGrid({
         return rows * 102 + (rows - 1) * 20; // initial minHeight based on 10 icons per row and 102px height per icon and 20px gap
     });
     const gridStyle = useMemo(() => ({ minHeight }), [minHeight]);
-    console.log('------------------------------');
-    console.log('Repo + Var', repository.name, variant.name);
-    console.log('Icons count', filteredIcons.length);
-    console.log('Min height', minHeight);
-    console.log('------------------------------');
 
     return (
         <Fragment key={variant.id}>

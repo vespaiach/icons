@@ -1,9 +1,10 @@
 import { Globe } from 'lucide-react';
 import Link from 'next/link';
+import Footer from '@/components/Footer';
 
 export default function AboutPage() {
     return (
-        <div className="container mx-auto px-4 py-8 max-w-3xl">
+        <div className="container mx-auto px-4 pt-8 max-w-3xl">
             <div className="mb-6">
                 <Link href="/ficons" className="d-btn d-btn-sm d-btn-ghost">
                     ← Back to Icons
@@ -14,7 +15,7 @@ export default function AboutPage() {
                 About <Globe size={28} /> Ficons
             </h1>
 
-            <div className="prose max-w-none">
+            <div className="prose max-w-none mb-10">
                 <p>
                     Ficons is a curated, all-in-one icon explorer designed for developers and designers who
                     need quick access to free vector icons. Instead of jumping between multiple documentation
@@ -52,6 +53,7 @@ export default function AboutPage() {
                     download all your favorite icons from there.
                 </p>
             </div>
+            <Footer />
         </div>
     );
 }
