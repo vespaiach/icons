@@ -120,6 +120,7 @@ function santizeSvgAttributeKey(rawKey: string): string | null {
         'fill',
         'fill-opacity',
         'fill-rule',
+        'clip-rule',
         'stroke',
         'stroke-width',
         'stroke-linecap',
