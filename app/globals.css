@@ -17,7 +17,7 @@
     }
 
     .ic-grid {
-        @apply grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12 gap-3 md:gap-5;
+        @apply grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12 auto-rows-[100px] gap-0;
     }
 
     .icon {

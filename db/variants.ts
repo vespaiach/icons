@@ -144,6 +144,53 @@ export async function updateVariant(
     return rows.length > 0 ? (rows[0] as unknown as Variant) : null;
 }
 
+export async function createVariant(
+    data: Pick<Variant, 'repositoryId' | 'name' | 'path' | 'regex'> & {
+        stroke?: string | null;
+        fill?: string | null;
+        strokeWidth?: string | null;
+    }
+) {
+    log('info', '[DB] createVariant - START', data);
+    const rows = await sql`
+        INSERT INTO variants (
+            repository_id,
+            name,
+            path,
+            regex,
+            stroke,
+            fill,
+            stroke_width
+        )
+        VALUES (
+            ${data.repositoryId},
+            ${data.name},
+            ${data.path},
+            ${data.regex},
+            ${data.stroke ?? null},
+            ${data.fill ?? null},
+            ${data.strokeWidth ?? null}
+        )
+        RETURNING
+            id,
+            repository_id AS "repositoryId",
+            name,
+            path,
+            regex,
+            stroke,
+            fill,
+            stroke_width AS "strokeWidth",
+            icon_count AS "iconCount",
+            created_at AS "createdAt",
+            updated_at AS "updatedAt"
+    `;
+    log('info', `[DB] createVariant - END (success: ${rows.length > 0})`);
+    if (Bun.env.DEBUG_QUERIES === 'true' && rows[0]) {
+        log('info', '[DB] createVariant - RESULT', rows[0]);
+    }
+    return rows.length > 0 ? (rows[0] as unknown as Variant) : null;
+}
+
 export async function updateVariantIconCount(repositoryId: number) {
     log('info', '[DB] updateVariantIconCount - START', { repositoryId });
     await sql`

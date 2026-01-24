@@ -49,6 +49,27 @@ export async function getIconsByRepositoryId(repositoryId: number) {
     return rows as unknown as IconWithRelativeData[];
 }
 
+export async function getIconsByVariantId(variantId: number) {
+    // await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network delay
+    log('info', '[DB] getIconsByVariantId - START', { variantId });
+    const rows = await sql`
+        SELECT 
+            i.id,
+            i.variant_id AS "variantId",
+            v.repository_id AS "repositoryId",
+            i.name,
+            i.svg_ast AS "svgAst"
+        FROM icons i INNER JOIN variants v ON i.variant_id = v.id
+        WHERE i.variant_id = ${variantId}
+        ORDER BY i.name ASC
+    `;
+    log('info', `[DB] getIconsByVariantId - END (${rows.length} rows)`);
+    if (Bun.env.DEBUG_QUERIES === 'true' && rows.length > 0) {
+        log('info', `[DB] getIconsByVariantId - SAMPLE RESULT (first row)`, rows[0]);
+    }
+    return rows as unknown as IconWithRelativeData[];
+}
+
 export async function getIconsByIds(iconIds: number[]) {
     log('info', '[DB] getIconsByIds - START', { count: iconIds.length });
     const rows = await sql`

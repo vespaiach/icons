@@ -10,6 +10,7 @@ export const adjustmentsByRepoIdAtom = atom<Record<number, { color: string; size
 export const iconAtom = atom<IconWithRelativeData | null>(null);
 export const favoritesAtom = atom<IconWithRelativeData[]>([]);
 export const drawerOpenAtom = atom<boolean>(false);
+export const repositoryAtom = atom<Repository | null>(null);
 
 export function PageContextProvider({
     children,
@@ -40,7 +41,7 @@ export function PageContextProvider({
             if (!modalElement) return;
 
             if (selectedIcon !== null) {
-                modalElement.show();
+                modalElement.showModal();
             } else {
                 modalElement.close();
             }
