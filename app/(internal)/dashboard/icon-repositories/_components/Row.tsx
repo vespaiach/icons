@@ -41,7 +41,14 @@ export default function Row({
             <td>{repository.iconCount.toLocaleString()}</td>
             <td>{formState.lastImportedAt ? formState.lastImportedAt.toLocaleString() : 'Never'}</td>
             <td>
-                <Form formState={formState} isPending={isPending} formAction={formAction} />
+                <div className="flex items-center gap-2">
+                    <a
+                        href={`/dashboard/icon-repositories/${repository.id}`}
+                        className="d-btn d-btn-sm d-btn-ghost">
+                        Edit
+                    </a>
+                    <Form formState={formState} isPending={isPending} formAction={formAction} />
+                </div>
             </td>
         </tr>
     );

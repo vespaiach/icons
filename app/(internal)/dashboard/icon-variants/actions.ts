@@ -1,13 +1,15 @@
 'use server';
 
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
+import { getRepositoriesWithIconCount } from '@/db/repositories';
 import {
+    createVariant,
     getVariantById,
     getVariantRepositoryById,
     getVariantsWithRepository,
     updateVariant
 } from '@/db/variants';
-import { parseVariantUpdateForm } from './validation';
+import { parseVariantCreateForm, parseVariantUpdateForm } from './validation';
 
 export async function loadVariantsAction(): Promise<VariantWithRepository[]> {
     return await getVariantsWithRepository();
@@ -79,4 +81,57 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
         },
         errors: {}
     };
+}
+
+export async function loadRepositoriesAction(): Promise<RepositoryWithIconCount[]> {
+    return await getRepositoriesWithIconCount();
+}
+
+interface CreateVariantParams {
+    errors: Record<string, string[]>;
+    values: {
+        repositoryId: number | null;
+        name: string;
+        regex: string;
+        path: string;
+        stroke: string | null;
+        fill: string | null;
+        strokeWidth: string | null;
+    };
+}
+
+export async function createVariantAction(prevState: CreateVariantParams, formData: FormData) {
+    const { success, payload, errors } = await parseVariantCreateForm(formData);
+    if (!success) {
+        return { ...prevState, errors };
+    }
+
+    const {
+        repositoryId,
+        name,
+        regex,
+        path,
+        enableStrokeColor,
+        stroke,
+        enableFillColor,
+        fill,
+        enableStrokeWidth,
+        strokeWidth
+    } = payload;
+
+    const newVariant = await createVariant({
+        repositoryId,
+        name,
+        regex,
+        path,
+        stroke: enableStrokeColor && stroke ? stroke : null,
+        fill: enableFillColor && fill ? fill : null,
+        strokeWidth: enableStrokeWidth && strokeWidth !== undefined ? String(strokeWidth) : null
+    });
+
+    if (!newVariant) {
+        return { ...prevState, errors: { global: ['Failed to create variant.'] } };
+    }
+
+    redirect('/dashboard/icon-variants');
 }

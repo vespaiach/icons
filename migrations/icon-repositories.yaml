@@ -106,3 +106,23 @@ repos:
         path: "/icons/svg"        
         fill: "currentColor"
         colorOnChildren: true
+  - owner: "iconoir-icons"
+    name: "iconoir"
+    ref: "main"
+    variants:
+      - name: regular
+        path: "/icons/regular"        
+        fill: "none"
+        stroke: "currentColor"
+        strokeWidth: "1.5"
+      - name: solid
+        path: "/icons/solid"        
+        fill: "currentColor"
+        colorOnChildren: true
+  - owner: "mikolajdobrucki"
+    name: "ikonate"
+    ref: "master"
+    variants:
+      - name: default
+        path: "/icons"        
+        stroke: "currentColor"

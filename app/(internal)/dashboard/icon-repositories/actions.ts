@@ -3,8 +3,12 @@
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { $ } from 'bun';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { createIcon, deleteIconsByRepositoryId } from '@/db/icons';
 import {
+    createRepository,
+    getRepositoryById,
     getRepositoryVariantsById,
     getRepositoryVariantsWithIconCount,
     updateRepository
@@ -12,10 +16,58 @@ import {
 import { updateVariantIconCount } from '@/db/variants';
 import { log } from '@/utils/log.helpers';
 import { parseSvgToAst } from '@/utils/svg-parser';
-import { parseRepositoryForm } from './validation';
+import { parseCreateRepositoryForm, parseRepositoryForm, parseUpdateRepositoryForm } from './validation';
 
 export async function loadRepositoriesAction() {
     return await getRepositoryVariantsWithIconCount();
+}
+
+export async function loadRepositoryAction(id: number) {
+    return await getRepositoryById(id);
+}
+
+export async function createRepositoryAction(
+    _prevState: { errors: Record<string, string[]> },
+    formData: FormData
+): Promise<{ errors: Record<string, string[]> }> {
+    const { success, payload, errors } = await parseCreateRepositoryForm(formData);
+    if (!success) {
+        return { errors };
+    }
+
+    const repository = await createRepository(payload);
+    if (!repository) {
+        return {
+            errors: {
+                global: ['Failed to create repository.']
+            }
+        };
+    }
+
+    revalidatePath('/dashboard/icon-repositories');
+    redirect('/dashboard/icon-repositories');
+}
+
+export async function updateRepositoryAction(
+    _prevState: { errors: Record<string, string[]> },
+    formData: FormData
+): Promise<{ errors: Record<string, string[]> }> {
+    const { success, payload, errors } = await parseUpdateRepositoryForm(formData);
+    if (!success) {
+        return { errors };
+    }
+
+    const repository = await updateRepository(payload);
+    if (!repository) {
+        return {
+            errors: {
+                global: ['Failed to update repository.']
+            }
+        };
+    }
+
+    revalidatePath('/dashboard/icon-repositories');
+    redirect('/dashboard/icon-repositories');
 }
 
 export async function importFromRepositoryAction(

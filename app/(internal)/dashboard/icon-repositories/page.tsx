@@ -7,7 +7,12 @@ export default async function RepositoriesManagementPage() {
 
     return (
         <div>
-            <h1 className="text-xl font-semibold mb-8">Icon Repositories</h1>
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-xl font-semibold">Icon Repositories</h1>
+                <a href="/dashboard/icon-repositories/new" className="d-btn d-btn-primary">
+                    Add New Repository
+                </a>
+            </div>
             <Box>
                 <BoxHeader>List of Repositories</BoxHeader>
                 <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">

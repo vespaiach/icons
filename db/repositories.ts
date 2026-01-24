@@ -163,6 +163,44 @@ export async function getRepositoryVariantsById(repositoryId: number): Promise<R
     return rows.length > 0 ? (rows[0] as RepositoryVariants) : null;
 }
 
+export async function getRepositoryById(repositoryId: number): Promise<Repository | null> {
+    log('info', '[DB] getRepositoryById - START', { repositoryId });
+    const rows = await sql`
+        SELECT 
+            id,
+            owner,
+            name,
+            ref,
+            created_at AS "createdAt",
+            last_imported_at AS "lastImportedAt"
+        FROM repositories
+        WHERE id = ${repositoryId}
+    `;
+    log('info', `[DB] getRepositoryById - END (found: ${rows.length > 0})`);
+    return rows.length > 0 ? (rows[0] as Repository) : null;
+}
+
+export async function createRepository(data: {
+    owner: string;
+    name: string;
+    ref: string;
+}): Promise<Repository | null> {
+    log('info', '[DB] createRepository - START', data);
+    const rows = await sql`
+        INSERT INTO repositories (owner, name, ref)
+        VALUES (${data.owner}, ${data.name}, ${data.ref})
+        RETURNING 
+            id,
+            owner,
+            name,
+            ref,
+            created_at AS "createdAt",
+            last_imported_at AS "lastImportedAt"
+    `;
+    log('info', `[DB] createRepository - END (success: ${!!rows[0]})`);
+    return rows[0] ? (rows[0] as Repository) : null;
+}
+
 export async function updateRepository(
     data: Partial<Omit<Repository, 'createdAt' | 'id'>> & { id: number }
 ): Promise<Repository | null> {
