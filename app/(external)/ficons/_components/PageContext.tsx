@@ -10,6 +10,7 @@ export const adjustmentsByRepoIdAtom = atom<Record<number, { color: string; size
 export const iconAtom = atom<IconWithRelativeData | null>(null);
 export const favoritesAtom = atom<IconWithRelativeData[]>([]);
 export const drawerOpenAtom = atom<boolean>(false);
+export const repositoryAtom = atom<Repository | null>(null);
 
 export function PageContextProvider({
     children,
@@ -33,6 +34,7 @@ export function PageContextProvider({
 
     const isClient = useIsClient();
     const selectedIcon = useIconValue();
+    const selectedRepository = useAtomValue(repositoryAtom);
 
     useEffect(() => {
         if (isClient) {
@@ -40,12 +42,25 @@ export function PageContextProvider({
             if (!modalElement) return;
 
             if (selectedIcon !== null) {
-                modalElement.show();
+                modalElement.showModal();
             } else {
                 modalElement.close();
             }
         }
     }, [selectedIcon, isClient]);
+
+    // useEffect(() => {
+    //     if (isClient) {
+    //         const modalElement = document.getElementById('repository_modal') as HTMLDialogElement | null;
+    //         if (!modalElement) return;
+
+    //         if (selectedRepository !== null) {
+    //             modalElement.showModal();
+    //         } else {
+    //             modalElement.close();
+    //         }
+    //     }
+    // }, [selectedRepository, isClient]);
 
     return children;
 }

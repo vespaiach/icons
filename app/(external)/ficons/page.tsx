@@ -6,6 +6,7 @@ import IconModal from './_components/IconModal';
 import IconSection from './_components/IconsSection';
 import Navbar from './_components/Navbar';
 import { PageContextProvider } from './_components/PageContext';
+import RepositoryModal from './_components/RepositoryModal';
 import SearchModal from './_components/SearchModal';
 import { getRepositoriesAction } from './actions';
 
@@ -28,6 +29,7 @@ export default async function PageIcons() {
 
                         <SearchModal repositories={repositoriesVariants} />
                         <IconModal repositories={repositoriesVariants} />
+                        <RepositoryModal />
                         <Footer />
                     </div>
                     <Drawer repositories={repositoriesVariants} />
