@@ -1,13 +1,17 @@
 'use client';
 
 import { useIntersectionObserver } from '@uidotdev/usehooks';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { cx } from '@/utils/common-helpers';
+import { useSearchCountAction, useSetSearchCountAction } from '../PageContext';
 import IconButton from './IconButton';
 
 export default function SectionBody({ variant }: { variant: Variant }) {
     const [ref, entry] = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px', threshold: 0 });
+    const searchCount = useSearchCountAction(variant.id);
     const style = useMemo(() => {
+        const count = searchCount !== null && searchCount !== undefined ? searchCount : variant.iconCount;
         const viewPortWidth = document.documentElement.clientWidth;
         const iconsPerRow =
             viewPortWidth >= 1536
@@ -22,9 +26,9 @@ export default function SectionBody({ variant }: { variant: Variant }) {
                         ? 4
                         : 3;
         return {
-            minHeight: Math.ceil(variant.iconCount / iconsPerRow) * 100
+            minHeight: Math.ceil(count / iconsPerRow) * 100
         };
-    }, [variant.iconCount]);
+    }, [searchCount, variant.iconCount]);
 
     return (
         <div className="ic-grid" style={style} ref={ref}>
@@ -34,7 +38,28 @@ export default function SectionBody({ variant }: { variant: Variant }) {
 }
 
 function Content({ variant }: { variant: Variant }) {
-    const [icons, setIcons] = useState<IconWithRelativeData[] | null>(null);
+    const setSearchCount = useSetSearchCountAction();
+    const [_icons, setIcons] = useState<IconWithRelativeData[] | null>(null);
+    const searchParams = useSearchParams();
+    const q = searchParams.get('q');
+
+    const icons = useMemo(() => {
+        if (!q || !_icons) {
+            return _icons;
+        }
+
+        const lowerQ = q.toLowerCase();
+        return _icons.filter((icon) => icon.name.toLowerCase().includes(lowerQ));
+    }, [_icons, q]);
+    const totalIcons = icons?.length;
+
+    useEffect(() => {
+        if (totalIcons !== null && totalIcons !== undefined && totalIcons !== variant.iconCount) {
+            setSearchCount(variant.id, totalIcons);
+        } else {
+            setSearchCount(variant.id, null);
+        }
+    }, [totalIcons, setSearchCount, variant.id, variant.iconCount]);
 
     useEffect(() => {
         fetch(`/ficons/icons?variantId=${variant.id}`)
