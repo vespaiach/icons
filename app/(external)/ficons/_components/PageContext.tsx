@@ -11,6 +11,7 @@ export const iconAtom = atom<IconWithRelativeData | null>(null);
 export const favoritesAtom = atom<IconWithRelativeData[]>([]);
 export const drawerOpenAtom = atom<boolean>(false);
 export const repositoryAtom = atom<Repository | null>(null);
+export const searchCountsAtom = atom<Record<number, number | undefined | null>>({});
 
 export function PageContextProvider({
     children,
@@ -127,4 +128,22 @@ export function useDrawerAction() {
             set(false);
         }, [set])
     ] as const;
+}
+
+export function useSearchCountAction(variantId: number) {
+    const searchCounts = useAtomValue(searchCountsAtom);
+    return searchCounts[variantId];
+}
+
+export function useSetSearchCountAction() {
+    const set = useSetAtom(searchCountsAtom);
+    return useCallback(
+        (variantId: number, count: number | undefined | null) => {
+            set((prev) => ({
+                ...prev,
+                [variantId]: count
+            }));
+        },
+        [set]
+    );
 }

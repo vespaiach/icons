@@ -4,8 +4,9 @@ import { useIsClient } from '@uidotdev/usehooks';
 import { useSetAtom } from 'jotai';
 import { Settings } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { assertNumber } from '@/utils/assert-helpers';
 import { cx, repoToId } from '@/utils/common-helpers';
-import { repositoryAtom } from '../PageContext';
+import { repositoryAtom, useSearchCountAction } from '../PageContext';
 import SectionBody from './SectionBody';
 
 export default function IconSection({ repository }: { repository: RepositoryVariants }) {
@@ -15,6 +16,7 @@ export default function IconSection({ repository }: { repository: RepositoryVari
     const [isSticky, setIsSticky] = useState(false);
     const sentinelRef = useRef<HTMLDivElement>(null);
     const setRepository = useSetAtom(repositoryAtom);
+    const searchCount = useSearchCountAction(selectedVariant.id);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -72,7 +74,11 @@ export default function IconSection({ repository }: { repository: RepositoryVari
                                     setSelectedVariant(variant);
                                     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
                                 }}>
-                                {variant.name} ({variant.iconCount})
+                                {variant.name} (
+                                {assertNumber(searchCount) && selectedVariant.id === variant.id
+                                    ? `${searchCount}/`
+                                    : ''}
+                                {variant.iconCount})
                             </button>
                         );
                     })}
