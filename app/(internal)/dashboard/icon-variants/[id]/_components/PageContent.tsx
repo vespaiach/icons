@@ -56,7 +56,10 @@ export default function PageContent({ variant }: { variant: Variant & { reposito
                                     Fill color:{' '}
                                     <code className="bg-base-300 px-2 py-1 rounded">
                                         {formState.values.fill}
-                                    </code>
+                                    </code>{' '}
+                                    <span className="text-sm text-base-content/70">
+                                        (applied to: {variant.fillOn})
+                                    </span>
                                 </li>
                             )}
                             {formState.values.stroke && (
@@ -64,7 +67,10 @@ export default function PageContent({ variant }: { variant: Variant & { reposito
                                     Stroke color:{' '}
                                     <code className="bg-base-300 px-2 py-1 rounded">
                                         {formState.values.stroke}
-                                    </code>
+                                    </code>{' '}
+                                    <span className="text-sm text-base-content/70">
+                                        (applied to: {variant.strokeOn})
+                                    </span>
                                 </li>
                             )}
                             {formState.values.strokeWidth && (
@@ -72,7 +78,10 @@ export default function PageContent({ variant }: { variant: Variant & { reposito
                                     Stroke width:{' '}
                                     <code className="bg-base-300 px-2 py-1 rounded">
                                         {formState.values.strokeWidth}
-                                    </code>
+                                    </code>{' '}
+                                    <span className="text-sm text-base-content/70">
+                                        (applied to: {variant.strokeWidthOn})
+                                    </span>
                                 </li>
                             )}
                             {!formState.values.fill &&
@@ -84,7 +93,12 @@ export default function PageContent({ variant }: { variant: Variant & { reposito
                     </div>
                 </div>
             </div>
-            <VariantForm formState={formState} formAction={formAction} isPending={isPending} />
+            <VariantForm
+                formState={formState}
+                formAction={formAction}
+                isPending={isPending}
+                variant={variant}
+            />
         </Box>
     );
 }
