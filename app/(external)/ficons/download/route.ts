@@ -3,8 +3,9 @@ import { type NextRequest, NextResponse } from 'next/server';
 import * as v from 'valibot';
 import { getIconsByIds } from '@/db/icons';
 import { astToSvgString, prepareAst } from '@/utils/ast-2-html';
-import { astToTsx } from '@/utils/ast-2-tsx';
+import { astToTsx, prepareAstToTsx } from '@/utils/ast-2-tsx';
 import { log } from '@/utils/log.helpers';
+import { mergeAttributes } from '@/utils/string-helpers';
 
 const downloadRequestSchema = v.object({
     iconIds: v.pipe(
@@ -63,8 +64,14 @@ export async function POST(request: NextRequest) {
                 await Bun.write(svgFilePath, svgContent);
 
                 // Generate React component file
-                const preparedAstToTsx = prepareAst(icon.svgAst, icon, attributes);
-                const tsxContent = astToTsx({ name: icon.name, svgAst: preparedAstToTsx });
+                const preparedAstToTsx = prepareAstToTsx(icon.svgAst, icon, attributes);
+                const tsxContent = astToTsx({
+                    name: icon.name,
+                    svgAst: preparedAstToTsx,
+                    size: attributes?.size,
+                    fill: mergeAttributes(icon.fill, attributes?.color),
+                    stroke: mergeAttributes(icon.stroke, attributes?.color)
+                });
                 const tsxFileName = `${icon.name
                     .split('-')
                     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))

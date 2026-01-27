@@ -57,12 +57,11 @@ export function astToSvgString(ast: SvgNode): string {
 
 export function prepareAst(
     svgAst: SvgNode,
-    variant: Pick<Variant, 'fill' | 'stroke' | 'colorOnChildren'>,
+    variant: Pick<Variant, 'fill' | 'fillOn' | 'stroke' | 'strokeOn' | 'strokeWidth' | 'strokeWidthOn'>,
     adjustment?: Adjustment
 ): SvgNode {
     const size = adjustment?.size || 24;
     const color = adjustment?.color || 'currentColor';
-    const colorOnChildren = variant.colorOnChildren;
     const ast = {
         ...svgAst,
         attrs: { ...svgAst.attrs, width: size, height: size } as Record<string, string | undefined>
@@ -74,10 +73,13 @@ export function prepareAst(
     const applyColorToChildren = (node: SvgNode) => {
         if (node.children) {
             node.children.forEach((child) => {
-                if (fill !== undefined) {
+                if (fill !== undefined && (variant.fillOn === 'children' || variant.fillOn === 'both')) {
                     child.attrs.fill = fill;
                 }
-                if (stroke !== undefined) {
+                if (
+                    stroke !== undefined &&
+                    (variant.strokeOn === 'children' || variant.strokeOn === 'both')
+                ) {
                     child.attrs.stroke = stroke;
                 }
                 applyColorToChildren(child);
@@ -85,15 +87,13 @@ export function prepareAst(
         }
     };
 
-    if (colorOnChildren) {
-        applyColorToChildren(ast);
-    } else {
-        if (fill !== undefined) {
-            ast.attrs.fill = fill;
-        }
-        if (stroke !== undefined) {
-            ast.attrs.stroke = stroke;
-        }
+    if (fill !== undefined && (variant.fillOn === 'parent' || variant.fillOn === 'both')) {
+        ast.attrs.fill = fill;
     }
+    if (stroke !== undefined && (variant.strokeOn === 'parent' || variant.strokeOn === 'both')) {
+        ast.attrs.stroke = stroke;
+    }
+
+    applyColorToChildren(ast);
     return ast;
 }

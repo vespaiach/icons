@@ -1,4 +1,3 @@
-import { unstable_cache } from 'next/cache';
 import { type NextRequest, NextResponse } from 'next/server';
 import * as v from 'valibot';
 import { getIconsByVariantId } from '@/db/icons';

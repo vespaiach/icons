@@ -19,9 +19,11 @@ export async function getRepositoriesWithVariants(): Promise<RepositoryVariants[
                     'regex', variants.regex,
                     'repositoryId', variants.repository_id,
                     'stroke', variants.stroke,
+                    'strokeOn', variants.stroke_on,
                     'fill', variants.fill,
+                    'fillOn', variants.fill_on,
                     'strokeWidth', variants.stroke_width,
-                    'colorOnChildren', variants.color_on_children,
+                    'strokeWidthOn', variants.stroke_width_on,
                     'iconCount', variants.icon_count,
                     'createdAt', variants.created_at,
                     'updatedAt', variants.updated_at
@@ -115,9 +117,11 @@ export async function getRepositoryVariantsWithIconCount(): Promise<RepositoryVa
                     'name', v.name,
                     'regex', v.regex,
                     'stroke', v.stroke,
+                    'strokeOn', v.stroke_on,
                     'fill', v.fill,
+                    'fillOn', v.fill_on,
                     'strokeWidth', v.stroke_width,
-                    'colorOnChildren', v.color_on_children,
+                    'strokeWidthOn', v.stroke_width_on,
                     'createdAt', v.created_at,
                     'updatedAt', v.updated_at
                 )
@@ -148,9 +152,11 @@ export async function getRepositoryVariantsById(repositoryId: number): Promise<R
                     'name', variants.name,
                     'regex', variants.regex,
                     'stroke', variants.stroke,
+                    'strokeOn', variants.stroke_on,
                     'fill', variants.fill,
+                    'fillOn', variants.fill_on,
                     'strokeWidth', variants.stroke_width,
-                    'colorOnChildren', variants.color_on_children,
+                    'strokeWidthOn', variants.stroke_width_on,
                     'createdAt', variants.created_at,
                     'updatedAt', variants.updated_at
                 )

@@ -63,8 +63,11 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
         regex,
         path,
         stroke: enableStrokeColor && stroke ? stroke : null,
+        strokeOn: 'parent',
         fill: enableFillColor && fill ? fill : null,
-        strokeWidth: enableStrokeWidth && strokeWidth !== undefined ? String(strokeWidth) : null
+        fillOn: 'parent',
+        strokeWidth: enableStrokeWidth && strokeWidth !== undefined ? String(strokeWidth) : null,
+        strokeWidthOn: 'parent'
     });
     if (!updatedVariant) {
         return { ...prevState, errors: { global: ['Failed to update variant.'] } };

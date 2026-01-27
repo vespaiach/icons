@@ -7,10 +7,12 @@ repos:
         path: "/icons"
         regex: "^(?!.*-fill\\.svg$).*$"
         fill: "currentColor"
+        fillOn: "parent"
       - name: "filled"
         path: "/icons"
         regex: "-fill\\.svg$"
         fill: "currentColor"
+        fillOn: "parent"
   - owner: "atisawd"
     name: "boxicons"
     ref: "master"
@@ -18,12 +20,15 @@ repos:
       - name: logos
         path: "/svg/logos"
         fill: "currentColor"
+        fillOn: "parent"
       - name: regular
         path: "/svg/regular"
         fill: "currentColor"
+        fillOn: "parent"
       - name: solid
         path: "/svg/solid"
         fill: "currentColor"
+        fillOn: "parent"
   - owner: "danklammer"
     name: "bytesize-icons"
     github_id: 39126489
@@ -32,8 +37,11 @@ repos:
       - name: default
         path: "/dist/icons"
         fill: "none"
+        fillOn: "parent"
         stroke: "currentColor"
+        strokeOn: "parent"
         strokeWidth: "2"
+        strokeWidthOn: "parent"
   - owner: "feathericons"
     name: "feather"
     ref: "main"
@@ -41,8 +49,11 @@ repos:
       - name: default
         path: "/icons"
         fill: "none"
+        fillOn: "parent"
         stroke: "currentColor"
+        strokeOn: "parent"
         strokeWidth: "2"
+        strokeWidthOn: "parent"
   - owner: "tailwindlabs"
     name: "heroicons"
     ref: "master"
@@ -50,17 +61,22 @@ repos:
       - name: "16/solid"
         path: "/optimized/16/solid"
         fill: "currentColor"
+        fillOn: "parent"
       - name: "20/solid" 
         path: "/optimized/20/solid"
         fill: "currentColor"
+        fillOn: "parent"
       - name: "24"
         path: "/optimized/24/outline"
         fill: "none"
         stroke: "currentColor"
+        strokeOn: "parent"
         strokeWidth: "1.5"
+        strokeWidthOn: "parent"
       - name: "24"
         path: "/optimized/24/solid"
         fill: "currentColor"
+        fillOn: "parent"
   - owner: "lucide-icons"
     name: "lucide"
     ref: "main"
@@ -68,8 +84,11 @@ repos:
       - name: default
         path: "/icons"
         fill: "none"
+        fillOn: "parent"
         stroke: "currentColor"
+        strokeOn: "parent"
         strokeWidth: "2"
+        strokeWidthOn: "parent"
   - owner: "tabler"
     name: "tabler-icons"
     ref: "main"
@@ -77,27 +96,31 @@ repos:
       - name: filled
         path: "/icons/filled"
         fill: "currentColor"
+        fillOn: "parent"
       - name: outline
         path: "/icons/outline"
         fill: "none"
+        fillOn: "parent"
         stroke: "currentColor"
+        strokeOn: "parent"
         strokeWidth: "2"
+        strokeWidthOn: "parent"
   - owner: "FortAwesome"
     name: "Font-Awesome"
     ref: "7.x"
     variants:
       - name: brands
         path: "/svgs-full/brands"
-        colorOnChildren: true
         fill: "currentColor"
+        fillOn: "children"
       - name: regular
         path: "/svgs-full/regular"
-        colorOnChildren: true
         fill: "currentColor"
+        fillOn: "children"
       - name: solid
         path: "/svgs-full/solid"
-        colorOnChildren: true
         fill: "currentColor"
+        fillOn: "children"
   - owner: "astrit"
     name: "css.gg"
     ref: "main"
@@ -105,7 +128,7 @@ repos:
       - name: default
         path: "/icons/svg"        
         fill: "currentColor"
-        colorOnChildren: true
+        fillOn: "children"
   - owner: "iconoir-icons"
     name: "iconoir"
     ref: "main"
@@ -113,12 +136,15 @@ repos:
       - name: regular
         path: "/icons/regular"        
         fill: "none"
+        fillOn: "parent"
         stroke: "currentColor"
+        strokeOn: "parent"
         strokeWidth: "1.5"
+        strokeWidthOn: "parent"
       - name: solid
         path: "/icons/solid"        
         fill: "currentColor"
-        colorOnChildren: true
+        fillOn: "children"
   - owner: "mikolajdobrucki"
     name: "ikonate"
     ref: "master"
@@ -126,3 +152,4 @@ repos:
       - name: default
         path: "/icons"        
         stroke: "currentColor"
+        strokeOn: "parent"

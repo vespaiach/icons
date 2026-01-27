@@ -8,9 +8,11 @@ declare module '*/icon.repositories.yaml' {
             path: string;
             regex?: string;
             fill?: string;
+            fillOn?: string;
             stroke?: string;
+            strokeOn?: string;
             strokeWidth?: string;
-            colorOnChildren?: boolean;
+            strokeWidthOn?: string;
         }[];
     }
 

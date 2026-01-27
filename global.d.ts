@@ -32,10 +32,12 @@ declare global {
         name: string;
         regex: string;
         stroke: string | null;
+        strokeOn: 'both' | 'parent' | 'children';
         fill: string | null;
+        fillOn: 'both' | 'parent' | 'children';
         strokeWidth: string | null;
+        strokeWidthOn: 'both' | 'parent' | 'children';
         iconCount: number;
-        colorOnChildren: boolean;
         createdAt: Date;
         updatedAt: Date;
     }
