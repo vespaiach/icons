@@ -1,14 +1,13 @@
 import { Globe } from 'lucide-react';
-import Link from 'next/link';
 import Footer from '@/components/Footer';
 
 export default function AboutPage() {
     return (
         <div className="container mx-auto px-4 pt-8 max-w-3xl">
             <div className="mb-6">
-                <Link href="/ficons" className="d-btn d-btn-sm d-btn-ghost">
+                <a href="/ficons" className="d-btn d-btn-sm d-btn-ghost">
                     ← Back to Icons
-                </Link>
+                </a>
             </div>
 
             <h1 className="font-bold text-3xl mb-6 flex items-center gap-3">

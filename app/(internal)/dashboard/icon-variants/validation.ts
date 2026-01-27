@@ -42,7 +42,10 @@ export const variantUpdateFormSchema = v.object({
             v.string(),
             v.transform((val) => (val ? Number(val) : undefined))
         )
-    )
+    ),
+    strokeOn: v.optional(v.pipe(v.string(), v.picklist(['both', 'parent', 'children']))),
+    fillOn: v.optional(v.pipe(v.string(), v.picklist(['both', 'parent', 'children']))),
+    strokeWidthOn: v.optional(v.pipe(v.string(), v.picklist(['both', 'parent', 'children'])))
 });
 
 export const parseVariantUpdateForm = buildFormParser(variantUpdateFormSchema);
@@ -77,7 +80,10 @@ export const variantCreateFormSchema = v.object({
             v.string(),
             v.transform((val) => (val ? Number(val) : undefined))
         )
-    )
+    ),
+    strokeOn: v.optional(v.pipe(v.string(), v.picklist(['both', 'parent', 'children']))),
+    fillOn: v.optional(v.pipe(v.string(), v.picklist(['both', 'parent', 'children']))),
+    strokeWidthOn: v.optional(v.pipe(v.string(), v.picklist(['both', 'parent', 'children'])))
 });
 
 export const parseVariantCreateForm = buildFormParser(variantCreateFormSchema);

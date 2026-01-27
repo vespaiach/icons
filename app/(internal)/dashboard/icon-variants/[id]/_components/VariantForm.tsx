@@ -14,22 +14,27 @@ type UpdateVariantReturn = Awaited<ReturnType<typeof updateVariantAction>>;
 export default function VariantForm({
     formState,
     isPending,
-    formAction
+    formAction,
+    variant
 }: {
     formState: UpdateVariantReturn;
     isPending: boolean;
     formAction: (formData: FormData) => void;
+    variant: Variant & { repository: Repository };
 }) {
     const [enableStrokeColor, setEnableStrokeColor] = useState(formState.values.stroke !== null);
     const [strokeColor, setStrokeColor] = useState(formState.values.stroke ?? '#000000');
+    const [strokeOn, setStrokeOn] = useState<'both' | 'parent' | 'children'>(variant.strokeOn);
 
     const [enableFillColor, setEnableFillColor] = useState(formState.values.fill !== null);
     const [fillColor, setFillColor] = useState(formState.values.fill ?? '#000000');
+    const [fillOn, setFillOn] = useState<'both' | 'parent' | 'children'>(variant.fillOn);
 
     const [enableStrokeWidth, setEnableStrokeWidth] = useState(formState.values.strokeWidth !== null);
     const [strokeWidth, setStrokeWidth] = useState(
         formState.values.strokeWidth ? Number(formState.values.strokeWidth) : 2
     );
+    const [strokeWidthOn, setStrokeWidthOn] = useState<'both' | 'parent' | 'children'>(variant.strokeWidthOn);
 
     return (
         <form action={formAction} className="space-y-6">
@@ -115,10 +120,28 @@ export default function VariantForm({
                             {enableStrokeColor && (
                                 <>
                                     <input type="hidden" name="stroke" value={strokeColor} />
-                                    <StrokeColorAdjuster
-                                        strokeColor={strokeColor}
-                                        onStrokeColorChange={setStrokeColor}
-                                    />
+                                    <input type="hidden" name="strokeOn" value={strokeOn} />
+                                    <div className="space-y-3">
+                                        <StrokeColorAdjuster
+                                            strokeColor={strokeColor}
+                                            onStrokeColorChange={setStrokeColor}
+                                        />
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-sm font-medium">Apply to:</span>
+                                            <select
+                                                className="d-select d-select-sm d-select-bordered"
+                                                value={strokeOn}
+                                                onChange={(e) =>
+                                                    setStrokeOn(
+                                                        e.target.value as 'both' | 'parent' | 'children'
+                                                    )
+                                                }>
+                                                <option value="parent">Parent only</option>
+                                                <option value="children">Children only</option>
+                                                <option value="both">Both parent and children</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </>
                             )}
                         </div>
@@ -139,10 +162,28 @@ export default function VariantForm({
                             {enableFillColor && (
                                 <>
                                     <input type="hidden" name="fill" value={fillColor} />
-                                    <FillColorAdjuster
-                                        fillColor={fillColor}
-                                        onFillColorChange={setFillColor}
-                                    />
+                                    <input type="hidden" name="fillOn" value={fillOn} />
+                                    <div className="space-y-3">
+                                        <FillColorAdjuster
+                                            fillColor={fillColor}
+                                            onFillColorChange={setFillColor}
+                                        />
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-sm font-medium">Apply to:</span>
+                                            <select
+                                                className="d-select d-select-sm d-select-bordered"
+                                                value={fillOn}
+                                                onChange={(e) =>
+                                                    setFillOn(
+                                                        e.target.value as 'both' | 'parent' | 'children'
+                                                    )
+                                                }>
+                                                <option value="parent">Parent only</option>
+                                                <option value="children">Children only</option>
+                                                <option value="both">Both parent and children</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </>
                             )}
                         </div>
@@ -163,10 +204,28 @@ export default function VariantForm({
                             {enableStrokeWidth && (
                                 <>
                                     <input type="hidden" name="strokeWidth" value={strokeWidth} />
-                                    <StrokeWidthAdjuster
-                                        strokeWidth={strokeWidth}
-                                        onStrokeWidthChange={setStrokeWidth}
-                                    />
+                                    <input type="hidden" name="strokeWidthOn" value={strokeWidthOn} />
+                                    <div className="space-y-3">
+                                        <StrokeWidthAdjuster
+                                            strokeWidth={strokeWidth}
+                                            onStrokeWidthChange={setStrokeWidth}
+                                        />
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-sm font-medium">Apply to:</span>
+                                            <select
+                                                className="d-select d-select-sm d-select-bordered"
+                                                value={strokeWidthOn}
+                                                onChange={(e) =>
+                                                    setStrokeWidthOn(
+                                                        e.target.value as 'both' | 'parent' | 'children'
+                                                    )
+                                                }>
+                                                <option value="parent">Parent only</option>
+                                                <option value="children">Children only</option>
+                                                <option value="both">Both parent and children</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </>
                             )}
                         </div>

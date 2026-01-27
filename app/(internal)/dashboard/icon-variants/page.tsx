@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Box, { BoxHeader } from '@/components/Box';
 import { loadVariantsAction } from './actions';
 
@@ -9,9 +8,9 @@ export default async function VariantsManagementPage() {
         <div>
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-xl font-semibold">Icon Variants</h1>
-                <Link href="/dashboard/icon-variants/new" className="d-btn d-btn-primary">
+                <a href="/dashboard/icon-variants/new" className="d-btn d-btn-primary">
                     Add New Variant
-                </Link>
+                </a>
             </div>
             <Box>
                 <BoxHeader>List of Variants</BoxHeader>
@@ -66,11 +65,11 @@ export default async function VariantsManagementPage() {
                                         </div>
                                     </td>
                                     <td>
-                                        <Link
+                                        <a
                                             href={`/dashboard/icon-variants/${variant.id}`}
                                             className="d-btn d-btn-sm d-btn-primary">
                                             Update
-                                        </Link>
+                                        </a>
                                     </td>
                                 </tr>
                             ))}

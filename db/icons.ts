@@ -80,9 +80,11 @@ export async function getIconsByIds(iconIds: number[]) {
             i.svg_ast AS "svgAst",
             v.name AS "variantName",
             v.stroke,
+            v.stroke_on AS "strokeOn",
             v.fill,
+            v.fill_on AS "fillOn",
             v.stroke_width AS "strokeWidth",
-            v.color_on_children AS "colorOnChildren"
+            v.stroke_width_on AS "strokeWidthOn"
         FROM icons i
         INNER JOIN variants v ON i.variant_id = v.id
         WHERE i.id = ANY(${iconIds})
@@ -97,9 +99,11 @@ export async function getIconsByIds(iconIds: number[]) {
             variantId: number;
             variantName: string;
             stroke: string | null;
+            strokeOn: 'both' | 'parent' | 'children';
             fill: string | null;
+            fillOn: 'both' | 'parent' | 'children';
             strokeWidth: string | null;
-            colorOnChildren: boolean;
+            strokeWidthOn: 'both' | 'parent' | 'children';
         }
     >;
 }

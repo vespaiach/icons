@@ -69,7 +69,7 @@ export default function IconSection({ repository }: { repository: RepositoryVari
                                     selectedVariant.id === variant.id && 'd-tab-active'
                                 )}
                                 onClick={() => {
-                                    setSelectedVariant(variant)
+                                    setSelectedVariant(variant);
                                     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
                                 }}>
                                 {variant.name} ({variant.iconCount})

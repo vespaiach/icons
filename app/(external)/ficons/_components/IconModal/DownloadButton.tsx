@@ -1,7 +1,8 @@
 import { ChevronDown, Download } from 'lucide-react';
 import { useState } from 'react';
 import { astToHtml, prepareAst } from '@/utils/ast-2-html';
-import { astToTsx, preparedAstToTsx } from '@/utils/ast-2-tsx';
+import { astToTsx, prepareAstToTsx } from '@/utils/ast-2-tsx';
+import { mergeAttributes } from '@/utils/client-side/svg-helpers';
 import { cx } from '@/utils/common-helpers';
 
 export default function DownloadButton({
@@ -22,11 +23,13 @@ export default function DownloadButton({
             const preparedAst = prepareAst(icon.svgAst, variant, adjustment);
             svgContent = astToHtml(preparedAst);
         } else if (format === 'React TSX') {
-            const preparedAst = preparedAstToTsx(icon.svgAst, variant, adjustment);
+            const preparedAst = prepareAstToTsx(icon.svgAst, variant, adjustment);
             svgContent = astToTsx({
                 name: icon.name,
                 svgAst: preparedAst,
-                colorOnChildren: variant.colorOnChildren
+                size: adjustment?.size,
+                fill: mergeAttributes(variant.fill, adjustment?.color),
+                stroke: mergeAttributes(variant.stroke, adjustment?.color)
             });
         }
 

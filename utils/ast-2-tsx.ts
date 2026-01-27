@@ -69,7 +69,13 @@ export function astToTsxNode(node: SvgNode): string {
     return jsx;
 }
 
-export function astToTsx(icon: { name: string; svgAst: SvgNode; colorOnChildren?: boolean }): string {
+export function astToTsx(icon: {
+    name: string;
+    svgAst: SvgNode;
+    size?: number | string;
+    fill?: string;
+    stroke?: string;
+}): string {
     let componentName = icon.name
         .split('-')
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -81,10 +87,25 @@ export function astToTsx(icon: { name: string; svgAst: SvgNode; colorOnChildren?
     }
 
     const title = `${icon.name.replace(/-/g, ' ')} icon`;
-    const width = icon.svgAst.attrs.width;
-    const height = icon.svgAst.attrs.height;
-    const fill = icon.svgAst.attrs.fill;
-    const stroke = icon.svgAst.attrs.stroke;
+    const attrs = Object.entries(icon.svgAst.attrs)
+        .map(([key, value]) => {
+            const jsxKey = htmlAttributeToJsx(key);
+            if (value === undefined || value === null) {
+                return '';
+            }
+            if (typeof value === 'boolean') {
+                return value ? jsxKey : '';
+            }
+            if (typeof value === 'number') {
+                return `${jsxKey}={${value}}`;
+            }
+            if (typeof value === 'string' && value.includes('{') && value.includes('}')) {
+                return `${jsxKey}=${value}`;
+            }
+            return `${jsxKey}="${value}"`;
+        })
+        .filter(Boolean)
+        .join('\n            ');
 
     const innerTsx = astToInnerTsx(icon.svgAst);
 
@@ -92,19 +113,20 @@ export function astToTsx(icon: { name: string; svgAst: SvgNode; colorOnChildren?
 
 interface IconProps extends SVGProps<SVGSVGElement> {
     title?: string;
+    size?: number;
 }
 
 export default function ${componentName}({
+    width,
+    height,
     title = "${title}",
-    width = ${width},
-    height = ${height},${fill ? `\n    fill = "${fill}",` : ''}${stroke ? `\n    stroke = "${stroke}",` : ''}
+    size = ${icon.size || 24},${icon.fill ? `\n    fill = "${icon.fill}",` : ''}${icon.stroke ? `\n    stroke = "${icon.stroke}",` : ''}
     ...rest
 }: IconProps): React.ReactNode {
     return (
         <svg
             {...rest}
-            width={width}
-            height={height}${fill && !icon.colorOnChildren ? `\n            fill={fill}` : ''}${stroke && !icon.colorOnChildren ? `\n            stroke={stroke}` : ''}>
+            ${attrs}>
             <title>{title}</title>
             ${innerTsx}
         </svg>
@@ -114,17 +136,18 @@ export default function ${componentName}({
     return content;
 }
 
-export function preparedAstToTsx(
+export function prepareAstToTsx(
     svgAst: SvgNode,
-    variant: Pick<Variant, 'fill' | 'stroke' | 'colorOnChildren'>,
+    variant: Pick<Variant, 'fill' | 'fillOn' | 'stroke' | 'strokeOn' | 'strokeWidth' | 'strokeWidthOn'>,
     adjustment?: Adjustment
 ): SvgNode {
-    const size = adjustment?.size || 24;
-    const color = adjustment?.color || 'currentColor';
-    const colorOnChildren = variant.colorOnChildren;
+    const color = adjustment?.color;
     const ast = {
         ...svgAst,
-        attrs: { ...svgAst.attrs, width: size, height: size } as Record<string, string | undefined>
+        attrs: { ...svgAst.attrs, width: '{width || size}', height: '{height || size}' } as Record<
+            string,
+            string | undefined
+        >
     };
 
     const fill = mergeAttributes(variant.fill, color);
@@ -133,18 +156,24 @@ export function preparedAstToTsx(
     const applyColorToChildren = (node: SvgNode) => {
         if (node.children) {
             node.children.forEach((child) => {
-                if (fill) child.attrs.fill = '{fill}';
-                if (stroke) child.attrs.stroke = '{stroke}';
+                if (fill && (variant.fillOn === 'children' || variant.fillOn === 'both')) {
+                    child.attrs.fill = '{fill}';
+                }
+                if (stroke && (variant.strokeOn === 'children' || variant.strokeOn === 'both')) {
+                    child.attrs.stroke = '{stroke}';
+                }
                 applyColorToChildren(child);
             });
         }
     };
 
-    ast.attrs.fill = fill;
-    ast.attrs.stroke = stroke;
-
-    if (colorOnChildren) {
-        applyColorToChildren(ast);
+    if (fill && (variant.fillOn === 'parent' || variant.fillOn === 'both')) {
+        ast.attrs.fill = '{fill}';
     }
+    if (stroke && (variant.strokeOn === 'parent' || variant.strokeOn === 'both')) {
+        ast.attrs.stroke = '{stroke}';
+    }
+
+    applyColorToChildren(ast);
     return ast;
 }

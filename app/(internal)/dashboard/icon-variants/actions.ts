@@ -47,10 +47,13 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
         path,
         enableStrokeColor,
         stroke,
+        strokeOn,
         enableFillColor,
         fill,
+        fillOn,
         enableStrokeWidth,
-        strokeWidth
+        strokeWidth,
+        strokeWidthOn
     } = payload;
 
     const variant = await getVariantById(id);
@@ -63,8 +66,11 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
         regex,
         path,
         stroke: enableStrokeColor && stroke ? stroke : null,
+        strokeOn: strokeOn ?? 'parent',
         fill: enableFillColor && fill ? fill : null,
-        strokeWidth: enableStrokeWidth && strokeWidth !== undefined ? String(strokeWidth) : null
+        fillOn: fillOn ?? 'parent',
+        strokeWidth: enableStrokeWidth && strokeWidth !== undefined ? String(strokeWidth) : null,
+        strokeWidthOn: strokeWidthOn ?? 'parent'
     });
     if (!updatedVariant) {
         return { ...prevState, errors: { global: ['Failed to update variant.'] } };
@@ -95,8 +101,11 @@ interface CreateVariantParams {
         regex: string;
         path: string;
         stroke: string | null;
+        strokeOn: 'both' | 'parent' | 'children';
         fill: string | null;
+        fillOn: 'both' | 'parent' | 'children';
         strokeWidth: string | null;
+        strokeWidthOn: 'both' | 'parent' | 'children';
     };
 }
 
@@ -113,10 +122,13 @@ export async function createVariantAction(prevState: CreateVariantParams, formDa
         path,
         enableStrokeColor,
         stroke,
+        strokeOn,
         enableFillColor,
         fill,
+        fillOn,
         enableStrokeWidth,
-        strokeWidth
+        strokeWidth,
+        strokeWidthOn
     } = payload;
 
     const newVariant = await createVariant({
@@ -125,8 +137,11 @@ export async function createVariantAction(prevState: CreateVariantParams, formDa
         regex,
         path,
         stroke: enableStrokeColor && stroke ? stroke : null,
+        strokeOn: strokeOn ?? 'parent',
         fill: enableFillColor && fill ? fill : null,
-        strokeWidth: enableStrokeWidth && strokeWidth !== undefined ? String(strokeWidth) : null
+        fillOn: fillOn ?? 'parent',
+        strokeWidth: enableStrokeWidth && strokeWidth !== undefined ? String(strokeWidth) : null,
+        strokeWidthOn: strokeWidthOn ?? 'parent'
     });
 
     if (!newVariant) {
