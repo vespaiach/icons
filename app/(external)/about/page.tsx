@@ -1,7 +1,9 @@
-import { Globe } from 'lucide-react';
+import { ExternalLink, Globe } from 'lucide-react';
 import Footer from '@/components/Footer';
+import { getRepositoriesAction } from '../ficons/actions';
 
-export default function AboutPage() {
+export default async function AboutPage() {
+    const repositories = await getRepositoriesAction();
     return (
         <div className="container mx-auto px-4 pt-8 max-w-3xl">
             <div className="mb-6">
@@ -51,6 +53,46 @@ export default function AboutPage() {
                     favorites by clicking the heart button in the top-right corner. You can quickly copy or
                     download all your favorite icons from there.
                 </p>
+
+                <h2 className="text-2xl font-semibold mt-8 mb-4">Supported Icon Collections</h2>
+                <p className="mb-4">
+                    Ficons currently supports {repositories.length} icon collections with a total of{' '}
+                    {repositories
+                        .reduce(
+                            (sum, repo) =>
+                                sum + repo.variants.reduce((vSum, v) => vSum + (v.iconCount || 0), 0),
+                            0
+                        )
+                        .toLocaleString()}{' '}
+                    icons:
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                    {repositories.map((repo) => {
+                        const totalIcons = repo.variants.reduce((sum, v) => sum + (v.iconCount || 0), 0);
+                        return (
+                            <div key={repo.id} className="d-card bg-base-200 p-4">
+                                <a
+                                    href={`https://github.com/${repo.owner}/${repo.name}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-start justify-between gap-2"
+                                    aria-label={`View ${repo.name} on GitHub`}>
+                                    <div className="flex-1">
+                                        <h3 className="font-semibold text-lg">{repo.name}</h3>
+                                        <p className="text-sm opacity-70 mt-1">
+                                            {totalIcons.toLocaleString()} icon{totalIcons !== 1 ? 's' : ''}
+                                            {repo.variants.length > 1 &&
+                                                ` · ${repo.variants.length} variants`}
+                                        </p>
+                                    </div>
+                                    <span className="d-btn d-btn-ghost d-btn-xs d-btn-square">
+                                        <ExternalLink size={14} />
+                                    </span>
+                                </a>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
             <Footer />
         </div>
