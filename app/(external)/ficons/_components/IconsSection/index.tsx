@@ -3,23 +3,48 @@
 import { useIsClient } from '@uidotdev/usehooks';
 import { useSetAtom } from 'jotai';
 import { Settings } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cx, repoToId } from '@/utils/common-helpers';
 import { repositoryAtom } from '../PageContext';
 import SectionBody from './SectionBody';
 
 export default function IconSection({ repository }: { repository: RepositoryVariants }) {
     const isClient = useIsClient();
+    const id = repoToId(repository);
     const [selectedVariant, setSelectedVariant] = useState(repository.variants[0]);
+    const [isSticky, setIsSticky] = useState(false);
+    const sentinelRef = useRef<HTMLDivElement>(null);
     const setRepository = useSetAtom(repositoryAtom);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsSticky(!entry.isIntersecting);
+            },
+            { threshold: [0], rootMargin: '48px 0px 0px 0px' }
+        );
+
+        if (sentinelRef.current) {
+            observer.observe(sentinelRef.current);
+        }
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
 
     return (
         <div
-            className="pb-20 px-2"
-            id={repoToId(repository)}
+            className="pb-20"
+            id={id}
             data-name={`${repository.owner}/${repository.name}`}
             style={{ scrollMarginTop: '72px' }}>
-            <div className="flex flex-col md:flex-row md:justify-between h-12 items-end sticky top-12 z-10 bg-base-100">
+            <div ref={sentinelRef} className="h-0" />
+            <div
+                className={cx(
+                    'flex flex-col md:flex-row md:justify-between sticky top-12 z-10 text-base-content px-2 pt-2',
+                    isSticky ? 'bg-base-300' : 'bg-base-100'
+                )}>
                 <h2 className="font-semibold text-2xl capitalize flex items-center mb-2">
                     {repository.owner}/{repository.name}
                     <button
@@ -43,21 +68,26 @@ export default function IconSection({ repository }: { repository: RepositoryVari
                                     'd-tab capitalize',
                                     selectedVariant.id === variant.id && 'd-tab-active'
                                 )}
-                                onClick={() => setSelectedVariant(variant)}>
+                                onClick={() => {
+                                    setSelectedVariant(variant)
+                                    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+                                }}>
                                 {variant.name} ({variant.iconCount})
                             </button>
                         );
                     })}
                 </div>
             </div>
-            <div className="d-tab-content block border-base-300 bg-base-100">
-                {isClient
-                    ? repository.variants.map((v) =>
-                          v.id === selectedVariant.id ? (
-                              <SectionBody key={v.id} variant={selectedVariant} />
-                          ) : null
-                      )
-                    : null}
+            <div className="px-2">
+                <div className="d-tab-content block border-base-300 bg-base-100">
+                    {isClient
+                        ? repository.variants.map((v) =>
+                              v.id === selectedVariant.id ? (
+                                  <SectionBody key={v.id} variant={selectedVariant} />
+                              ) : null
+                          )
+                        : null}
+                </div>
             </div>
         </div>
     );

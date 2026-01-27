@@ -34,7 +34,6 @@ export function PageContextProvider({
 
     const isClient = useIsClient();
     const selectedIcon = useIconValue();
-    const selectedRepository = useAtomValue(repositoryAtom);
 
     useEffect(() => {
         if (isClient) {
@@ -48,19 +47,6 @@ export function PageContextProvider({
             }
         }
     }, [selectedIcon, isClient]);
-
-    // useEffect(() => {
-    //     if (isClient) {
-    //         const modalElement = document.getElementById('repository_modal') as HTMLDialogElement | null;
-    //         if (!modalElement) return;
-
-    //         if (selectedRepository !== null) {
-    //             modalElement.showModal();
-    //         } else {
-    //             modalElement.close();
-    //         }
-    //     }
-    // }, [selectedRepository, isClient]);
 
     return children;
 }

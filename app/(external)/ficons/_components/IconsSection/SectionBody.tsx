@@ -26,6 +26,14 @@ export default function SectionBody({ variant }: { variant: Variant }) {
         };
     }, [variant.iconCount]);
 
+    return (
+        <div className="ic-grid" style={style} ref={ref}>
+            {entry?.isIntersecting ? <Content variant={variant} /> : null}
+        </div>
+    );
+}
+
+function Content({ variant }: { variant: Variant }) {
     const [icons, setIcons] = useState<IconWithRelativeData[] | null>(null);
 
     useEffect(() => {
@@ -38,18 +46,11 @@ export default function SectionBody({ variant }: { variant: Variant }) {
             });
     }, [variant.id]);
 
-    return (
-        <div className="ic-grid" style={style} ref={ref}>
-            {entry?.isIntersecting ? <Content variant={variant} icons={icons} /> : null}
-        </div>
-    );
-}
-
-function Content({ variant, icons }: { variant: Variant; icons: IconWithRelativeData[] | null }) {
-    if (icons === null)
+    if (icons === null) {
         return new Array(variant.iconCount).fill(null).map((_, index) => {
             return <IconSkeleton key={index} index={index} />;
         });
+    }
 
     if (icons.length === 0) {
         return (

@@ -21,7 +21,7 @@ export default async function PageIcons() {
                     <div className="d-drawer-content">
                         <Navbar repositories={repositoriesVariants} />
 
-                        <div className="mt-6">
+                        <div className="mt-6 space-y-20">
                             {repositoriesVariants.map((repository) => (
                                 <IconSection key={repository.id} repository={repository} />
                             ))}

@@ -50,7 +50,7 @@ export async function getIconsByRepositoryId(repositoryId: number) {
 }
 
 export async function getIconsByVariantId(variantId: number) {
-    await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network delay
+    // await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network delay
     log('info', '[DB] getIconsByVariantId - START', { variantId });
     const rows = await sql`
         SELECT 
