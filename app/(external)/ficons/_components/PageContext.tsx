@@ -12,6 +12,7 @@ export const favoritesAtom = atom<IconWithRelativeData[]>([]);
 export const drawerOpenAtom = atom<boolean>(false);
 export const repositoryAtom = atom<Repository | null>(null);
 export const searchCountsAtom = atom<Record<number, number | undefined | null>>({});
+export const searchKeywordAtom = atom<string>('');
 
 export function PageContextProvider({
     children,
@@ -146,4 +147,12 @@ export function useSetSearchCountAction() {
         },
         [set]
     );
+}
+
+export function useSearchKeywordAction() {
+    return useSetAtom(searchKeywordAtom);
+}
+
+export function useSearchKeywordValue() {
+    return useAtomValue(searchKeywordAtom);
 }

@@ -1,10 +1,9 @@
 'use client';
 
 import { useIntersectionObserver } from '@uidotdev/usehooks';
-import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { cx } from '@/utils/common-helpers';
-import { useSearchCountAction, useSetSearchCountAction } from '../PageContext';
+import { useSearchCountAction, useSearchKeywordValue, useSetSearchCountAction } from '../PageContext';
 import IconButton from './IconButton';
 
 export default function SectionBody({ variant, active }: { variant: Variant; active: boolean }) {
@@ -44,8 +43,7 @@ export default function SectionBody({ variant, active }: { variant: Variant; act
             });
     }, [variant.id]);
 
-    const searchParams = useSearchParams();
-    const q = searchParams.get('q');
+    const q = useSearchKeywordValue();
     const icons = useMemo(() => {
         if (!q || !_icons) {
             return _icons;
@@ -54,7 +52,6 @@ export default function SectionBody({ variant, active }: { variant: Variant; act
         const lowerQ = q.toLowerCase();
         return _icons.filter((icon) => icon.name.toLowerCase().includes(lowerQ));
     }, [_icons, q]);
-    const _totalIcons = icons?.length;
 
     if (!active) return null;
 
