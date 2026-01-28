@@ -13,6 +13,20 @@ export const dynamic = 'force-dynamic'; // Mark as dynamic route since we use re
 
 export async function GET(request: NextRequest) {
     try {
+        // Prevent access from other sites
+        const origin = request.headers.get('origin');
+        const referer = request.headers.get('referer');
+        const host = request.headers.get('host');
+
+        // Check if request comes from the same origin
+        const isValidOrigin = origin ? new URL(origin).host === host : true;
+        const isValidReferer = referer ? new URL(referer).host === host : true;
+
+        if (!isValidOrigin || !isValidReferer) {
+            log('warn', '[icons/route] GET - FORBIDDEN: Invalid origin', { origin, referer, host });
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
+
         const { searchParams } = request.nextUrl;
         const variantIdParam = searchParams.get('variantId');
 
