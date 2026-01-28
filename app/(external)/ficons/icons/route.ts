@@ -18,13 +18,19 @@ export async function GET(request: NextRequest) {
         const referer = request.headers.get('referer');
         const host = request.headers.get('host');
 
-        // Check if request comes from the same origin
-        const isValidOrigin = origin ? new URL(origin).host === host : true;
-        const isValidReferer = referer ? new URL(referer).host === host : true;
-
-        if (!isValidOrigin || !isValidReferer) {
-            log('warn', '[icons/route] GET - FORBIDDEN: Invalid origin', { origin, referer, host });
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        // Block if origin or referer explicitly shows a different site
+        if (origin) {
+            const originHost = new URL(origin).host;
+            if (originHost !== host) {
+                log('warn', '[icons/route] GET - FORBIDDEN: Invalid origin', { origin, referer, host });
+                return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+            }
+        } else if (referer) {
+            const refererHost = new URL(referer).host;
+            if (refererHost !== host) {
+                log('warn', '[icons/route] GET - FORBIDDEN: Invalid referer', { origin, referer, host });
+                return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+            }
         }
 
         const { searchParams } = request.nextUrl;
