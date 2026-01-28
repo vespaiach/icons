@@ -2,6 +2,8 @@ import Box, { BoxHeader } from '@/components/Box';
 import RepositoryForm from '../_components/RepositoryForm';
 import { createRepositoryAction } from '../actions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function NewRepositoryPage() {
     return (
         <div>

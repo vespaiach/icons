@@ -1,6 +1,8 @@
 import Box, { BoxHeader } from '@/components/Box';
 import { loadVariantsAction } from './actions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function VariantsManagementPage() {
     const variants = await loadVariantsAction();
 

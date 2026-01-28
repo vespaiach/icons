@@ -44,7 +44,7 @@ export default function IconSection({ repository }: { repository: RepositoryVari
             <div ref={sentinelRef} className="h-0" />
             <div
                 className={cx(
-                    'flex flex-col md:flex-row md:justify-between sticky top-12 z-10 text-base-content px-2 pt-2',
+                    'flex flex-col md:flex-row md:justify-between sticky top-12 z-10 text-base-content px-2 pt-2 transition-colors',
                     isSticky ? 'bg-base-300' : ''
                 )}>
                 <h2 className="font-semibold text-2xl capitalize flex items-center mb-2">

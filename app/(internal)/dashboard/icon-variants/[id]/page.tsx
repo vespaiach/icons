@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation';
 import { loadVariantByIdAction } from '../actions';
 import PageContent from './_components/PageContent';
 
+export const dynamic = 'force-dynamic';
+
 export default async function VariantEditPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const variantId = Number.parseInt(id, 10);

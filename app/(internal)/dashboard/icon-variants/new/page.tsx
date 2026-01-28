@@ -2,6 +2,8 @@ import Box, { BoxHeader } from '@/components/Box';
 import { createVariantAction, loadRepositoriesAction } from '../actions';
 import VariantCreateForm from './_components/VariantCreateForm';
 
+export const dynamic = 'force-dynamic';
+
 export default async function NewVariantPage() {
     const repositories = await loadRepositoriesAction();
 
