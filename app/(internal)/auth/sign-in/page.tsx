@@ -1,5 +1,7 @@
 import SignInForm from './_components/SignInForm';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SignInPage({ searchParams }: { searchParams: Promise<{ rt?: string }> }) {
     const returnTo = (await searchParams).rt;
 

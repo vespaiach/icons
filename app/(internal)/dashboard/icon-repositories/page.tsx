@@ -2,6 +2,8 @@ import Box, { BoxHeader } from '@/components/Box';
 import Row from './_components/Row';
 import { loadRepositoriesAction } from './actions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function RepositoriesManagementPage() {
     const repos = await loadRepositoriesAction();
 

@@ -3,6 +3,8 @@ import Box, { BoxHeader } from '@/components/Box';
 import RepositoryForm from '../_components/RepositoryForm';
 import { loadRepositoryAction, updateRepositoryAction } from '../actions';
 
+export const dynamic = 'force-dynamic';
+
 interface EditRepositoryPageProps {
     params: Promise<{ id: string }>;
 }
