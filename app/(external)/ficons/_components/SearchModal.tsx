@@ -1,22 +1,19 @@
 'use client';
 
 import { Search } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cx, repoToId } from '@/utils/common-helpers';
+import { useSearchKeywordAction, useSearchKeywordValue } from './PageContext';
 
 export default function SearchModal({ repositories }: { repositories: RepositoryVariants[] }) {
     const searchInputRef = useRef<HTMLInputElement>(null);
-    const router = useRouter();
+    const setQ = useSearchKeywordAction();
+    const q = useSearchKeywordValue();
+    const [search, setSearch] = useState(q);
 
     useEffect(() => {
         const handleModalOpening = () => {
-            // Read query string when modal is opening
-            const params = new URLSearchParams(window.location.search);
-            const query = params.get('q') || '';
-
             if (searchInputRef.current) {
-                searchInputRef.current.value = query;
                 searchInputRef.current?.focus();
             }
         };
@@ -30,12 +27,7 @@ export default function SearchModal({ repositories }: { repositories: Repository
         const formData = new FormData(e.currentTarget);
         const query = formData.get('search') as string;
 
-        if (query) {
-            // Update URL with query string using Next.js router
-            router.push(`?q=${encodeURIComponent(query)}`);
-        } else {
-            router.push(`/ficons/`);
-        }
+        setQ(query);
 
         // Close modal
         const searchModal = document.getElementById('search_modal') as HTMLDialogElement;
@@ -53,6 +45,8 @@ export default function SearchModal({ repositories }: { repositories: Repository
                         <input
                             type="search"
                             name="search"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
                             ref={searchInputRef}
                             placeholder="Type and hit enter to search…"
                         />

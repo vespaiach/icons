@@ -2,9 +2,8 @@
 
 import { useIsClient } from '@uidotdev/usehooks';
 import { HeartPlus, Search } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useState } from 'react';
-import { useDrawerAction, useFavoritesValue } from '../PageContext';
+import { useDrawerAction, useFavoritesValue, useSearchKeywordValue } from '../PageContext';
 
 export default function SearchButton() {
     const isClient = useIsClient();
@@ -80,7 +79,6 @@ export default function SearchButton() {
 }
 
 function SearchText() {
-    const searchParams = useSearchParams();
-    const searchQuery = searchParams.get('q') || '';
-    return <span className="grow text-left">{searchQuery || 'Search…'}</span>;
+    const q = useSearchKeywordValue();
+    return <span className="grow text-left">{q || 'Search…'}</span>;
 }
