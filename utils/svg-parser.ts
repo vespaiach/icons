@@ -26,30 +26,35 @@ export function parseSvgToAst(svgText: string): SvgNode {
 
 function buildAstNode(id: string, type: string, element: Record<string, unknown> | string): SvgNode {
     const node: SvgNode = {
-        id,
-        type,
-        attrs: {}
+        i: id,
+        t: type
     };
 
     // Handle text-only elements (e.g., <title>text</title> or <style>css</style>)
     if (typeof element === 'string') {
-        node.attrs.textContent = element;
+        node.a = { textContent: element };
         return node;
     }
 
     // Extract attributes
+    const attrs: Record<string, string | number | boolean | undefined | null> = {};
     for (const [key, value] of Object.entries(element)) {
         if (key.startsWith('@_')) {
             const sanitizedKey = santizeSvgAttributeKey(key);
             if (sanitizedKey) {
-                node.attrs[sanitizedKey] = String(value);
+                attrs[sanitizedKey] = String(value);
             }
         }
     }
 
     // Handle #text property (text content mixed with other elements)
     if (element['#text']) {
-        node.attrs.textContent = String(element['#text']);
+        attrs.textContent = String(element['#text']);
+    }
+
+    // Only add attrs if non-empty
+    if (Object.keys(attrs).length > 0) {
+        node.a = attrs;
     }
 
     // Extract children
@@ -98,7 +103,7 @@ function buildAstNode(id: string, type: string, element: Record<string, unknown>
     }
 
     if (children.length > 0) {
-        node.children = children;
+        node.c = children;
     }
 
     return node;

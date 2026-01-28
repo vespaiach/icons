@@ -46,7 +46,8 @@ export function extractSvgInnerContent(svgContent: string): string {
 
 export function astToSvgAttributes(ast: SvgNode): Record<string, string> {
     const result: Record<string, string> = {};
-    for (const [key, value] of Object.entries(ast.attrs)) {
+    const attrs = ast.a || {};
+    for (const [key, value] of Object.entries(attrs)) {
         result[key] = String(value);
     }
     return result;

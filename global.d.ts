@@ -48,10 +48,10 @@ declare global {
     }
 
     interface SvgNode {
-        id: string;
-        type: string;
-        attrs: Record<string, string | number | boolean | undefined | null>;
-        children?: SvgNode[];
+        i: string; // id
+        t: string; // type
+        a?: Record<string, string | number | boolean | undefined | null>; // attrs (optional)
+        c?: SvgNode[]; // children (optional)
     }
 
     interface Icon {

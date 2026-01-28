@@ -11,7 +11,7 @@ export default function useDownloadIconTsx(icon: Icon) {
                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                 .join('');
             const title = `${icon.name.replace(/-/g, ' ')} icon`;
-            const { width, height, ...rest } = { ...icon.svgAst.attrs, ...adjustedAttributes };
+            const { width, height, ...rest } = { ...icon.svgAst.a, ...adjustedAttributes };
 
             const content = `
 import type { SVGProps } from 'react';

@@ -6,7 +6,7 @@ import { astToInnerHtml } from '@/utils/ast-2-html';
 export default function useDownloadRawIcon(icon: Icon) {
     return useCallback(
         (adjustedAttributes: Record<string, string>) => {
-            const { width, height, ...rest } = { ...icon.svgAst.attrs, ...adjustedAttributes };
+            const { width, height, ...rest } = { ...icon.svgAst.a, ...adjustedAttributes };
             const innerContent = astToInnerHtml(icon.svgAst);
             const svgContent = `<svg width="${width || 24}" height="${height || 24}" ${Object.entries(rest)
                 .map(([key, value]) => `${key}="${value}"`)

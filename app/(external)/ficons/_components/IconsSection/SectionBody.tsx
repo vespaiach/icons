@@ -36,7 +36,9 @@ export default function SectionBody({ variant, active }: { variant: Variant; act
     useEffect(() => {
         fetch(`/ficons/icons?variantId=${variant.id}`)
             .then((res) => res.json())
-            .then((data) => setIcons(data))
+            .then((data: IconWithRelativeData[]) => {
+                setIcons(data);
+            })
             .catch(() => {
                 setIcons([]);
                 // TODO: report error

@@ -1,18 +1,19 @@
 import { mergeAttributes } from './string-helpers';
 
 export function astToInnerHtml(ast: SvgNode): string {
-    if (!ast.children || ast.children.length === 0) {
+    if (!ast.c || ast.c.length === 0) {
         return '';
     }
 
-    return ast.children.map((child) => astToHtml(child)).join('');
+    return ast.c.map((child) => astToHtml(child)).join('');
 }
 
 export function astToHtml(node: SvgNode): string {
+    const attrs = node.a || {};
     // Separate textContent from other attributes
-    const { textContent, ...otherAttrs } = node.attrs;
+    const { textContent, ...otherAttrs } = attrs;
 
-    const attrs = Object.entries(otherAttrs)
+    const attrsStr = Object.entries(otherAttrs)
         .map(([key, value]) => {
             if (value !== undefined && value !== null) {
                 return `${key}="${value}"`;
@@ -23,12 +24,12 @@ export function astToHtml(node: SvgNode): string {
         .join(' ');
 
     // If no children and no text content, it's a self-closing tag
-    if ((!node.children || node.children.length === 0) && !textContent) {
-        return `<${node.type}${attrs ? ` ${attrs}` : ''}/>`;
+    if ((!node.c || node.c.length === 0) && !textContent) {
+        return `<${node.t}${attrsStr ? ` ${attrsStr}` : ''}/>`;
     }
 
     // Build opening tag
-    let html = `<${node.type}${attrs ? ` ${attrs}` : ''}>`;
+    let html = `<${node.t}${attrsStr ? ` ${attrsStr}` : ''}>`;
 
     // Add text content if present
     if (textContent) {
@@ -36,23 +37,24 @@ export function astToHtml(node: SvgNode): string {
     }
 
     // Add children if present
-    if (node.children && node.children.length > 0) {
-        html += node.children.map((child) => astToHtml(child)).join('');
+    if (node.c && node.c.length > 0) {
+        html += node.c.map((child) => astToHtml(child)).join('');
     }
 
     // Add closing tag
-    html += `</${node.type}>`;
+    html += `</${node.t}>`;
 
     return html;
 }
 
 export function astToSvgString(ast: SvgNode): string {
-    const attrs = Object.entries(ast.attrs)
+    const attrs = ast.a || {};
+    const attrsStr = Object.entries(attrs)
         .map(([key, value]) => `${key}="${value}"`)
         .join(' ');
 
     const innerHtml = astToInnerHtml(ast);
-    return `<svg${attrs ? ` ${attrs}` : ''}>${innerHtml}</svg>`;
+    return `<svg${attrsStr ? ` ${attrsStr}` : ''}>${innerHtml}</svg>`;
 }
 
 export function prepareAst(
@@ -64,35 +66,39 @@ export function prepareAst(
     const color = adjustment?.color || 'currentColor';
     const ast = {
         ...svgAst,
-        attrs: { ...svgAst.attrs, width: size, height: size } as Record<string, string | undefined>
+        a: { ...svgAst.a, width: size, height: size } as Record<string, string | number | undefined>
     };
 
     const fill = mergeAttributes(variant.fill, color);
     const stroke = mergeAttributes(variant.stroke, color);
 
     const applyColorToChildren = (node: SvgNode) => {
-        if (node.children) {
-            node.children.forEach((child) => {
+        if (node.c) {
+            node.c.forEach((child) => {
+                const childAttrs = child.a || {};
                 if (fill !== undefined && (variant.fillOn === 'children' || variant.fillOn === 'both')) {
-                    child.attrs.fill = fill;
+                    childAttrs.fill = fill;
                 }
                 if (
                     stroke !== undefined &&
                     (variant.strokeOn === 'children' || variant.strokeOn === 'both')
                 ) {
-                    child.attrs.stroke = stroke;
+                    childAttrs.stroke = stroke;
                 }
+                child.a = childAttrs;
                 applyColorToChildren(child);
             });
         }
     };
 
+    const astAttrs = ast.a || {};
     if (fill !== undefined && (variant.fillOn === 'parent' || variant.fillOn === 'both')) {
-        ast.attrs.fill = fill;
+        astAttrs.fill = fill;
     }
     if (stroke !== undefined && (variant.strokeOn === 'parent' || variant.strokeOn === 'both')) {
-        ast.attrs.stroke = stroke;
+        astAttrs.stroke = stroke;
     }
+    ast.a = astAttrs;
 
     applyColorToChildren(ast);
     return ast;
