@@ -11,16 +11,16 @@ function htmlAttributeToJsx(attrName: string): string {
 }
 
 export function astToInnerTsx(ast: SvgNode): string {
-    if (!ast.children || ast.children.length === 0) {
+    if (!ast.c || ast.c.length === 0) {
         return '';
     }
 
-    return ast.children.map((child) => astToTsxNode(child)).join('\n            ');
+    return ast.c.map((child) => astToTsxNode(child)).join('\n            ');
 }
 
 export function astToTsxNode(node: SvgNode): string {
     // Separate textContent from other attributes
-    const { textContent, ...otherAttrs } = node.attrs;
+    const { textContent, ...otherAttrs } = node.a || {};
 
     const attrs = Object.entries(otherAttrs)
         .map(([key, attrValue]) => {
@@ -46,12 +46,12 @@ export function astToTsxNode(node: SvgNode): string {
         .join(' ');
 
     // If no children and no text content, it's a self-closing tag
-    if ((!node.children || node.children.length === 0) && !textContent) {
-        return `<${node.type}${attrs ? ` ${attrs}` : ''} />`;
+    if ((!node.c || node.c.length === 0) && !textContent) {
+        return `<${node.t}${attrs ? ` ${attrs}` : ''} />`;
     }
 
     // Build opening tag
-    let jsx = `<${node.type}${attrs ? ` ${attrs}` : ''}>`;
+    let jsx = `<${node.t}${attrs ? ` ${attrs}` : ''}>`;
 
     // Add text content if present
     if (textContent) {
@@ -59,12 +59,12 @@ export function astToTsxNode(node: SvgNode): string {
     }
 
     // Add children if present
-    if (node.children && node.children.length > 0) {
-        jsx += node.children.map((child) => astToTsxNode(child)).join('');
+    if (node.c && node.c.length > 0) {
+        jsx += node.c.map((child) => astToTsxNode(child)).join('');
     }
 
     // Add closing tag
-    jsx += `</${node.type}>`;
+    jsx += `</${node.t}>`;
 
     return jsx;
 }
@@ -87,7 +87,7 @@ export function astToTsx(icon: {
     }
 
     const title = `${icon.name.replace(/-/g, ' ')} icon`;
-    const attrs = Object.entries(icon.svgAst.attrs)
+    const attrs = Object.entries(icon.svgAst.a || {})
         .map(([key, value]) => {
             const jsxKey = htmlAttributeToJsx(key);
             if (value === undefined || value === null) {
@@ -109,7 +109,7 @@ export function astToTsx(icon: {
 
     const innerTsx = astToInnerTsx(icon.svgAst);
 
-    const content = `import type { SVGProps } from 'react';
+    const content = `import type { SVGProps, ReactNode } from 'react';
 
 interface IconProps extends SVGProps<SVGSVGElement> {
     title?: string;
@@ -122,7 +122,7 @@ export default function ${componentName}({
     title = "${title}",
     size = ${icon.size || 24},${icon.fill ? `\n    fill = "${icon.fill}",` : ''}${icon.stroke ? `\n    stroke = "${icon.stroke}",` : ''}
     ...rest
-}: IconProps): React.ReactNode {
+}: IconProps): ReactNode {
     return (
         <svg
             {...rest}
@@ -144,7 +144,7 @@ export function prepareAstToTsx(
     const color = adjustment?.color;
     const ast = {
         ...svgAst,
-        attrs: { ...svgAst.attrs, width: '{width || size}', height: '{height || size}' } as Record<
+        a: { ...svgAst.a, width: '{width || size}', height: '{height || size}' } as Record<
             string,
             string | undefined
         >
@@ -154,13 +154,15 @@ export function prepareAstToTsx(
     const stroke = mergeAttributes(variant.stroke, color);
 
     const applyColorToChildren = (node: SvgNode) => {
-        if (node.children) {
-            node.children.forEach((child) => {
+        if (node.c) {
+            node.c.forEach((child) => {
                 if (fill && (variant.fillOn === 'children' || variant.fillOn === 'both')) {
-                    child.attrs.fill = '{fill}';
+                    if (!child.a) child.a = {};
+                    child.a.fill = '{fill}';
                 }
                 if (stroke && (variant.strokeOn === 'children' || variant.strokeOn === 'both')) {
-                    child.attrs.stroke = '{stroke}';
+                    if (!child.a) child.a = {};
+                    child.a.stroke = '{stroke}';
                 }
                 applyColorToChildren(child);
             });
@@ -168,10 +170,12 @@ export function prepareAstToTsx(
     };
 
     if (fill && (variant.fillOn === 'parent' || variant.fillOn === 'both')) {
-        ast.attrs.fill = '{fill}';
+        if (!ast.a) ast.a = {};
+        ast.a.fill = '{fill}';
     }
     if (stroke && (variant.strokeOn === 'parent' || variant.strokeOn === 'both')) {
-        ast.attrs.stroke = '{stroke}';
+        if (!ast.a) ast.a = {};
+        ast.a.stroke = '{stroke}';
     }
 
     applyColorToChildren(ast);

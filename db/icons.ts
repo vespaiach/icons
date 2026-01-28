@@ -1,6 +1,17 @@
 import { log } from '../utils/log.helpers';
 import { sql } from './db.client';
 
+/**
+ * COMPACT AST FORMAT
+ *
+ * All SVG icons use compact AST format throughout the application:
+ * - Database storage (shorter property names)
+ * - Network transmission (smaller bandwidth)
+ * - Application usage (direct usage without conversion)
+ *
+ * SvgNode structure: { i: id, t: type, a: attrs, c: children }
+ */
+
 export async function createIcon(variantId: number, name: string, svgAst: SvgNode): Promise<Icon | null> {
     log('info', '[DB] createIcon - START', { variantId, name });
     const rows = await sql`
@@ -29,7 +40,7 @@ export async function deleteIconsByRepositoryId(repositoryId: number) {
     log('info', '[DB] deleteIconsByRepositoryId - END');
 }
 
-export async function getIconsByRepositoryId(repositoryId: number) {
+export async function getIconsByRepositoryId(repositoryId: number): Promise<IconWithRelativeData[]> {
     log('info', '[DB] getIconsByRepositoryId - START', { repositoryId });
     const rows = await sql`
         SELECT 
@@ -49,7 +60,7 @@ export async function getIconsByRepositoryId(repositoryId: number) {
     return rows as unknown as IconWithRelativeData[];
 }
 
-export async function getIconsByVariantId(variantId: number) {
+export async function getIconsByVariantId(variantId: number): Promise<IconWithRelativeData[]> {
     // await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network delay
     log('info', '[DB] getIconsByVariantId - START', { variantId });
     const rows = await sql`

@@ -9,10 +9,11 @@ const iconsRequestSchema = v.object({
 
 // Next.js will cache responses for 1 day
 export const revalidate = 86400; // 1 day in seconds
+export const dynamic = 'force-dynamic'; // Mark as dynamic route since we use request.url
 
 export async function GET(request: NextRequest) {
     try {
-        const { searchParams } = new URL(request.url);
+        const { searchParams } = request.nextUrl;
         const variantIdParam = searchParams.get('variantId');
 
         // Parse and validate variantId
