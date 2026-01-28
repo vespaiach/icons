@@ -17,7 +17,7 @@ export default function Navbar({ repositories }: { repositories: RepositoryVaria
     });
 
     return (
-        <div className="d-navbar bg-base-100 min-h-10 px-4 shadow-sm sticky top-0 z-10">
+        <div className="d-navbar bg-base-100 min-h-10 px-4 shadow-sm sticky top-0 z-100">
             <a
                 href="/ficons/"
                 className="btn btn-ghost d-btn-sm font-mono font-semibold text-sm text-secondary flex items-center">
