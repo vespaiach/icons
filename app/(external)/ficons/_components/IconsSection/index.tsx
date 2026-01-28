@@ -3,7 +3,7 @@
 import { useIsClient } from '@uidotdev/usehooks';
 import { useSetAtom } from 'jotai';
 import { Settings } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { startTransition, useEffect, useRef, useState } from 'react';
 import { assertNumber } from '@/utils/assert-helpers';
 import { cx, repoToId } from '@/utils/common-helpers';
 import { repositoryAtom, useSearchCountAction } from '../PageContext';
@@ -23,7 +23,7 @@ export default function IconSection({ repository }: { repository: RepositoryVari
             ([entry]) => {
                 setIsSticky(!entry.isIntersecting);
             },
-            { threshold: [0], rootMargin: '48px 0px 0px 0px' }
+            { threshold: [0], rootMargin: '-48px 0px 0px 0px' }
         );
 
         if (sentinelRef.current) {
@@ -45,7 +45,7 @@ export default function IconSection({ repository }: { repository: RepositoryVari
             <div
                 className={cx(
                     'flex flex-col md:flex-row md:justify-between sticky top-12 z-10 text-base-content px-2 pt-2',
-                    isSticky ? 'bg-base-300' : 'bg-base-100'
+                    isSticky ? 'bg-base-300' : ''
                 )}>
                 <h2 className="font-semibold text-2xl capitalize flex items-center mb-2">
                     {repository.owner}/{repository.name}
@@ -71,8 +71,10 @@ export default function IconSection({ repository }: { repository: RepositoryVari
                                     selectedVariant.id === variant.id && 'd-tab-active'
                                 )}
                                 onClick={() => {
-                                    setSelectedVariant(variant);
-                                    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+                                    startTransition(() => {
+                                        setSelectedVariant(variant);
+                                        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+                                    });
                                 }}>
                                 {variant.name} (
                                 {assertNumber(searchCount) && selectedVariant.id === variant.id
@@ -87,11 +89,13 @@ export default function IconSection({ repository }: { repository: RepositoryVari
             <div className="px-2">
                 <div className="d-tab-content block border-base-300 bg-base-100">
                     {isClient
-                        ? repository.variants.map((v) =>
-                              v.id === selectedVariant.id ? (
-                                  <SectionBody key={v.id} variant={selectedVariant} />
-                              ) : null
-                          )
+                        ? repository.variants.map((v) => (
+                              <SectionBody
+                                  key={v.id}
+                                  variant={selectedVariant}
+                                  active={v.id === selectedVariant.id}
+                              />
+                          ))
                         : null}
                 </div>
             </div>

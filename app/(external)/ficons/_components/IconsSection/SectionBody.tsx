@@ -7,9 +7,11 @@ import { cx } from '@/utils/common-helpers';
 import { useSearchCountAction, useSetSearchCountAction } from '../PageContext';
 import IconButton from './IconButton';
 
-export default function SectionBody({ variant }: { variant: Variant }) {
+export default function SectionBody({ variant, active }: { variant: Variant; active: boolean }) {
     const [ref, entry] = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px', threshold: 0 });
+
     const searchCount = useSearchCountAction(variant.id);
+
     const style = useMemo(() => {
         const count = searchCount !== null && searchCount !== undefined ? searchCount : variant.iconCount;
         const viewPortWidth = document.documentElement.clientWidth;
@@ -30,36 +32,7 @@ export default function SectionBody({ variant }: { variant: Variant }) {
         };
     }, [searchCount, variant.iconCount]);
 
-    return (
-        <div className="ic-grid" style={style} ref={ref}>
-            {entry?.isIntersecting ? <Content variant={variant} /> : null}
-        </div>
-    );
-}
-
-function Content({ variant }: { variant: Variant }) {
-    const setSearchCount = useSetSearchCountAction();
     const [_icons, setIcons] = useState<IconWithRelativeData[] | null>(null);
-    const searchParams = useSearchParams();
-    const q = searchParams.get('q');
-
-    const icons = useMemo(() => {
-        if (!q || !_icons) {
-            return _icons;
-        }
-
-        const lowerQ = q.toLowerCase();
-        return _icons.filter((icon) => icon.name.toLowerCase().includes(lowerQ));
-    }, [_icons, q]);
-    const totalIcons = icons?.length;
-
-    useEffect(() => {
-        if (totalIcons !== null && totalIcons !== undefined && totalIcons !== variant.iconCount) {
-            setSearchCount(variant.id, totalIcons);
-        } else {
-            setSearchCount(variant.id, null);
-        }
-    }, [totalIcons, setSearchCount, variant.id, variant.iconCount]);
 
     useEffect(() => {
         fetch(`/ficons/icons?variantId=${variant.id}`)
@@ -70,6 +43,38 @@ function Content({ variant }: { variant: Variant }) {
                 // TODO: report error
             });
     }, [variant.id]);
+
+    const searchParams = useSearchParams();
+    const q = searchParams.get('q');
+    const icons = useMemo(() => {
+        if (!q || !_icons) {
+            return _icons;
+        }
+
+        const lowerQ = q.toLowerCase();
+        return _icons.filter((icon) => icon.name.toLowerCase().includes(lowerQ));
+    }, [_icons, q]);
+    const _totalIcons = icons?.length;
+
+    if (!active) return null;
+
+    return (
+        <div className="ic-grid" style={style} ref={ref}>
+            {entry?.isIntersecting ? <Content icons={icons} variant={variant} /> : null}
+        </div>
+    );
+}
+
+function Content({ icons, variant }: { icons: IconWithRelativeData[] | null; variant: Variant }) {
+    const setSearchCount = useSetSearchCountAction();
+
+    useEffect(() => {
+        if (icons !== null && icons !== undefined && icons.length !== variant.iconCount) {
+            setSearchCount(variant.id, icons.length);
+        } else {
+            setSearchCount(variant.id, null);
+        }
+    }, [icons, setSearchCount, variant.id, variant.iconCount]);
 
     if (icons === null) {
         return new Array(variant.iconCount).fill(null).map((_, index) => {
