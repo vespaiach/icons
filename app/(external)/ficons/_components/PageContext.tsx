@@ -53,7 +53,7 @@ export function PageContextProvider({
     return children;
 }
 
-export function useAdjustment(repositoryId?: number) {
+export function useAdjustmentValue(repositoryId?: number) {
     const adjustments = useAtomValue(adjustmentsByRepoIdAtom);
     return repositoryId ? adjustments[repositoryId] : { color: 'currentColor', size: 24 };
 }

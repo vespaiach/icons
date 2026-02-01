@@ -1,7 +1,7 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { useAdjustment, useIconAction, useIconValue } from '../PageContext';
+import { useAdjustmentValue, useIconAction, useIconValue } from '../PageContext';
 import IconDetails from './IconDetails';
 
 export default function IconModal({ repositories }: { repositories: RepositoryVariants[] }) {
@@ -10,7 +10,7 @@ export default function IconModal({ repositories }: { repositories: RepositoryVa
     const repository = selectedIcon
         ? repositories.find((repo) => repo.id === selectedIcon.repositoryId)
         : null;
-    const adjustment = useAdjustment(repository?.id);
+    const adjustment = useAdjustmentValue(repository?.id);
     const variant =
         selectedIcon && repository ? repository.variants.find((v) => v.id === selectedIcon.variantId) : null;
 

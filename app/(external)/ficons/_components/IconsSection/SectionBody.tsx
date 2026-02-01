@@ -3,7 +3,7 @@
 import { useIntersectionObserver } from '@uidotdev/usehooks';
 import { useEffect, useMemo, useState } from 'react';
 import { cx } from '@/utils/common-helpers';
-import { useSearchCountAction, useSearchKeywordValue, useSetSearchCountAction } from '../PageContext';
+import { useAdjustmentValue, useSearchCountAction, useSearchKeywordValue, useSetSearchCountAction } from '../PageContext';
 import IconButton from './IconButton';
 
 export default function SectionBody({ variant, active }: { variant: Variant; active: boolean }) {
@@ -66,6 +66,7 @@ export default function SectionBody({ variant, active }: { variant: Variant; act
 
 function Content({ icons, variant }: { icons: IconWithRelativeData[] | null; variant: Variant }) {
     const setSearchCount = useSetSearchCountAction();
+    const adjustments = useAdjustmentValue(variant.repositoryId);
 
     useEffect(() => {
         if (icons !== null && icons !== undefined && icons.length !== variant.iconCount) {
@@ -94,7 +95,7 @@ function Content({ icons, variant }: { icons: IconWithRelativeData[] | null; var
             key={icon.id}
             icon={icon}
             variant={variant}
-            adjustment={{ color: 'currentColor', size: 24 }}
+            adjustment={adjustments}
         />
     ));
 }
