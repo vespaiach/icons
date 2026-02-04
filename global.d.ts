@@ -47,17 +47,9 @@ declare global {
         repositoryName: string;
     }
 
-    interface SvgNode {
-        i: string; // id
-        t: string; // type
-        a?: Record<string, string | number | boolean | undefined | null>; // attrs (optional)
-        c?: SvgNode[]; // children (optional)
-    }
-
     interface Icon {
         id: number;
         name: string;
-        // svgAst: SvgNode;
         svgText: string;
     }
 

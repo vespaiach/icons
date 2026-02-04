@@ -64,34 +64,6 @@ export async function getRepositoriesWithIconCount(): Promise<RepositoryWithIcon
     return rows as unknown as RepositoryWithIconCount[];
 }
 
-export async function getRepositoryVariants(): Promise<RepositoryVariants[]> {
-    log('info', '[DB] getRepositoryVariants - START');
-    const rows = await sql`
-        SELECT 
-            repositories.id,
-            repositories.owner,
-            repositories.name,
-            repositories.ref,
-            repositories.created_at AS "createdAt",
-            repositories.last_imported_at AS "lastImportedAt",
-            json_agg(
-                json_build_object(
-                    'id', variants.id,
-                    'path', variants.path,
-                    'name', variants.name,
-                    'regex', variants.regex,
-                    'attributesToAdjust', variants.attributes_to_adjust,
-                    'createdAt', variants.created_at,
-                    'updatedAt', variants.updated_at
-                )
-            ) AS variants
-        FROM repositories INNER JOIN variants ON repositories.id = variants.repository_id
-        GROUP BY 1, 2, 3, 4, 5, 6
-    `;
-    log('info', `[DB] getRepositoryVariants - END (${rows.length} rows)`);
-    return rows as unknown as RepositoryVariants[];
-}
-
 export async function getRepositoryVariantsWithIconCount(): Promise<RepositoryVariantsWithIconCount[]> {
     log('info', '[DB] getRepositoryVariantsWithIconCount - START');
     const rows = await sql`

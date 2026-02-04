@@ -1,6 +1,6 @@
-import { textFormatToSvgFormatted } from '@/converters/text-to-svg-converter';
-import { extractSvgAttributes, extractSvgInnerContent } from '@/utils/client-side/svg-helpers';
+import { textFormatToSvg } from '@/converters/svg-to-text-converter';
 import { applyAdjustmentColor } from '@/utils/string-helpers';
+import { extractSvgAttributes, extractSvgInnerContent } from '@/utils/svg-helpers';
 
 interface TextToSvgProps {
     svgText: string;
@@ -10,7 +10,7 @@ interface TextToSvgProps {
 
 export default function TextToSvg({ svgText, adjustment, className }: TextToSvgProps) {
     const svgTextAppliedColor = applyAdjustmentColor(svgText, adjustment);
-    const svgHtml = textFormatToSvgFormatted(svgTextAppliedColor);
+    const svgHtml = textFormatToSvg(svgTextAppliedColor);
     const attributes = extractSvgAttributes(svgHtml);
     const innerHtml = extractSvgInnerContent(svgHtml);
 

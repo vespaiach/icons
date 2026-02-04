@@ -1,34 +1,6 @@
 import { log } from '../utils/log.helpers';
 import { sql } from './db.client';
 
-export async function getVariants(): Promise<Variant[]> {
-    log('info', '[DB] getVariants - START');
-    const rows = await sql`
-        SELECT 
-            id,
-            repository_id AS "repositoryId",
-            name,
-            path,
-            regex,
-            stroke,
-            stroke_on AS "strokeOn",
-            fill,
-            fill_on AS "fillOn",
-            stroke_width AS "strokeWidth",
-            stroke_width_on AS "strokeWidthOn",
-            icon_count AS "iconCount",
-            created_at AS "createdAt",
-            updated_at AS "updatedAt"
-        FROM variants
-        ORDER BY id ASC
-    `;
-    log('info', `[DB] getVariants - END (${rows.length} rows)`);
-    if (Bun.env.DEBUG_QUERIES === 'true' && rows.length > 0) {
-        log('info', `[DB] getVariants - SAMPLE RESULT (first row)`, rows[0]);
-    }
-    return rows as unknown as Variant[];
-}
-
 export async function getVariantById(id: number): Promise<Variant | null> {
     log('info', '[DB] getVariantById - START', { id });
     const rows = await sql`
