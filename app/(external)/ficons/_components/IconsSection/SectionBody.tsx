@@ -3,7 +3,12 @@
 import { useIntersectionObserver } from '@uidotdev/usehooks';
 import { useEffect, useMemo, useState } from 'react';
 import { cx } from '@/utils/common-helpers';
-import { useAdjustmentValue, useSearchCountAction, useSearchKeywordValue, useSetSearchCountAction } from '../PageContext';
+import {
+    useAdjustmentValue,
+    useSearchCountAction,
+    useSearchKeywordValue,
+    useSetSearchCountAction
+} from '../PageContext';
 import IconButton from './IconButton';
 
 export default function SectionBody({ variant, active }: { variant: Variant; active: boolean }) {
@@ -91,12 +96,7 @@ function Content({ icons, variant }: { icons: IconWithRelativeData[] | null; var
     }
 
     return icons.map((icon) => (
-        <IconButton
-            key={icon.id}
-            icon={icon}
-            variant={variant}
-            adjustment={adjustments}
-        />
+        <IconButton key={icon.id} icon={icon} variant={variant} adjustment={adjustments} />
     ));
 }
 

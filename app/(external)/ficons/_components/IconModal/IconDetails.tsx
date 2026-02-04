@@ -2,9 +2,9 @@
 
 import { Copy } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import AstToSvg from '@/components/AstToSvg';
 import ColorAdjuster from '@/components/ColorAdjuster';
 import SizeAdjuster from '@/components/SizeAdjuster';
+import TextToSvg from '@/components/TextToSvg';
 import { cx } from '@/utils/common-helpers';
 import FavoriteButton from '../FavoriteButton';
 import CopyButton from './CopyButton';
@@ -14,11 +14,9 @@ const gridLineNumber = new Array(24).fill(0);
 
 export default function IconDetails({
     selectedIcon,
-    variant,
     adjustment
 }: {
     selectedIcon: IconWithRelativeData;
-    variant: Variant;
     adjustment: { color: string; size: number };
 }) {
     const [copied, setCopied] = useState(false);
@@ -66,9 +64,8 @@ export default function IconDetails({
                                 </g>
                             ))}
                         </svg>
-                        <AstToSvg
-                            svgAst={selectedIcon.svgAst}
-                            variant={variant}
+                        <TextToSvg
+                            svgText={selectedIcon.svgText}
                             adjustment={adjustmentForDisplay}
                             className="z-10"
                         />
@@ -86,8 +83,8 @@ export default function IconDetails({
                     />
 
                     <div className="flex gap-3 mt-6">
-                        <CopyButton icon={selectedIcon} variant={variant} adjustment={attributes} />
-                        <DownloadButton icon={selectedIcon} variant={variant} adjustment={attributes} />
+                        <CopyButton icon={selectedIcon} adjustment={attributes} />
+                        <DownloadButton icon={selectedIcon} adjustment={attributes} />
                     </div>
                 </div>
             </div>

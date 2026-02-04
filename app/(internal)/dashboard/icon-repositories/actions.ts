@@ -5,6 +5,7 @@ import path from 'node:path';
 import { $ } from 'bun';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { svgToTextFormat } from '@/converters/svg-to-text-converter';
 import { createIcon, deleteIconsByRepositoryId } from '@/db/icons';
 import {
     createRepository,
@@ -15,7 +16,6 @@ import {
 } from '@/db/repositories';
 import { updateVariantIconCount } from '@/db/variants';
 import { log } from '@/utils/log.helpers';
-import { parseSvgToAst } from '@/utils/svg-parser';
 import { parseCreateRepositoryForm, parseRepositoryForm, parseUpdateRepositoryForm } from './validation';
 
 export async function loadRepositoriesAction() {
@@ -198,7 +198,7 @@ async function saveIconsToDatabase(variantId: number, fileName: string, fullPath
         const svgContent = (await file.text()).trim();
 
         // Parse SVG into AST structure
-        const svgAst = parseSvgToAst(svgContent);
+        const svgAst = svgToTextFormat(svgContent);
 
         // Insert icon to database
         await createIcon(variantId, fileName, svgAst);

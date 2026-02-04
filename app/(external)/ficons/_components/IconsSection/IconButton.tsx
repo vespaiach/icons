@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
-import AstToSvg from '@/components/AstToSvg';
+import TextToSvg from '@/components/TextToSvg';
 import { cx } from '@/utils/common-helpers';
 import FavoriteButton from '../FavoriteButton';
 import { useIconAction, useIconValue } from '../PageContext';
 
 export default function IconButton({
     icon,
-    variant,
     adjustment
 }: {
     icon: IconWithRelativeData;
@@ -16,8 +15,8 @@ export default function IconButton({
     const [setIcon] = useIconAction();
     const selectedIcon = useIconValue();
     const iconElement = useMemo(() => {
-        return <AstToSvg svgAst={icon.svgAst} variant={variant} adjustment={{ ...adjustment, size: 38 }} />;
-    }, [icon.svgAst, adjustment, variant]);
+        return <TextToSvg svgText={icon.svgText} adjustment={{ ...adjustment, size: 38 }} />;
+    }, [icon.svgText, adjustment]);
 
     return (
         <div className={cx('icon group rounded-md', selectedIcon?.id === icon.id && 'ring-2 ring-secondary')}>
