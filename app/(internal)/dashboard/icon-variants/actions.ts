@@ -29,9 +29,8 @@ interface UpdateVariantParams {
         id: number;
         regex: string;
         path: string;
-        stroke: string | null;
-        fill: string | null;
-        strokeWidth: string | null;
+        colorOn: 'fill' | 'stroke' | null;
+        replacements: string[] | null;
     };
 }
 
@@ -41,18 +40,20 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
         return { ...prevState, errors };
     }
 
-    const {
-        id,
-        regex,
-        path,
-    } = payload;
+    const { id, regex, path, colorOn, replacements } = payload;
 
     const variant = await getVariantById(id);
     if (!variant) {
         notFound();
     }
 
-    const updatedVariant = await updateVariant({ id, regex, path });
+    const updatedVariant = await updateVariant({
+        id,
+        regex,
+        path,
+        colorOn: colorOn ?? null,
+        replacements: replacements ?? null
+    });
     if (!updatedVariant) {
         return { ...prevState, errors: { global: ['Failed to update variant.'] } };
     }
@@ -62,6 +63,8 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
             id: updatedVariant.id,
             regex: updatedVariant.regex,
             path: updatedVariant.path,
+            colorOn: updatedVariant.colorOn,
+            replacements: updatedVariant.replacements
         },
         errors: {}
     };
@@ -78,12 +81,8 @@ interface CreateVariantParams {
         name: string;
         regex: string;
         path: string;
-        stroke: string | null;
-        strokeOn: 'both' | 'parent' | 'children';
-        fill: string | null;
-        fillOn: 'both' | 'parent' | 'children';
-        strokeWidth: string | null;
-        strokeWidthOn: 'both' | 'parent' | 'children';
+        colorOn: 'fill' | 'stroke' | null;
+        replacements: string[] | null;
     };
 }
 
@@ -93,33 +92,15 @@ export async function createVariantAction(prevState: CreateVariantParams, formDa
         return { ...prevState, errors };
     }
 
-    const {
-        repositoryId,
-        name,
-        regex,
-        path,
-        enableStrokeColor,
-        stroke,
-        strokeOn,
-        enableFillColor,
-        fill,
-        fillOn,
-        enableStrokeWidth,
-        strokeWidth,
-        strokeWidthOn
-    } = payload;
+    const { repositoryId, name, regex, path, colorOn, replacements } = payload;
 
     const newVariant = await createVariant({
         repositoryId,
         name,
         regex,
         path,
-        stroke: enableStrokeColor && stroke ? stroke : null,
-        strokeOn: strokeOn ?? 'parent',
-        fill: enableFillColor && fill ? fill : null,
-        fillOn: fillOn ?? 'parent',
-        strokeWidth: enableStrokeWidth && strokeWidth !== undefined ? String(strokeWidth) : null,
-        strokeWidthOn: strokeWidthOn ?? 'parent'
+        colorOn: colorOn ?? null,
+        replacements: replacements ?? null
     });
 
     if (!newVariant) {

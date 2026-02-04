@@ -44,15 +44,6 @@ export function extractSvgInnerContent(svgContent: string): string {
     return svgContent;
 }
 
-export function astToSvgAttributes(ast: SvgNode): Record<string, string> {
-    const result: Record<string, string> = {};
-    const attrs = ast.a || {};
-    for (const [key, value] of Object.entries(attrs)) {
-        result[key] = String(value);
-    }
-    return result;
-}
-
 function santizeSvgAttributeKey(rawKey: string): string | null {
     // Remove @_ prefix from fast-xml-parser
     const key = rawKey.trim().replace(/^@_/, '');

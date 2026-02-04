@@ -90,6 +90,7 @@ export async function updateVariant(
     const rows = await sql`
         UPDATE variants
         SET
+            path = ${data.path},
             regex = ${data.regex},
             color_on = ${data.colorOn},
             replacements = ${data.replacements},
@@ -103,17 +104,6 @@ export async function updateVariant(
             regex,
             color_on AS "colorOn",
             replacements,
-            updated_at AS "updatedAt"
-        WHERE id = ${data.id}
-        RETURNING
-            id,
-            repository_id AS "repositoryId",
-            name,
-            path,
-            regex,
-            color_on AS "colorOn",
-            replacements,
-            updated_at AS "updatedAt"
             icon_count AS "iconCount",
             created_at AS "createdAt",
             updated_at AS "updatedAt"
@@ -126,14 +116,7 @@ export async function updateVariant(
 }
 
 export async function createVariant(
-    data: Pick<Variant, 'repositoryId' | 'name' | 'path' | 'regex'> & {
-        stroke?: string | null;
-        strokeOn?: 'both' | 'parent' | 'children';
-        fill?: string | null;
-        fillOn?: 'both' | 'parent' | 'children';
-        strokeWidth?: string | null;
-        strokeWidthOn?: 'both' | 'parent' | 'children';
-    }
+    data: Pick<Variant, 'repositoryId' | 'name' | 'path' | 'regex' | 'colorOn' | 'replacements'>
 ) {
     log('info', '[DB] createVariant - START', data);
     const rows = await sql`
@@ -141,13 +124,17 @@ export async function createVariant(
             repository_id,
             name,
             path,
-            regex
+            regex,
+            color_on,
+            replacements
         )
         VALUES (
             ${data.repositoryId},
             ${data.name},
             ${data.path},
             ${data.regex},
+            ${data.colorOn},
+            ${data.replacements}
         )
         RETURNING
             id,

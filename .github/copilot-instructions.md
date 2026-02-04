@@ -19,7 +19,7 @@ Routes prefixed with `(external)` and `(internal)` are **route groups** - the pa
 
 ### Data Flow Pattern
 
-The app uses **server actions as the data layer** for pages, with **API routes** for specific endpoints like icon downloads and dynamic icon fetching. Example pattern from [app/(external)/ficons/page.tsx](app/(external)/ficons/page.tsx):
+The app uses **server actions as the data layer** for pages, with **API routes** for specific endpoints like icon downloads and dynamic icon fetching. Example pattern from [app/(external)/ficons/page.tsx](../app/%28external%29/ficons/page.tsx):
 
 ```tsx
 const repositoriesVariants = await getRepositoriesAction();
@@ -33,7 +33,7 @@ API Routes:
 
 ### postgres.js Client
 
-Uses **postgres.js** ([github.com/porsager/postgres](https://github.com/porsager/postgres)) as the PostgreSQL client (see [db/db.client.ts](db/db.client.ts)). Query syntax uses **tagged templates**:
+Uses **postgres.js** ([github.com/porsager/postgres](https://github.com/porsager/postgres)) as the PostgreSQL client (see [db/db.client.ts](../db/db.client.ts)). Query syntax uses **tagged templates**:
 
 ```typescript
 await sql`SELECT * FROM icons WHERE variant_id = ${variantId}`;
@@ -72,11 +72,11 @@ const sql = postgres(DATABASE_URL, {
 
 ### Migration System
 
-Custom migration system in [utils/migration.service.ts](utils/migration.service.ts):
+Custom migration system in [utils/migration.service.ts](../utils/migration.service.ts):
 
 - `bun run migrate:create` - Generate new timestamped migration
 - `bun run migrate` - Run pending migrations
-- Migrations are TypeScript files with `up()` and `down()` functions using any compatible SQL executor (see [migrations/20251228_171007_init_db.ts](migrations/20251228_171007_init_db.ts))
+- Migrations are TypeScript files with `up()` and `down()` functions using any compatible SQL executor (see [migrations/20251228_171007_init_db.ts](../migrations/20251228_171007_init_db.ts))
 :
   - `name`, `path`, `regex` for matching SVG files
   - `stroke`, `stroke_on` (both/parent/children)
@@ -103,11 +103,11 @@ compact text format using `svgToTextFormat()` from `converters/svg-to-text-conve
 5. Batch inserts icons using `PROCESSING_BATCH_SIZE` env var
 6. Cleans up temporary files
 
-SVG parsing utilities in [converters/svg-to-text-converter.ts](converters/svg-to-text-converter.ts) use `fast-xml-parser` to convert SVG to compact text notation
+SVG parsing utilities in [converters/svg-to-text-converter.ts](../converters/svg-to-text-converter.ts) use `fast-xml-parser` to convert SVG to compact text notation
 
 ## Authentication Pattern
 
-Uses **iron-session** with Bun environment variables. Session logic in [utils/session.ts](utils/session.ts):
+Uses **iron-session** with Bun environment variables. Session logic in [utils/session.ts](../utils/session.ts):
 
 ```typescript
 await getAuthSession(); // Throws redirect if not authenticated
@@ -118,7 +118,7 @@ Cookie-based auth with `COOKIE_SECRET` and `COOKIE_MAX_AGE` env vars. Protected 
 
 ## Icon Import Workflow
 
-Repository imports happen in [app/(internal)/dashboard/icon-repositories/actions.ts](app/(internal)/dashboard/icon-repositories/actions.ts):
+Repository imports happen in [app/(internal)/dashboard/icon-repositories/actions.ts](../app/%28internal%29/dashboard/icon-repositories/actions.ts):
 
 1. Downloads GitHub repo as ZIP using `codeload.github.com`
 2. Extracts to `/var/tmp` directory using Bun's `$` shell helper
@@ -127,11 +127,11 @@ Repository imports happen in [app/(internal)/dashboard/icon-repositories/actions
 5. Batch inserts icons using `PROCESSING_BATCH_SIZE` env var
 6. Cleans up temporary files
 
-SVG parsing utilities in [utils/svg-helpers.ts](utils/svg-helpers.ts) use `fast-xml-parser`. The AST structure (`SvgNode`) stores SVG elements recursively with attributes and text content.
+SVG parsing utilities in [utils/svg-helpers.ts](../utils/svg-helpers.ts) use `fast-xml-parser`. The AST structure (`SvgNode`) stores SVG elements recursively with attributes and text content.
 
 ## Validation Pattern
 
-Uses **Valibot** (not Zod). Custom form parser in [utils/validation.helpers.ts](utils/validation.helpers.ts):
+Uses **Valibot** (not Zod). Custom form parser in [utils/validation.helpers.ts](../utils/validation.helpers.ts):
 
 ```typescript
 const parseRepositoryForm = buildFormParser(repositoryFormSchema);
@@ -161,7 +161,7 @@ const { success, payload, errors } = await parseRepositoryForm(formData);
 
 ### Type Definitions
 
-Global types in [global.d.ts](global.d.ts) - `Repository`, `Icon`, `Variant`, etc. No need to import these types.
+Global types in [global.d.ts](../global.d.ts) - `Repository`, `Icon`, `Variant`, etc. No need to import these types.
 
 **Core Types:**
 
@@ -185,9 +185,8 @@ bun run build            # Production build
 bun run migrate:create   # Generate new migration
 bun run migrate          # Run pending migrations
 ```
-ficons/page.tsx](app/(external)/ficons/page.tsx)
 
-**Main Components:**
+**Main Components:****
 
 - **Drawer.tsx**: Sidebar drawer for repository filtering and favorites management
 - **DrawerToggler.tsx**: Toggle button for drawer
@@ -224,7 +223,7 @@ return { ...prevState, errors: { field: ['Error message'] } };
 
 ### Client State
 
-Context providers wrap page-level features (see [PageContext.tsx](app/(external)/icons/_components/PageContext.tsx)). Use `'use client'` only when needed.
+Context providers wrap page-level features (see [PageContext.tsx](../app/%28external%29/ficons/_components/PageContext.tsx)). Use `'use client'` only when needed.
 
 ### Page Components Structurecompact text format using `textFormatToSvg()` converter and `dangerouslySetInnerHTML`
 - **ColorAdjuster.tsx**, **FillColorAdjuster.tsx**, **StrokeColorAdjuster.tsx**: Color adjustment controls
@@ -248,7 +247,7 @@ All comGithubStarCount.ts**: Fetches GitHub star count for repositories
 
 External hooks from `@uidotdev/usehooks`:
 
-- `useIsClient()`: Used in [PageContext.tsx](app/(external)/ficons/_components/PageContext.tsx) for client-side logic
+- `useIsClient()`: Used in [PageContext.tsx](../app/%28external%29/ficons/_components/PageContext.tsx) for client-side logic
 - `useClickAway()`: Used in navbar components
 ```
 
@@ -256,7 +255,7 @@ External hooks from `@uidotdev/usehooks`:
 
 ### State Management with Jotai
 
-Uses **Jotai** for client-side state management (not React Context). See [app/(external)/ficons/_components/PageContext.tsx](app/(external)/ficons/_components/PageContext.tsx).
+Uses **Jotai** for client-side state management (not React Context). See [app/(external)/ficons/_components/PageContext.tsx](../app/%28external%29/ficons/_components/PageContext.tsx).
 
 **Global Atoms**:
 
@@ -286,7 +285,7 @@ export const searchKeywordAtom = atom<string>('');
 
 ## Converters
 
-Custom SVG format converters in [converters/](converters/) directory:
+Custom SVG format converters in [converters/](../converters/) directory:
 
 - **svg-to-text-converter.ts**: Converts SVG to compact text format
   - `svgToTextFormat(svgString, config?)`: Main conversion function
@@ -304,7 +303,7 @@ Custom SVG format converters in [converters/](converters/) directory:
 Wrap page with `<Provider>` from `jotai` and `<PageContextProvider>` to initialize state
 ### Custom Hooks
 
-Hooks in [hooks/](hooks/) directory:
+Hooks in [hooks/](../hooks/) directory:
 
 - **useReportDefaultAttributeValues.ts**: Manages default variant settings and attributes
 - **useDownloadIconTsx.ts**: Generates and downloads React component code for selected icon
@@ -313,12 +312,12 @@ Hooks in [hooks/](hooks/) directory:
 
 External hooks from `@uidotdev/usehooks`:
 
-- `useIsClient()`: Used in [PageContext.tsx](app/(external)/icons/_components/PageContext.tsx) for client-side logic
-- `useClickAway()`: Used in [Navbar.tsx](app/(external)/icons/_components/Navbar.tsx) for dropdown management
+- `useIsClient()`: Used in [PageContext.tsx](../app/%28external%29/ficons/_components/PageContext.tsx) for client-side logic
+- `useClickAway()`: Used in navbar components for dropdown management
 
 ### Context Pattern
 
-Page-level context in [app/(external)/icons/_components/PageContext.tsx](app/(external)/icons/_components/PageContext.tsx):
+Page-level context in [app/(external)/ficons/_components/PageContext.tsx](../app/%28external%29/ficons/_components/PageContext.tsx):
 
 ```typescript
 interface IconContextType {
