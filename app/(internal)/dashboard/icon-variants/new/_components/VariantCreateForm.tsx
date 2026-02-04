@@ -2,9 +2,6 @@
 
 import { FolderTree, Regex, Tag } from 'lucide-react';
 import { useActionState, useState } from 'react';
-import FillColorAdjuster from '@/components/FillColorAdjuster';
-import StrokeColorAdjuster from '@/components/StrokeColorAdjuster';
-import StrokeWidthAdjuster from '@/components/StrokeWidthAdjuster';
 import { assertArray } from '@/utils/assert-helpers';
 import { cx } from '@/utils/common-helpers';
 import type { createVariantAction } from '../../actions';
@@ -18,12 +15,8 @@ const initialState: CreateVariantReturn = {
         name: '',
         regex: '',
         path: '',
-        stroke: null,
-        strokeOn: 'parent',
-        fill: null,
-        fillOn: 'parent',
-        strokeWidth: null,
-        strokeWidthOn: 'parent'
+        colorOn: null,
+        replacements: null
     }
 };
 
@@ -36,17 +29,8 @@ export default function VariantCreateForm({
 }) {
     const [formState, action, isPending] = useActionState(formAction, initialState);
 
-    const [enableStrokeColor, setEnableStrokeColor] = useState(false);
-    const [strokeColor, setStrokeColor] = useState('#000000');
-    const [strokeOn, setStrokeOn] = useState<'both' | 'parent' | 'children'>('parent');
-
-    const [enableFillColor, setEnableFillColor] = useState(false);
-    const [fillColor, setFillColor] = useState('#000000');
-    const [fillOn, setFillOn] = useState<'both' | 'parent' | 'children'>('parent');
-
-    const [enableStrokeWidth, setEnableStrokeWidth] = useState(false);
-    const [strokeWidth, setStrokeWidth] = useState(2);
-    const [strokeWidthOn, setStrokeWidthOn] = useState<'both' | 'parent' | 'children'>('parent');
+    const [colorOn, setColorOn] = useState<'fill' | 'stroke' | ''>('');
+    const [replacements, setReplacements] = useState<string>('');
 
     return (
         <form action={action} className="space-y-6">
@@ -157,133 +141,45 @@ export default function VariantCreateForm({
                 </fieldset>
             </div>
 
-            <fieldset className="d-fieldset flex-1">
-                <legend className="d-fieldset-legend">Default SVG Attributes</legend>
+            <fieldset className="d-fieldset">
+                <legend className="d-fieldset-legend">Color Replacement Configuration</legend>
                 <div className="space-y-4 mt-4">
-                    <div className="flex items-start gap-4">
-                        <label className="flex items-center gap-2 w-48 pt-2">
-                            <input
-                                type="checkbox"
-                                className="d-checkbox d-checkbox-md"
-                                checked={enableStrokeColor}
-                                onChange={(e) => setEnableStrokeColor(e.target.checked)}
-                                name="enableStrokeColor"
-                            />
-                            <span>Stroke color</span>
+                    <div>
+                        <label htmlFor="colorOn" className="d-label">
+                            <span className="d-label-text">Apply color to:</span>
                         </label>
-                        <div className="flex-1">
-                            {enableStrokeColor && (
-                                <>
-                                    <input type="hidden" name="stroke" value={strokeColor} />
-                                    <input type="hidden" name="strokeOn" value={strokeOn} />
-                                    <div className="space-y-3">
-                                        <StrokeColorAdjuster
-                                            strokeColor={strokeColor}
-                                            onStrokeColorChange={setStrokeColor}
-                                        />
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-sm font-medium">Apply to:</span>
-                                            <select
-                                                className="d-select d-select-sm d-select-bordered"
-                                                value={strokeOn}
-                                                onChange={(e) =>
-                                                    setStrokeOn(
-                                                        e.target.value as 'both' | 'parent' | 'children'
-                                                    )
-                                                }>
-                                                <option value="parent">Parent only</option>
-                                                <option value="children">Children only</option>
-                                                <option value="both">Both parent and children</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
+                        <select
+                            id="colorOn"
+                            name="colorOn"
+                            className="d-select d-select-bordered w-full"
+                            value={colorOn}
+                            onChange={(e) => setColorOn(e.target.value as 'fill' | 'stroke' | '')}>
+                            <option value="">None</option>
+                            <option value="fill">Fill</option>
+                            <option value="stroke">Stroke</option>
+                        </select>
+                        <p className="d-label-text-alt mt-2 text-base-content/70">
+                            Specifies which SVG attribute should be replaced with user-selected colors
+                        </p>
                     </div>
 
-                    <div className="flex items-start gap-4">
-                        <label className="flex items-center gap-2 w-48 pt-2">
-                            <input
-                                type="checkbox"
-                                className="d-checkbox d-checkbox-md"
-                                checked={enableFillColor}
-                                onChange={(e) => setEnableFillColor(e.target.checked)}
-                                name="enableFillColor"
-                            />
-                            <span>Fill color</span>
+                    <div>
+                        <label htmlFor="replacements" className="d-label">
+                            <span className="d-label-text">Replacements (comma-separated):</span>
                         </label>
-                        <div className="flex-1">
-                            {enableFillColor && (
-                                <>
-                                    <input type="hidden" name="fill" value={fillColor} />
-                                    <input type="hidden" name="fillOn" value={fillOn} />
-                                    <div className="space-y-3">
-                                        <FillColorAdjuster
-                                            fillColor={fillColor}
-                                            onFillColorChange={setFillColor}
-                                        />
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-sm font-medium">Apply to:</span>
-                                            <select
-                                                className="d-select d-select-sm d-select-bordered"
-                                                value={fillOn}
-                                                onChange={(e) =>
-                                                    setFillOn(
-                                                        e.target.value as 'both' | 'parent' | 'children'
-                                                    )
-                                                }>
-                                                <option value="parent">Parent only</option>
-                                                <option value="children">Children only</option>
-                                                <option value="both">Both parent and children</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                        <label className="flex items-center gap-2 w-48 pt-2">
-                            <input
-                                type="checkbox"
-                                className="d-checkbox d-checkbox-md"
-                                checked={enableStrokeWidth}
-                                onChange={(e) => setEnableStrokeWidth(e.target.checked)}
-                                name="enableStrokeWidth"
-                            />
-                            <span>Stroke width</span>
-                        </label>
-                        <div className="flex-1">
-                            {enableStrokeWidth && (
-                                <>
-                                    <input type="hidden" name="strokeWidth" value={strokeWidth} />
-                                    <input type="hidden" name="strokeWidthOn" value={strokeWidthOn} />
-                                    <div className="space-y-3">
-                                        <StrokeWidthAdjuster
-                                            strokeWidth={strokeWidth}
-                                            onStrokeWidthChange={setStrokeWidth}
-                                        />
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-sm font-medium">Apply to:</span>
-                                            <select
-                                                className="d-select d-select-sm d-select-bordered"
-                                                value={strokeWidthOn}
-                                                onChange={(e) =>
-                                                    setStrokeWidthOn(
-                                                        e.target.value as 'both' | 'parent' | 'children'
-                                                    )
-                                                }>
-                                                <option value="parent">Parent only</option>
-                                                <option value="children">Children only</option>
-                                                <option value="both">Both parent and children</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
+                        <textarea
+                            id="replacements"
+                            name="replacements"
+                            className="d-textarea d-textarea-bordered w-full"
+                            rows={3}
+                            placeholder="e.g., currentColor, #000000, #fff"
+                            value={replacements}
+                            onChange={(e) => setReplacements(e.target.value)}
+                        />
+                        <p className="d-label-text-alt mt-2 text-base-content/70">
+                            List of color values to be replaced. Each value will be replaced with the
+                            user-selected color.
+                        </p>
                     </div>
                 </div>
             </fieldset>

@@ -49,46 +49,27 @@ export default function PageContent({ variant }: { variant: Variant & { reposito
                         </a>
                     </p>
                     <div className="col-span-2">
-                        <strong>Default SVG Attributes:</strong>
+                        <strong>Color Replacement Configuration:</strong>
                         <ul className="list-disc pl-6 mt-4">
-                            {formState.values.fill && (
+                            {formState.values.colorOn && (
                                 <li>
-                                    Fill color:{' '}
+                                    Apply color to:{' '}
                                     <code className="bg-base-300 px-2 py-1 rounded">
-                                        {formState.values.fill}
-                                    </code>{' '}
-                                    <span className="text-sm text-base-content/70">
-                                        (applied to: {variant.fillOn})
-                                    </span>
+                                        {formState.values.colorOn}
+                                    </code>
                                 </li>
                             )}
-                            {formState.values.stroke && (
+                            {formState.values.replacements && formState.values.replacements.length > 0 && (
                                 <li>
-                                    Stroke color:{' '}
+                                    Replacements:{' '}
                                     <code className="bg-base-300 px-2 py-1 rounded">
-                                        {formState.values.stroke}
-                                    </code>{' '}
-                                    <span className="text-sm text-base-content/70">
-                                        (applied to: {variant.strokeOn})
-                                    </span>
+                                        {formState.values.replacements.join(', ')}
+                                    </code>
                                 </li>
                             )}
-                            {formState.values.strokeWidth && (
-                                <li>
-                                    Stroke width:{' '}
-                                    <code className="bg-base-300 px-2 py-1 rounded">
-                                        {formState.values.strokeWidth}
-                                    </code>{' '}
-                                    <span className="text-sm text-base-content/70">
-                                        (applied to: {variant.strokeWidthOn})
-                                    </span>
-                                </li>
+                            {!formState.values.colorOn && !formState.values.replacements && (
+                                <li className="text-base-content/50">None configured</li>
                             )}
-                            {!formState.values.fill &&
-                                !formState.values.stroke &&
-                                !formState.values.strokeWidth && (
-                                    <li className="text-base-content/50">None configured</li>
-                                )}
                         </ul>
                     </div>
                 </div>

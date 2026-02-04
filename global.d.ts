@@ -43,6 +43,18 @@ declare global {
         repositoryName: string;
     }
 
+    /**
+     * @deprecated Use compact text format (svgText) instead of AST
+     * Kept for backward compatibility with test files
+     */
+    interface SvgNode {
+        i?: string;
+        t: string;
+        a?: Record<string, string | number>;
+        c?: SvgNode[];
+        txt?: string;
+    }
+
     interface Icon {
         id: number;
         name: string;

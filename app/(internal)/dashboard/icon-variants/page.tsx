@@ -58,9 +58,10 @@ export default async function VariantsManagementPage() {
                                     <td>
                                         <div className="flex flex-wrap gap-1">
                                             {[
-                                                variant.stroke && `stroke: ${variant.stroke}`,
-                                                variant.fill && `fill: ${variant.fill}`,
-                                                variant.strokeWidth && `strokeWidth: ${variant.strokeWidth}`
+                                                variant.colorOn && `colorOn: ${variant.colorOn}`,
+                                                variant.replacements &&
+                                                    variant.replacements.length > 0 &&
+                                                    `replacements: ${variant.replacements.join(', ')}`
                                             ]
                                                 .filter(Boolean)
                                                 .join(', ') || 'None'}
