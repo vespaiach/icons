@@ -1,3 +1,4 @@
+import { XMLParser } from 'fast-xml-parser';
 import { camelCase } from 'lodash';
 
 export function svgToReactComponent(icon: {
@@ -6,9 +7,15 @@ export function svgToReactComponent(icon: {
     color?: string;
     svgString: string;
 }): string {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(icon.svgString, 'image/svg+xml');
-    const svgElement = doc.querySelector('svg');
+    const parser = new XMLParser({
+        ignoreAttributes: false,
+        attributeNamePrefix: '@_',
+        textNodeName: '#text',
+        preserveOrder: true
+    });
+
+    const parsed = parser.parse(icon.svgString);
+    const svgElement = parsed.find((node: { [key: string]: unknown }) => node.svg);
 
     if (!svgElement) {
         throw new Error('Invalid SVG string');
@@ -17,12 +24,15 @@ export function svgToReactComponent(icon: {
     // Process all child elements
     let innerContent = '';
     let prefix = '';
-    svgElement.childNodes.forEach((node) => {
-        if (node.nodeType === Node.ELEMENT_NODE) {
-            innerContent += prefix + convertElementAttributes(node as Element);
+    const children = svgElement.svg || [];
+
+    for (const child of children) {
+        const elementName = Object.keys(child).find((key) => !key.startsWith('@_') && key !== '#text');
+        if (elementName) {
+            innerContent += prefix + convertElement(child);
             prefix = '\n            ';
         }
-    });
+    }
 
     let componentName = icon.name
         .split('-')
@@ -34,22 +44,24 @@ export function svgToReactComponent(icon: {
         componentName = `Icon${componentName}`;
     }
 
-    // Extract attributes
+    // Extract attributes from svg element
     const hasFillColor = icon.svgString.includes('fill="CurrentColor"');
     const hasStrokeColor = icon.svgString.includes('stroke="CurrentColor"');
 
+    const svgAttrs = extractAttributes(svgElement.svg[':@'] || {});
     const attributes: string[] = [];
-    Array.from(svgElement.attributes).forEach((attr) => {
-        if (attr.name === 'fill' && attr.value === 'CurrentColor') {
+
+    for (const [key, value] of Object.entries(svgAttrs)) {
+        if (key === 'fill' && value === 'CurrentColor') {
             attributes.push('fill={fill}');
-            return;
+            continue;
         }
-        if (attr.name === 'stroke' && attr.value === 'CurrentColor') {
+        if (key === 'stroke' && value === 'CurrentColor') {
             attributes.push('stroke={stroke}');
-            return;
+            continue;
         }
-        attributes.push(`${camelCase(attr.name)}="${attr.value}"`);
-    });
+        attributes.push(`${camelCase(key)}="${value}"`);
+    }
 
     const title = `${icon.name.replace(/-/g, ' ')} icon`;
 
@@ -81,7 +93,18 @@ export default function ${componentName}({
 `;
 }
 
-function convertElementAttributes(element: Element): string {
+function extractAttributes(attrObj: Record<string, unknown>): Record<string, string> {
+    const attrs: Record<string, string> = {};
+    for (const key of Object.keys(attrObj)) {
+        if (key.startsWith('@_')) {
+            const attrName = key.substring(2);
+            attrs[attrName] = String(attrObj[key]);
+        }
+    }
+    return attrs;
+}
+
+function convertElement(node: Record<string, unknown>): string {
     const attributeMap: Record<string, string> = {
         'stroke-width': 'strokeWidth',
         'stroke-linecap': 'strokeLinecap',
@@ -96,31 +119,45 @@ function convertElementAttributes(element: Element): string {
         'clip-rule': 'clipRule'
     };
 
-    // Build attributes string
-    const attrs = Array.from(element.attributes)
-        .map((attr) => {
-            const name = attributeMap[attr.name] || attr.name;
-            return `${name}="${attr.value}"`;
+    // Get element name
+    const elementName = Object.keys(node).find((key) => !key.startsWith('@_') && key !== '#text');
+    if (!elementName) {
+        return '';
+    }
+
+    const tagName = elementName;
+    const element = node[elementName];
+
+    // Extract attributes
+    const attrObj = (node[':@'] as Record<string, unknown>) || {};
+    const attrs = extractAttributes(attrObj);
+    const attrsString = Object.entries(attrs)
+        .map(([name, value]) => {
+            const reactName = attributeMap[name] || name;
+            return `${reactName}="${value}"`;
         })
         .join(' ');
 
-    // Get tag name
-    const tagName = element.tagName;
-
-    // Check if self-closing
-    if (element.children.length === 0 && !element.textContent?.trim()) {
-        return `<${tagName}${attrs ? ` ${attrs}` : ''} />`;
+    // Check if element has children
+    if (!Array.isArray(element) || element.length === 0) {
+        return `<${tagName}${attrsString ? ` ${attrsString}` : ''} />`;
     }
 
-    // Process children recursively
+    // Process children
     let children = '';
-    element.childNodes.forEach((node) => {
-        if (node.nodeType === Node.ELEMENT_NODE) {
-            children += convertElementAttributes(node as Element);
-        } else if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
-            children += node.textContent;
+    for (const child of element) {
+        if (typeof child === 'object' && child !== null) {
+            if (child['#text']) {
+                children += child['#text'];
+            } else {
+                children += convertElement(child);
+            }
         }
-    });
+    }
 
-    return `<${tagName}${attrs ? ` ${attrs}` : ''}>${children}</${tagName}>`;
+    if (!children.trim()) {
+        return `<${tagName}${attrsString ? ` ${attrsString}` : ''} />`;
+    }
+
+    return `<${tagName}${attrsString ? ` ${attrsString}` : ''}>${children}</${tagName}>`;
 }
