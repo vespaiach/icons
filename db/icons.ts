@@ -86,13 +86,7 @@ export async function getIconsByIds(iconIds: number[]) {
             i.variant_id AS "variantId",
             i.name,
             i.svg_text AS "svgText",
-            v.name AS "variantName",
-            v.stroke,
-            v.stroke_on AS "strokeOn",
-            v.fill,
-            v.fill_on AS "fillOn",
-            v.stroke_width AS "strokeWidth",
-            v.stroke_width_on AS "strokeWidthOn"
+            v.name AS "variantName"
         FROM icons i
         INNER JOIN variants v ON i.variant_id = v.id
         WHERE i.id = ANY(${iconIds})
@@ -102,16 +96,5 @@ export async function getIconsByIds(iconIds: number[]) {
     if (Bun.env.DEBUG_QUERIES === 'true' && rows.length > 0) {
         log('info', `[DB] getIconsByIds - SAMPLE RESULT (first row)`, rows[0]);
     }
-    return rows as unknown as Array<
-        Icon & {
-            variantId: number;
-            variantName: string;
-            stroke: string | null;
-            strokeOn: 'both' | 'parent' | 'children';
-            fill: string | null;
-            fillOn: 'both' | 'parent' | 'children';
-            strokeWidth: string | null;
-            strokeWidthOn: 'both' | 'parent' | 'children';
-        }
-    >;
+    return rows as unknown as Array<Icon & { variantId: number; variantName: string }>;
 }

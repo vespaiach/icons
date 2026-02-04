@@ -45,15 +45,6 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
         id,
         regex,
         path,
-        enableStrokeColor,
-        stroke,
-        strokeOn,
-        enableFillColor,
-        fill,
-        fillOn,
-        enableStrokeWidth,
-        strokeWidth,
-        strokeWidthOn
     } = payload;
 
     const variant = await getVariantById(id);
@@ -61,17 +52,7 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
         notFound();
     }
 
-    const updatedVariant = await updateVariant({
-        id,
-        regex,
-        path,
-        stroke: enableStrokeColor && stroke ? stroke : null,
-        strokeOn: strokeOn ?? 'parent',
-        fill: enableFillColor && fill ? fill : null,
-        fillOn: fillOn ?? 'parent',
-        strokeWidth: enableStrokeWidth && strokeWidth !== undefined ? String(strokeWidth) : null,
-        strokeWidthOn: strokeWidthOn ?? 'parent'
-    });
+    const updatedVariant = await updateVariant({ id, regex, path });
     if (!updatedVariant) {
         return { ...prevState, errors: { global: ['Failed to update variant.'] } };
     }
@@ -81,9 +62,6 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
             id: updatedVariant.id,
             regex: updatedVariant.regex,
             path: updatedVariant.path,
-            stroke: updatedVariant.stroke,
-            fill: updatedVariant.fill,
-            strokeWidth: updatedVariant.strokeWidth
         },
         errors: {}
     };

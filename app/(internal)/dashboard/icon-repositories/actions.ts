@@ -174,11 +174,7 @@ async function scanIconVariants(repo: RepositoryVariants) {
                 const batch = svgFiles.slice(i, i + BATCH_SIZE);
                 await Promise.all(
                     batch.map((fileName) =>
-                        saveIconsToDatabase(
-                            variant.id,
-                            path.parse(fileName).name,
-                            path.join(fullPath, fileName)
-                        )
+                        saveIconsToDatabase(variant, path.parse(fileName).name, path.join(fullPath, fileName))
                     )
                 );
                 log(
@@ -192,22 +188,54 @@ async function scanIconVariants(repo: RepositoryVariants) {
     }
 }
 
-async function saveIconsToDatabase(variantId: number, fileName: string, fullPath: string) {
+function addColorAttributeToSvgRoot(svgContent: string, colorOn: 'fill' | 'stroke'): string {
+    // Match the opening <svg tag and check if it already has the attribute
+    const svgTagMatch = svgContent.match(/<svg([^>]*)>/);
+
+    if (!svgTagMatch) {
+        log('warn', 'No SVG root element found in content');
+        return svgContent;
+    }
+
+    const attributes = svgTagMatch[1];
+    const attributeName = colorOn;
+
+    // Check if the attribute already exists
+    const attrRegex = new RegExp(`\\s${attributeName}=`, 'i');
+    if (attrRegex.test(attributes)) {
+        // Attribute already exists, don't add another one
+        return svgContent;
+    }
+
+    // Add attribute="currentColor" to the SVG tag
+    return svgContent.replace(/<svg([^>]*)>/, `<svg$1 ${attributeName}="currentColor">`);
+}
+
+async function saveIconsToDatabase(variant: Variant, fileName: string, fullPath: string) {
     try {
         const file = Bun.file(fullPath);
-        const svgContent = (await file.text()).trim();
+        let svgContent = (await file.text()).trim();
 
-        // Parse SVG into AST structure
+        if (variant.colorOn) {
+            svgContent = addColorAttributeToSvgRoot(svgContent, variant.colorOn);
+        }
+        if (variant.replacements && variant.replacements.length > 0) {
+            for (const replacement of variant.replacements) {
+                svgContent = svgContent.replace(replacement, 'currentColor');
+            }
+        }
+
+        // Compress SVG content to text format
         const svgAst = svgToTextFormat(svgContent);
 
         // Insert icon to database
-        await createIcon(variantId, fileName, svgAst);
+        await createIcon(variant.id, fileName, svgAst);
 
-        log('info', `Saved icon ${fullPath}, from variant id: ${variantId}`);
+        log('info', `Saved icon ${fullPath}, from variant id: ${variant.id}`);
     } catch (error) {
         log(
             'error',
-            `Failed to save icon ${fileName} from variant id: ${variantId} to database (${fullPath})`,
+            `Failed to save icon ${fileName} from variant id: ${variant.id} to database (${fullPath})`,
             error
         );
     }

@@ -10,12 +10,8 @@ export async function getVariantById(id: number): Promise<Variant | null> {
             name,
             path,
             regex,
-            stroke,
-            stroke_on AS "strokeOn",
-            fill,
-            fill_on AS "fillOn",
-            stroke_width AS "strokeWidth",
-            stroke_width_on AS "strokeWidthOn",
+            color_on AS "colorOn",
+            replacements,
             icon_count AS "iconCount",
             created_at AS "createdAt",
             updated_at AS "updatedAt"
@@ -39,12 +35,8 @@ export async function getVariantsWithRepository(): Promise<VariantWithRepository
             v.name,
             v.path,
             v.regex,
-            v.stroke,
-            v.stroke_on AS "strokeOn",
-            v.fill,
-            v.fill_on AS "fillOn",
-            v.stroke_width AS "strokeWidth",
-            v.stroke_width_on AS "strokeWidthOn",
+            v.color_on AS "colorOn",
+            v.replacements,
             v.icon_count AS "iconCount",
             v.created_at AS "createdAt",
             v.updated_at AS "updatedAt",
@@ -69,12 +61,8 @@ export async function getVariantRepositoryById(
             v.name,
             v.path,
             v.regex,
-            v.stroke,
-            v.stroke_on AS "strokeOn",
-            v.fill,
-            v.fill_on AS "fillOn",
-            v.stroke_width AS "strokeWidth",
-            v.stroke_width_on AS "strokeWidthOn",
+            v.color_on AS "colorOn",
+            v.replacements,
             v.icon_count AS "iconCount",
             v.created_at AS "createdAt",
             v.updated_at AS "updatedAt",
@@ -96,22 +84,15 @@ export async function getVariantRepositoryById(
 }
 
 export async function updateVariant(
-    data: Pick<
-        Variant,
-        'id' | 'path' | 'regex' | 'stroke' | 'strokeOn' | 'fill' | 'fillOn' | 'strokeWidth' | 'strokeWidthOn'
-    >
+    data: Pick<Variant, 'id' | 'path' | 'regex' | 'colorOn' | 'replacements'>
 ) {
     log('info', '[DB] updateVariant - START', { id: data.id });
     const rows = await sql`
         UPDATE variants
         SET
             regex = ${data.regex},
-            stroke = ${data.stroke},
-            stroke_on = ${data.strokeOn},
-            fill = ${data.fill},
-            fill_on = ${data.fillOn},
-            stroke_width = ${data.strokeWidth},
-            stroke_width_on = ${data.strokeWidthOn},
+            color_on = ${data.colorOn},
+            replacements = ${data.replacements},
             updated_at = CURRENT_TIMESTAMP
         WHERE id = ${data.id}
         RETURNING
@@ -120,12 +101,19 @@ export async function updateVariant(
             name,
             path,
             regex,
-            stroke,
-            stroke_on AS "strokeOn",
-            fill,
-            fill_on AS "fillOn",
-            stroke_width AS "strokeWidth",
-            stroke_width_on AS "strokeWidthOn",
+            color_on AS "colorOn",
+            replacements,
+            updated_at AS "updatedAt"
+        WHERE id = ${data.id}
+        RETURNING
+            id,
+            repository_id AS "repositoryId",
+            name,
+            path,
+            regex,
+            color_on AS "colorOn",
+            replacements,
+            updated_at AS "updatedAt"
             icon_count AS "iconCount",
             created_at AS "createdAt",
             updated_at AS "updatedAt"
@@ -153,25 +141,13 @@ export async function createVariant(
             repository_id,
             name,
             path,
-            regex,
-            stroke,
-            stroke_on,
-            fill,
-            fill_on,
-            stroke_width,
-            stroke_width_on
+            regex
         )
         VALUES (
             ${data.repositoryId},
             ${data.name},
             ${data.path},
             ${data.regex},
-            ${data.stroke ?? null},
-            ${data.strokeOn ?? 'parent'},
-            ${data.fill ?? null},
-            ${data.fillOn ?? 'parent'},
-            ${data.strokeWidth ?? null},
-            ${data.strokeWidthOn ?? 'parent'}
         )
         RETURNING
             id,
@@ -179,12 +155,8 @@ export async function createVariant(
             name,
             path,
             regex,
-            stroke,
-            stroke_on AS "strokeOn",
-            fill,
-            fill_on AS "fillOn",
-            stroke_width AS "strokeWidth",
-            stroke_width_on AS "strokeWidthOn",
+            color_on AS "colorOn",
+            replacements,
             icon_count AS "iconCount",
             created_at AS "createdAt",
             updated_at AS "updatedAt"

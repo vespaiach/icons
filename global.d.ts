@@ -31,12 +31,8 @@ declare global {
         path: string;
         name: string;
         regex: string;
-        stroke: string | null;
-        strokeOn: 'both' | 'parent' | 'children';
-        fill: string | null;
-        fillOn: 'both' | 'parent' | 'children';
-        strokeWidth: string | null;
-        strokeWidthOn: 'both' | 'parent' | 'children';
+        colorOn: 'fill' | 'stroke' | null;
+        replacements: string[] | null;
         iconCount: number;
         createdAt: Date;
         updatedAt: Date;
