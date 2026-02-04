@@ -62,7 +62,7 @@ export async function up(sql: any): Promise<void> {
             id SERIAL PRIMARY KEY,
             variant_id INTEGER REFERENCES variants(id) ON DELETE CASCADE,
             name VARCHAR(255) NOT NULL,
-            svg_ast JSONB NOT NULL,
+            svg_text TEXT NOT NULL,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         );

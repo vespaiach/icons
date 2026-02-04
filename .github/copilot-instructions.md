@@ -213,7 +213,7 @@ log('error', 'Failed operation', error);
 
 Reusable components in [components/](components/) directory:
 
-- **AstToSvg.tsx**: Renders SVG from AST structure using `dangerouslySetInnerHTML` with converted HTML from `astToInnerHtml()`
+- **TextToSvg.tsx**: Renders SVG from AST structure using `dangerouslySetInnerHTML` with converted HTML from `astToInnerHtml()`
 - **AttributesAdjuster.tsx**: Composite component for adjusting icon properties (size, stroke, fill)
 - **SizeAdjuster.tsx**, **StrokeWidthAdjuster.tsx**, **StrokeColorAdjuster.tsx**, **FillColorAdjuster.tsx**: Individual attribute controls
 - **Box.tsx**: Generic container component with optional header

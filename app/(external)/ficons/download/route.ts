@@ -1,11 +1,11 @@
 import { $ } from 'bun';
 import { type NextRequest, NextResponse } from 'next/server';
 import * as v from 'valibot';
+import { textFormatToSvg } from '@/converters/svg-to-text-converter';
 import { getIconsByIds } from '@/db/icons';
-import { astToSvgString, prepareAst } from '@/utils/ast-2-html';
-import { astToTsx, prepareAstToTsx } from '@/utils/ast-2-tsx';
 import { log } from '@/utils/log.helpers';
-import { mergeAttributes } from '@/utils/string-helpers';
+import { applyAdjustment2SvgText } from '@/utils/string-helpers';
+import { svgToReactComponent } from '@/utils/svg-to-tsx';
 
 const downloadRequestSchema = v.object({
     iconIds: v.pipe(
@@ -57,20 +57,21 @@ export async function POST(request: NextRequest) {
             // Generate SVG files and React components with applied attributes
             for (const icon of icons) {
                 // Generate raw SVG file
-                const prepareedAst = prepareAst(icon.svgAst, icon, attributes);
-                const svgContent = astToSvgString(prepareedAst);
+                const appliedAdjustmentText = applyAdjustment2SvgText(icon.svgText, {
+                    color: attributes?.color,
+                    size: attributes?.size
+                });
+                const svgContent = textFormatToSvg(appliedAdjustmentText);
                 const svgFileName = `${icon.name}.svg`;
                 const svgFilePath = `${rawDir}/${svgFileName}`;
                 await Bun.write(svgFilePath, svgContent);
 
                 // Generate React component file
-                const preparedAstToTsx = prepareAstToTsx(icon.svgAst, icon, attributes);
-                const tsxContent = astToTsx({
+                const tsxContent = svgToReactComponent({
                     name: icon.name,
-                    svgAst: preparedAstToTsx,
+                    svgString: textFormatToSvg(icon.svgText),
                     size: attributes?.size,
-                    fill: mergeAttributes(icon.fill, attributes?.color),
-                    stroke: mergeAttributes(icon.stroke, attributes?.color)
+                    color: attributes?.color
                 });
                 const tsxFileName = `${icon.name
                     .split('-')

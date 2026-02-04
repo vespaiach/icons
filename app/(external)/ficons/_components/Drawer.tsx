@@ -2,9 +2,9 @@
 
 import { Download, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import AstToSvg from '@/components/AstToSvg';
 import ColorAdjuster from '@/components/ColorAdjuster';
 import SizeAdjuster from '@/components/SizeAdjuster';
+import TextToSvg from '@/components/TextToSvg';
 import { useFavoritesAction, useFavoritesValue } from './PageContext';
 
 export default function Drawer({ repositories }: { repositories: RepositoryVariants[] }) {
@@ -112,7 +112,7 @@ export default function Drawer({ repositories }: { repositories: RepositoryVaria
                                 key={id}
                                 onClick={() => removeFromFavorites(id)}
                                 className="d-btn d-btn-sm d-btn-error d-btn-ghost p-1 relative group">
-                                <AstToSvg svgAst={favorite.svgAst} variant={variant} />
+                                <TextToSvg svgText={favorite.svgText} />
                             </button>
                         );
                     })}

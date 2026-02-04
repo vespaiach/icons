@@ -12,15 +12,12 @@ import { sql } from './db.client';
  * SvgNode structure: { i: id, t: type, a: attrs, c: children }
  */
 
-export async function createIcon(variantId: number, name: string, svgAst: SvgNode): Promise<Icon | null> {
+export async function createIcon(variantId: number, name: string, svgText: string): Promise<Icon | null> {
     log('info', '[DB] createIcon - START', { variantId, name });
     const rows = await sql`
-        INSERT INTO icons (variant_id, name, svg_ast)
-        VALUES (${variantId}, ${name}, ${
-            // biome-ignore lint/suspicious/noExplicitAny: SvgNode structure doesn't match JSONValue type exactly
-            sql.json(svgAst as any)
-        })
-        RETURNING id, name, svg_ast AS "svgAst";
+        INSERT INTO icons (variant_id, name, svg_text)
+        VALUES (${variantId}, ${name}, ${svgText})
+        RETURNING id, name, svg_text AS "svgText";
     `;
     log('info', `[DB] createIcon - END (success: ${!!rows[0]})`);
     if (Bun.env.DEBUG_QUERIES === 'true' && rows[0]) {
@@ -48,7 +45,7 @@ export async function getIconsByRepositoryId(repositoryId: number): Promise<Icon
             i.variant_id AS "variantId",
             v.repository_id AS "repositoryId",
             i.name,
-            i.svg_ast AS "svgAst"
+            i.svg_text AS "svgText"
         FROM icons i INNER JOIN variants v ON i.variant_id = v.id
         WHERE v.repository_id = ${repositoryId}
         ORDER BY i.name ASC
@@ -69,7 +66,7 @@ export async function getIconsByVariantId(variantId: number): Promise<IconWithRe
             i.variant_id AS "variantId",
             v.repository_id AS "repositoryId",
             i.name,
-            i.svg_ast AS "svgAst"
+            i.svg_text AS "svgText"
         FROM icons i INNER JOIN variants v ON i.variant_id = v.id
         WHERE i.variant_id = ${variantId}
         ORDER BY i.name ASC
@@ -88,7 +85,7 @@ export async function getIconsByIds(iconIds: number[]) {
             i.id,
             i.variant_id AS "variantId",
             i.name,
-            i.svg_ast AS "svgAst",
+            i.svg_text AS "svgText",
             v.name AS "variantName",
             v.stroke,
             v.stroke_on AS "strokeOn",

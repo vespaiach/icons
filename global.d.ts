@@ -57,7 +57,8 @@ declare global {
     interface Icon {
         id: number;
         name: string;
-        svgAst: SvgNode;
+        // svgAst: SvgNode;
+        svgText: string;
     }
 
     interface IconWithRelativeData extends Icon {

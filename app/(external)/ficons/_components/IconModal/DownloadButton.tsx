@@ -1,37 +1,20 @@
 import { ChevronDown, Download } from 'lucide-react';
 import { useState } from 'react';
-import { astToHtml, prepareAst } from '@/utils/ast-2-html';
-import { astToTsx, prepareAstToTsx } from '@/utils/ast-2-tsx';
-import { mergeAttributes } from '@/utils/client-side/svg-helpers';
 import { cx } from '@/utils/common-helpers';
+import prepareText from './prepareText';
 
 export default function DownloadButton({
     icon,
-    variant,
     adjustment
 }: {
     icon: IconWithRelativeData;
-    variant: Variant;
     adjustment?: Adjustment;
 }) {
     const [text, setText] = useState('Raw SVG');
     const [open, setOpen] = useState(false);
 
     const download = (format: string) => {
-        let svgContent = '';
-        if (format === 'Raw SVG') {
-            const preparedAst = prepareAst(icon.svgAst, variant, adjustment);
-            svgContent = astToHtml(preparedAst);
-        } else if (format === 'React TSX') {
-            const preparedAst = prepareAstToTsx(icon.svgAst, variant, adjustment);
-            svgContent = astToTsx({
-                name: icon.name,
-                svgAst: preparedAst,
-                size: adjustment?.size,
-                fill: mergeAttributes(variant.fill, adjustment?.color),
-                stroke: mergeAttributes(variant.stroke, adjustment?.color)
-            });
-        }
+        const svgContent = prepareText(icon, format, adjustment);
 
         const blob = new Blob([svgContent], { type: format === 'Raw SVG' ? 'image/svg+xml' : 'text/plain' });
         const url = URL.createObjectURL(blob);

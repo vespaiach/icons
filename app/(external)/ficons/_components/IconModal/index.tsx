@@ -11,10 +11,8 @@ export default function IconModal({ repositories }: { repositories: RepositoryVa
         ? repositories.find((repo) => repo.id === selectedIcon.repositoryId)
         : null;
     const adjustment = useAdjustmentValue(repository?.id);
-    const variant =
-        selectedIcon && repository ? repository.variants.find((v) => v.id === selectedIcon.variantId) : null;
 
-    if (!selectedIcon || !variant) {
+    if (!selectedIcon) {
         return null;
     }
 
@@ -27,7 +25,7 @@ export default function IconModal({ repositories }: { repositories: RepositoryVa
                     onClick={clearSelectedIcon}>
                     <X size={20} />
                 </button>
-                <IconDetails selectedIcon={selectedIcon} variant={variant} adjustment={adjustment} />
+                <IconDetails selectedIcon={selectedIcon} adjustment={adjustment} />
             </div>
             <form method="dialog" onSubmit={clearSelectedIcon} className="d-modal-backdrop">
                 <button type="submit" className="outline-none">
