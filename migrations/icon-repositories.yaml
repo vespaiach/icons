@@ -15,16 +15,13 @@ repos:
     variants:
       - name: logos
         path: "/svg/logos"
-        fill: "currentColor"
-        fillOn: "parent"
+        colorOn: "fill"
       - name: regular
         path: "/svg/regular"
-        fill: "currentColor"
-        fillOn: "parent"
+        colorOn: "fill"
       - name: solid
         path: "/svg/solid"
-        fill: "currentColor"
-        fillOn: "parent"
+        colorOn: "fill"
   - owner: "danklammer"
     name: "bytesize-icons"
     github_id: 39126489
@@ -32,120 +29,118 @@ repos:
     variants:
       - name: default
         path: "/dist/icons"
-        fill: "none"
-        fillOn: "parent"
-        stroke: "currentColor"
-        strokeOn: "parent"
-        strokeWidth: "2"
-        strokeWidthOn: "parent"
   - owner: "feathericons"
     name: "feather"
     ref: "main"
     variants:
       - name: default
         path: "/icons"
-        fill: "none"
-        fillOn: "parent"
-        stroke: "currentColor"
-        strokeOn: "parent"
-        strokeWidth: "2"
-        strokeWidthOn: "parent"
   - owner: "tailwindlabs"
     name: "heroicons"
     ref: "master"
     variants:
       - name: "16/solid"
         path: "/optimized/16/solid"
-        fill: "currentColor"
-        fillOn: "parent"
+        replacements:
+          - "#0F172A"
       - name: "20/solid" 
         path: "/optimized/20/solid"
-        fill: "currentColor"
-        fillOn: "parent"
+        replacements:
+          - "#0F172A"
       - name: "24"
         path: "/optimized/24/outline"
-        fill: "none"
-        stroke: "currentColor"
-        strokeOn: "parent"
-        strokeWidth: "1.5"
-        strokeWidthOn: "parent"
+        replacements:
+          - "#0F172A"
       - name: "24"
         path: "/optimized/24/solid"
-        fill: "currentColor"
-        fillOn: "parent"
+        replacements:
+          - "#0F172A"
   - owner: "lucide-icons"
     name: "lucide"
     ref: "main"
     variants:
       - name: default
         path: "/icons"
-        fill: "none"
-        fillOn: "parent"
-        stroke: "currentColor"
-        strokeOn: "parent"
-        strokeWidth: "2"
-        strokeWidthOn: "parent"
   - owner: "tabler"
     name: "tabler-icons"
     ref: "main"
     variants:
       - name: filled
         path: "/icons/filled"
-        fill: "currentColor"
-        fillOn: "parent"
       - name: outline
         path: "/icons/outline"
-        fill: "none"
-        fillOn: "parent"
-        stroke: "currentColor"
-        strokeOn: "parent"
-        strokeWidth: "2"
-        strokeWidthOn: "parent"
   - owner: "FortAwesome"
     name: "Font-Awesome"
     ref: "7.x"
     variants:
       - name: brands
         path: "/svgs-full/brands"
-        fill: "currentColor"
-        fillOn: "children"
       - name: regular
         path: "/svgs-full/regular"
-        fill: "currentColor"
-        fillOn: "children"
       - name: solid
         path: "/svgs-full/solid"
-        fill: "currentColor"
-        fillOn: "children"
   - owner: "astrit"
     name: "css.gg"
     ref: "main"
     variants:
       - name: default
         path: "/icons/svg"        
-        fill: "currentColor"
-        fillOn: "children"
   - owner: "iconoir-icons"
     name: "iconoir"
     ref: "main"
     variants:
       - name: regular
         path: "/icons/regular"        
-        fill: "none"
-        fillOn: "parent"
-        stroke: "currentColor"
-        strokeOn: "parent"
-        strokeWidth: "1.5"
-        strokeWidthOn: "parent"
       - name: solid
         path: "/icons/solid"        
-        fill: "currentColor"
-        fillOn: "children"
   - owner: "mikolajdobrucki"
     name: "ikonate"
     ref: "master"
     variants:
       - name: default
         path: "/icons"        
-        stroke: "currentColor"
-        strokeOn: "parent"
+        colorOn: "stroke"
+  - owner: "primer"
+    name: "octicons"
+    ref: "main"
+    variants:
+      - name: Size 16
+        path: "/icons"        
+        regex: "-16\\.svg$"
+        colorOn: "fill"        
+      - name: Size 24
+        path: "/icons"        
+        regex: "-24\\.svg$"
+        colorOn: "fill"        
+      - name: Size 12
+        path: "/icons"        
+        regex: "-12\\.svg$"
+        colorOn: "fill"
+  - owner: "simple-icons"
+    name: "simple-icons"
+    ref: "master"
+    variants:
+      - name: default
+        path: "/icons"        
+        colorOn: "fill"
+  - owner: "ant-design"
+    name: "ant-design-icons"
+    ref: "master"
+    variants:
+      - name: filled
+        path: "/packages/icons-svg/svg/filled"        
+        colorOn: "fill"        
+      - name: outlined
+        path: "/packages/icons-svg/svg/outlined"        
+        colorOn: "fill"
+      - name: twotones
+        path: "/packages/icons-svg/svg/twotone"        
+        colorOn: "fill"
+  - owner: "uiwjs"
+    name: "icons"
+    ref: "master"
+    variants:
+      - name: default
+        path: "/icon"        
+        replacements:
+          - "#555"
