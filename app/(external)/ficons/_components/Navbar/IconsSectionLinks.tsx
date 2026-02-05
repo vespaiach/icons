@@ -1,9 +1,8 @@
 'use client';
 
 import { useClickAway } from '@uidotdev/usehooks';
-import type { RefObject } from 'react';
 import { useRef } from 'react';
-import { repoToId } from '@/utils/common-helpers';
+import MenuItem from '../MenuItem';
 
 export default function IconsSectionLinks({ repositories }: { repositories: RepositoryVariants[] }) {
     const detailRef = useRef<HTMLDetailsElement>(null);
@@ -14,7 +13,7 @@ export default function IconsSectionLinks({ repositories }: { repositories: Repo
     });
 
     return (
-        <details ref={detailRef} className="d-dropdown d-dropdown-end">
+        <details ref={detailRef} id="collections_dropdown" className="d-dropdown d-dropdown-end">
             <summary className="d-btn d-btn-sm d-btn-ghost">Collections</summary>
             <ul
                 ref={ref}
@@ -23,55 +22,18 @@ export default function IconsSectionLinks({ repositories }: { repositories: Repo
                 <li>
                     <ul className="before:hidden ml-0 pl-0">
                         {repositories.slice(0, Math.ceil(repositories.length / 2)).map((repo) => (
-                            <MenuItem key={repo.id} repo={repo} detailRef={detailRef} />
+                            <MenuItem key={repo.id} repo={repo} />
                         ))}
                     </ul>
                 </li>
                 <li>
                     <ul>
                         {repositories.slice(Math.ceil(repositories.length / 2)).map((repo) => (
-                            <MenuItem key={repo.id} repo={repo} detailRef={detailRef} />
+                            <MenuItem key={repo.id} repo={repo} />
                         ))}
                     </ul>
                 </li>
             </ul>
         </details>
-    );
-}
-
-function MenuItem({
-    repo,
-    detailRef
-}: {
-    repo: RepositoryVariants;
-    detailRef: RefObject<HTMLDetailsElement | null>;
-}) {
-    return (
-        <li>
-            <a
-                className="capitalize"
-                href={`#${repoToId(repo)}`}
-                onClick={(e) => {
-                    e.preventDefault();
-                    const id = repoToId(repo);
-
-                    const element = document.getElementById(id);
-                    if (element) {
-                        element.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start',
-                            inline: 'nearest'
-                        });
-                    }
-
-                    // Close dropdown
-                    if (detailRef.current) {
-                        detailRef.current.open = false;
-                    }
-                }}>
-                {repo.owner}/{repo.name} ({repo.variants.reduce((acc, variant) => acc + variant.iconCount, 0)}
-                )
-            </a>
-        </li>
     );
 }

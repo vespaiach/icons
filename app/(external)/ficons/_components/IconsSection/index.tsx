@@ -44,10 +44,10 @@ export default function IconSection({ repository }: { repository: RepositoryVari
             <div ref={sentinelRef} className="h-0" />
             <div
                 className={cx(
-                    'flex flex-col md:flex-row md:justify-between sticky top-12 z-10 text-base-content px-2 pt-2 transition-colors',
+                    'gap-x-6 flex flex-col md:flex-row md:justify-between sticky top-12 z-10 text-base-content px-2 pt-2 transition-colors',
                     isSticky ? 'bg-base-300' : ''
                 )}>
-                <h2 className="font-semibold text-2xl capitalize flex items-center mb-2">
+                <h2 className="font-semibold text-2xl capitalize flex items-center whitespace-nowrap">
                     {repository.owner}/{repository.name}
                     <button
                         type="button"
@@ -59,31 +59,35 @@ export default function IconSection({ repository }: { repository: RepositoryVari
                         <Settings className="w-4 h-4" />
                     </button>
                 </h2>
-                <div role="tablist" className="d-tabs d-tabs-border">
-                    {repository.variants.map((variant) => {
-                        return (
-                            <button
-                                key={variant.id}
-                                type="button"
-                                role="tab"
-                                className={cx(
-                                    'd-tab capitalize',
-                                    selectedVariant.id === variant.id && 'd-tab-active'
-                                )}
-                                onClick={() => {
-                                    startTransition(() => {
-                                        setSelectedVariant(variant);
-                                        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-                                    });
-                                }}>
-                                {variant.name} (
-                                {assertNumber(searchCount) && selectedVariant.id === variant.id
-                                    ? `${searchCount}/`
-                                    : ''}
-                                {variant.iconCount})
-                            </button>
-                        );
-                    })}
+                <div className='tablist-container'>
+                    <div role="tablist" className="d-tabs d-tabs-border flex-nowrap">
+                        {repository.variants.map((variant) => {
+                            return (
+                                <button
+                                    key={variant.id}
+                                    type="button"
+                                    role="tab"
+                                    className={cx(
+                                        'd-tab capitalize',
+                                        selectedVariant.id === variant.id && 'd-tab-active'
+                                    )}
+                                    onClick={() => {
+                                        startTransition(() => {
+                                            setSelectedVariant(variant);
+                                            document
+                                                .getElementById(id)
+                                                ?.scrollIntoView({ behavior: 'smooth' });
+                                        });
+                                    }}>
+                                    {variant.name} (
+                                    {assertNumber(searchCount) && selectedVariant.id === variant.id
+                                        ? `${searchCount}/`
+                                        : ''}
+                                    {variant.iconCount})
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
             <div className="px-2">

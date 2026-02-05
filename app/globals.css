@@ -54,3 +54,23 @@ body {
     color: var(--color-base-content);
     overflow-x: hidden;
 }
+
+.tablist-container {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 1.5rem;
+
+    /* Hide default scrollbar for a cleaner look (optional) */
+    scrollbar-width: thin;
+}
+
+/* For Chrome, Safari, and Edge */
+.tablist-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.tablist-container::-webkit-scrollbar-thumb {
+    background-color: #e2e8f0;
+    border-radius: 10px;
+}
