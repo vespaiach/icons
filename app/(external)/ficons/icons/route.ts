@@ -7,9 +7,8 @@ const iconsRequestSchema = v.object({
     variantId: v.pipe(v.number(), v.minValue(1, 'Variant ID must be a positive number'))
 });
 
-// Next.js will cache responses for 1 day
-export const revalidate = 86400; // 1 day in seconds
-export const dynamic = 'force-dynamic'; // Mark as dynamic route since we use request.url
+// Cache indefinitely until manually revalidated
+export const revalidate = false;
 
 export async function GET(request: NextRequest) {
     try {
@@ -34,7 +33,13 @@ export async function GET(request: NextRequest) {
 
         log('info', '[icons/route] GET - END', { count: icons.length });
 
-        return Response.json(icons);
+        return Response.json(icons, {
+            headers: {
+                'Cache-Control': 'public, max-age=31536000, immutable'
+            },
+            // @ts-expect-error - Next.js adds this in production
+            next: { tags: [`icons-variant-${validatedVariantId}`, 'icons'] }
+        });
     } catch (error) {
         log('error', '[icons/route] GET - ERROR', error);
         return NextResponse.json({ error: 'Failed to fetch icons' }, { status: 500 });

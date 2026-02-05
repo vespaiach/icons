@@ -3,14 +3,13 @@
 import { useClickAway } from '@uidotdev/usehooks';
 import { Globe, Menu } from 'lucide-react';
 import { useRef } from 'react';
-import { repoToId } from '@/utils/common-helpers';
 import AboutButton from './AboutButton';
 import IconsSectionLinks from './IconsSectionLinks';
 import SearchButton from './SearchButton';
 
 export default function Navbar({ repositories }: { repositories: RepositoryVariants[] }) {
     const detailRef = useRef<HTMLDetailsElement>(null);
-    const ref = useClickAway<HTMLUListElement>(() => {
+    const _ref = useClickAway<HTMLUListElement>(() => {
         if (detailRef.current) {
             detailRef.current.open = false;
         }
@@ -29,51 +28,11 @@ export default function Navbar({ repositories }: { repositories: RepositoryVaria
                 <IconsSectionLinks repositories={repositories} />
                 <AboutButton />
             </div>
-            <details ref={detailRef} className="d-dropdown d-dropdown-end ml-auto md:hidden">
-                <summary className="d-btn d-btn-sm d-btn-ghost -mr-2">
-                    <Menu size={18} />
-                </summary>
-                <ul
-                    ref={ref}
-                    tabIndex={-1}
-                    className="d-dropdown-content d-menu bg-base-100 rounded-box z-1 w-72 p-2 shadow-sm">
-                    <li>
-                        <span>Collections</span>
-                        <ul>
-                            {repositories.map((repo) => (
-                                <li key={repo.id}>
-                                    <a
-                                        className="capitalize"
-                                        href={`#${repoToId(repo)}`}
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            const id = repoToId(repo);
-
-                                            const element = document.getElementById(id);
-                                            if (element) {
-                                                element.scrollIntoView({
-                                                    behavior: 'smooth',
-                                                    block: 'start',
-                                                    inline: 'nearest'
-                                                });
-                                            }
-
-                                            // Close dropdown
-                                            if (detailRef.current) {
-                                                detailRef.current.open = false;
-                                            }
-                                        }}>
-                                        {repo.owner}/{repo.name}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="/about">About</a>
-                    </li>
-                </ul>
-            </details>
+            <label
+                className="d-btn d-btn-sm d-btn-ghost -mr-2 md:hidden ml-auto"
+                htmlFor="right_drawer_toggler">
+                <Menu size={18} />
+            </label>
         </div>
     );
 }

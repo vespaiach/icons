@@ -263,9 +263,9 @@ repos:
       - name: Food
         path: "/icons/Food"
       - name: "Game & Sports"
-        path: "/icons/Game%20%26%20Sports"
+        path: "/icons/Game & Sports"
       - name: "Health & Medical"
-        path: "/icons/Health%20%26%20Medical"
+        path: "/icons/Health & Medical"
       - name: Logos
         path: "/icons/Logos"
       - name: Map
@@ -277,7 +277,7 @@ repos:
       - name: System
         path: "/icons/System"
       - name: "User & Faces"
-        path: "/icons/User%20%26%20Faces"
+        path: "/icons/User & Faces"
       - name: Weather
         path: "/icons/Weather"
   - owner: "lykmapipo"
