@@ -144,3 +144,185 @@ repos:
         path: "/icon"        
         replacements:
           - "#555"
+  - owner: "artcoholic"
+    name: "akar-icons"
+    ref: "master"
+    variants:
+      - name: default
+        path: "/src/svg"        
+        replacements:
+          - "black"
+  - owner: "amitjakhu"
+    name: "dripicons"
+    ref: "master"
+    variants:
+      - name: default
+        path: "/SVG"        
+        colorOn: "fill"
+  - owner: "Iconscout"
+    name: "unicons"
+    ref: "master"
+    variants:
+      - name: line
+        path: "/svg/line"        
+        colorOn: "fill"
+      - name: monochrome
+        path: "/svg/monochrome"
+        colorOn: "fill"
+      - name: solid
+        path: "/svg/solid"
+        colorOn: "fill"      
+      - name: thinline
+        path: "/svg/thinline"
+        colorOn: "fill"
+  - owner: "CoreyGinnivan"
+    name: "system-uicons"
+    ref: "main"
+    variants:
+      - name: default
+        path: "/src/images/icons"      
+  - owner: "phosphor-icons"
+    name: "core"
+    ref: "main"
+    variants:
+      - name: bold
+        path: "/raw/bold"      
+      - name: duotone
+        path: "/raw/duotone"      
+      - name: fill
+        path: "/raw/fill"      
+      - name: light
+        path: "/raw/light"      
+      - name: regular
+        path: "/raw/regular"      
+      - name: thin
+        path: "/raw/thin"
+  - owner: "radix-ui"
+    name: "icons"
+    ref: "main"
+    variants:
+      - name: default
+        path: "/packages/radix-icons/icons" 
+  - owner: "teenyicons"
+    name: "teenyicons"
+    ref: "master"
+    variants:
+      - name: outline
+        path: "/src/outline" 
+        replacements:
+          - "black"
+      - name: solid
+        path: "/src/solid" 
+        replacements:
+          - "black"
+  - owner: "coreui"
+    name: "coreui-icons"
+    ref: "main"
+    variants:
+      - name: brand
+        path: "/svg/brand" 
+        colorOn: "fill"
+      - name: flag
+        path: "/svg/flag" 
+      - name: free
+        path: "/svg/free" 
+        replacements:
+          - "var(--ci-primary-color, currentColor)"
+  - owner: "mono-company"
+    name: "mono-icons"
+    ref: "master"
+    variants:
+      - name: default
+        path: "/svg" 
+        replacements:
+          - "#0D0D0D"
+  - owner: "Remix-Design"
+    name: "RemixIcon"
+    ref: "master"
+    variants:
+      - name: Arrows
+        path: "/icons/Arrows" 
+      - name: Buildings
+        path: "/icons/Buildings"
+      - name: Business
+        path: "/icons/Business"
+      - name: Communication
+        path: "/icons/Communication"
+      - name: Design
+        path: "/icons/Design"
+      - name: Development
+        path: "/icons/Development"
+      - name: Device
+        path: "/icons/Device"
+      - name: Document
+        path: "/icons/Document"
+      - name: Editor
+        path: "/icons/Editor"
+      - name: Finance
+        path: "/icons/Finance"
+      - name: Food
+        path: "/icons/Food"
+      - name: "Game & Sports"
+        path: "/icons/Game%20%26%20Sports"
+      - name: "Health & Medical"
+        path: "/icons/Health%20%26%20Medical"
+      - name: Logos
+        path: "/icons/Logos"
+      - name: Map
+        path: "/icons/Map"
+      - name: Media
+        path: "/icons/Media"
+      - name: Others
+        path: "/icons/Others"
+      - name: System
+        path: "/icons/System"
+      - name: "User & Faces"
+        path: "/icons/User%20%26%20Faces"
+      - name: Weather
+        path: "/icons/Weather"
+  - owner: "lykmapipo"
+    name: "themify-icons"
+    ref: "master"
+    variants:       
+      - name: default
+        path: "/SVG"
+        replacements:
+          - "#000000"
+  - owner: "edent"
+    name: "SuperTinyIcons"
+    ref: "master"
+    variants:       
+      - name: default
+        path: "/images/svg"
+  - owner: "CyCraft"
+    name: "pepicons"
+    ref: "production"
+    variants:       
+      - name: pencil
+        path: "/packages/pepicons/svg/pencil"
+      - name: pop
+        path: "/packages/pepicons/svg/pop"
+      - name: print
+        path: "/packages/pepicons/svg/print"
+  - owner: "evil-icons"
+    name: "evil-icons"
+    ref: "master"
+    variants:       
+      - name: default
+        path: "/assets/icons"
+        colorOn: "fill"
+  - owner: "LineiconsHQ"
+    name: "lineicons"
+    ref: "main"
+    variants:       
+      - name: default
+        path: "/assets/svgs/regular"
+        replacements:
+          - "#323544"
+  - owner: "icons8"
+    name: "line-awesome"
+    ref: "master"
+    variants:       
+      - name: default
+        path: "/svgs"
+        colorOn: "fill"

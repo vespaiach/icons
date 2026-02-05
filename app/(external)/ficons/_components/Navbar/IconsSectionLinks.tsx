@@ -1,10 +1,11 @@
 'use client';
 
 import { useClickAway } from '@uidotdev/usehooks';
+import type { RefObject } from 'react';
 import { useRef } from 'react';
 import { repoToId } from '@/utils/common-helpers';
 
-export default function IconsSectionLinks({ repositories }: { repositories: Repository[] }) {
+export default function IconsSectionLinks({ repositories }: { repositories: RepositoryVariants[] }) {
     const detailRef = useRef<HTMLDetailsElement>(null);
     const ref = useClickAway<HTMLUListElement>(() => {
         if (detailRef.current) {
@@ -18,35 +19,59 @@ export default function IconsSectionLinks({ repositories }: { repositories: Repo
             <ul
                 ref={ref}
                 tabIndex={-1}
-                className="d-dropdown-content d-menu bg-base-100 rounded-box z-1 w-62 p-2 shadow-sm">
-                {repositories.map((repo) => (
-                    <li key={repo.id}>
-                        <a
-                            className="capitalize"
-                            href={`#${repoToId(repo)}`}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                const id = repoToId(repo);
-
-                                const element = document.getElementById(id);
-                                if (element) {
-                                    element.scrollIntoView({
-                                        behavior: 'smooth',
-                                        block: 'start',
-                                        inline: 'nearest'
-                                    });
-                                }
-
-                                // Close dropdown
-                                if (detailRef.current) {
-                                    detailRef.current.open = false;
-                                }
-                            }}>
-                            {repo.owner}/{repo.name}
-                        </a>
-                    </li>
-                ))}
+                className="p-8 d-dropdown-content d-menu d-menu-horizontal bg-base-100 rounded-box z-1 min-w-max shadow-xl border-2 border-secondary">
+                <li>
+                    <ul className="before:hidden ml-0 pl-0">
+                        {repositories.slice(0, Math.ceil(repositories.length / 2)).map((repo) => (
+                            <MenuItem key={repo.id} repo={repo} detailRef={detailRef} />
+                        ))}
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        {repositories.slice(Math.ceil(repositories.length / 2)).map((repo) => (
+                            <MenuItem key={repo.id} repo={repo} detailRef={detailRef} />
+                        ))}
+                    </ul>
+                </li>
             </ul>
         </details>
+    );
+}
+
+function MenuItem({
+    repo,
+    detailRef
+}: {
+    repo: RepositoryVariants;
+    detailRef: RefObject<HTMLDetailsElement | null>;
+}) {
+    return (
+        <li>
+            <a
+                className="capitalize"
+                href={`#${repoToId(repo)}`}
+                onClick={(e) => {
+                    e.preventDefault();
+                    const id = repoToId(repo);
+
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start',
+                            inline: 'nearest'
+                        });
+                    }
+
+                    // Close dropdown
+                    if (detailRef.current) {
+                        detailRef.current.open = false;
+                    }
+                }}>
+                {repo.owner}/{repo.name} ({repo.variants.reduce((acc, variant) => acc + variant.iconCount, 0)}
+                )
+            </a>
+        </li>
     );
 }

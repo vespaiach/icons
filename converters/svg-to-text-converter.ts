@@ -58,7 +58,8 @@ export const DEFAULT_ELEMENT_MAP: Record<string, string> = {
     g: 'g',
     defs: 'defs',
     style: 'sl',
-    title: 'title'
+    title: 'title',
+    mask: 'mk'
 };
 
 /**
@@ -67,10 +68,14 @@ export const DEFAULT_ELEMENT_MAP: Record<string, string> = {
 export const DEFAULT_EXCLUDE_ATTRS: string[] = [
     'xmlns',
     'xmlns:xlink',
+    'xml:space',
     'data-slot',
     'aria-hidden',
     'aria-labelledby',
-    'role'
+    'role',
+    'version',
+    'id',
+    'enable-background'
 ];
 
 /**
