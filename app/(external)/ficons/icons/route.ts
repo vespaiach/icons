@@ -13,7 +13,7 @@ export const revalidate = false;
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = request.nextUrl;
-        const variantIdParam = searchParams.get('variantId');
+        const variantIdParam = searchParams.get('v');
 
         // Parse and validate variantId
         const variantId = variantIdParam ? Number(variantIdParam) : null;

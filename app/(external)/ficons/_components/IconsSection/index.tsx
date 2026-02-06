@@ -9,7 +9,7 @@ import { cx, repoToId } from '@/utils/common-helpers';
 import { repositoryAtom, useSearchCountAction } from '../PageContext';
 import SectionBody from './SectionBody';
 
-export default function IconSection({ repository }: { repository: RepositoryVariants }) {
+export default function IconSection({ repository }: { repository: RepositoryVariants & { hash: string } }) {
     const isClient = useIsClient();
     const id = repoToId(repository);
     const [selectedVariant, setSelectedVariant] = useState(repository.variants[0]);
@@ -96,6 +96,7 @@ export default function IconSection({ repository }: { repository: RepositoryVari
                         ? repository.variants.map((v) => (
                               <SectionBody
                                   key={v.id}
+                                  repository={repository}
                                   variant={selectedVariant}
                                   active={v.id === selectedVariant.id}
                               />

@@ -11,6 +11,7 @@ export async function getVariantById(id: number): Promise<Variant | null> {
             path,
             regex,
             color_on AS "colorOn",
+            none_color_on AS "noneColorOn",
             replacements,
             icon_count AS "iconCount",
             created_at AS "createdAt",
@@ -36,6 +37,7 @@ export async function getVariantsWithRepository(): Promise<VariantWithRepository
             v.path,
             v.regex,
             v.color_on AS "colorOn",
+            v.none_color_on AS "noneColorOn",
             v.replacements,
             v.icon_count AS "iconCount",
             v.created_at AS "createdAt",
@@ -62,6 +64,7 @@ export async function getVariantRepositoryById(
             v.path,
             v.regex,
             v.color_on AS "colorOn",
+            v.none_color_on AS "noneColorOn",
             v.replacements,
             v.icon_count AS "iconCount",
             v.created_at AS "createdAt",
@@ -84,7 +87,7 @@ export async function getVariantRepositoryById(
 }
 
 export async function updateVariant(
-    data: Pick<Variant, 'id' | 'path' | 'regex' | 'colorOn' | 'replacements'>
+    data: Pick<Variant, 'id' | 'path' | 'regex' | 'colorOn' | 'noneColorOn' | 'replacements'>
 ) {
     log('info', '[DB] updateVariant - START', { id: data.id });
     const rows = await sql`
@@ -93,6 +96,7 @@ export async function updateVariant(
             path = ${data.path},
             regex = ${data.regex},
             color_on = ${data.colorOn},
+            none_color_on = ${data.noneColorOn},
             replacements = ${data.replacements},
             updated_at = CURRENT_TIMESTAMP
         WHERE id = ${data.id}
@@ -103,6 +107,7 @@ export async function updateVariant(
             path,
             regex,
             color_on AS "colorOn",
+            none_color_on AS "noneColorOn",
             replacements,
             icon_count AS "iconCount",
             created_at AS "createdAt",
@@ -116,7 +121,10 @@ export async function updateVariant(
 }
 
 export async function createVariant(
-    data: Pick<Variant, 'repositoryId' | 'name' | 'path' | 'regex' | 'colorOn' | 'replacements'>
+    data: Pick<
+        Variant,
+        'repositoryId' | 'name' | 'path' | 'regex' | 'colorOn' | 'noneColorOn' | 'replacements'
+    >
 ) {
     log('info', '[DB] createVariant - START', data);
     const rows = await sql`
@@ -126,6 +134,7 @@ export async function createVariant(
             path,
             regex,
             color_on,
+            none_color_on,
             replacements
         )
         VALUES (
@@ -134,6 +143,7 @@ export async function createVariant(
             ${data.path},
             ${data.regex},
             ${data.colorOn},
+            ${data.noneColorOn},
             ${data.replacements}
         )
         RETURNING
@@ -143,6 +153,7 @@ export async function createVariant(
             path,
             regex,
             color_on AS "colorOn",
+            none_color_on AS "noneColorOn",
             replacements,
             icon_count AS "iconCount",
             created_at AS "createdAt",

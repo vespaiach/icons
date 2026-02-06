@@ -1,6 +1,6 @@
 'use server';
 
-import { readdir } from 'node:fs/promises';
+import { readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { $ } from 'bun';
 import { revalidatePath } from 'next/cache';
@@ -145,7 +145,40 @@ async function extractZipFile(repo: Repository) {
     try {
         await $`rm -rf /var/tmp/${repo.name}-${repo.ref}`;
         const zipFilePath = `/var/tmp/${repo.owner}-${repo.name}-${repo.ref}.zip`;
-        await $`unzip -q -d /var/tmp ${zipFilePath}`;
+        const extractPath = `/var/tmp/${repo.name}-${repo.ref}`;
+
+        log('info', `Extracting ZIP file: ${zipFilePath} to /var/tmp`);
+
+        // x: extract with full paths (recursive)
+        // -y: assume Yes on all queries (auto overwrite without prompting)
+        // -aoa: overwrite all existing files without prompt
+        // -o: output directory (no space between -o and path)
+        const result = await $`7z x -y -aoa -o/var/tmp ${zipFilePath}`.nothrow();
+
+        log('info', `7z extraction result - exit code: ${result.exitCode}`);
+
+        // List what was actually extracted
+        const lsResult = await $`ls -la /var/tmp | grep ${repo.name}`.nothrow();
+        log('info', `Directories matching ${repo.name}:\n${lsResult.stdout}`);
+
+        // Check if extraction directory was created successfully
+        try {
+            const dirStat = await stat(extractPath);
+            if (!dirStat.isDirectory()) {
+                log('error', `Expected path is not a directory: ${extractPath}`);
+                throw new Error(`Extraction directory not created: ${extractPath}`);
+            }
+            log('info', `Successfully extracted repository to: ${extractPath}`);
+        } catch (statError) {
+            log(
+                'error',
+                `Extraction directory verification failed for: ${repo.owner}/${repo.name}`,
+                statError
+            );
+            return {
+                errors: { global: [`Failed to extract ZIP file for repository: ${repo.owner}/${repo.name}.`] }
+            };
+        }
     } catch (error) {
         log('error', `Failed to extract ZIP file for repository: ${repo.owner}/${repo.name}`, error);
         return {
@@ -188,7 +221,11 @@ async function scanIconVariants(repo: RepositoryVariants) {
     }
 }
 
-function addColorAttributeToSvgRoot(svgContent: string, colorOn: 'fill' | 'stroke'): string {
+function addColorAttributeToSvgRoot(
+    svgContent: string,
+    colorOn?: 'fill' | 'stroke' | null,
+    noneColorOn?: 'fill' | 'stroke' | null
+): string {
     // Match the opening <svg tag and check if it already has the attribute
     const svgTagMatch = svgContent.match(/<svg([^>]*)>/);
 
@@ -201,27 +238,27 @@ function addColorAttributeToSvgRoot(svgContent: string, colorOn: 'fill' | 'strok
     const attributeName = colorOn;
 
     // Check if the attribute already exists
-    const attrRegex = new RegExp(`\\s${attributeName}=`, 'i');
-    if (attrRegex.test(attributes)) {
-        // Attribute already exists, don't add another one
-        return svgContent;
+    const attrRegex = new RegExp(`\\s${colorOn}=currentColor`, 'i');
+    if (colorOn && !attrRegex.test(attributes)) {
+        svgContent = svgContent.replace(/<svg([^>]*)>/, `<svg$1 ${attributeName}="currentColor">`);
     }
 
-    // Add attribute="currentColor" to the SVG tag
-    return svgContent.replace(/<svg([^>]*)>/, `<svg$1 ${attributeName}="currentColor">`);
+    if (noneColorOn && !new RegExp(`\\s${noneColorOn}=none`, 'i').test(attributes)) {
+        svgContent = svgContent.replace(/<svg([^>]*)>/, `<svg$1 ${noneColorOn}="none">`);
+    }
+
+    return svgContent;
 }
 
 async function saveIconsToDatabase(variant: Variant, fileName: string, fullPath: string) {
     try {
         const file = Bun.file(fullPath);
         let svgContent = (await file.text()).trim();
+        svgContent = addColorAttributeToSvgRoot(svgContent, variant.colorOn, variant.noneColorOn);
 
-        if (variant.colorOn) {
-            svgContent = addColorAttributeToSvgRoot(svgContent, variant.colorOn);
-        }
         if (variant.replacements && variant.replacements.length > 0) {
             for (const replacement of variant.replacements) {
-                svgContent = svgContent.replace(replacement, 'currentColor');
+                svgContent = svgContent.replaceAll(replacement, 'currentColor');
             }
         }
 

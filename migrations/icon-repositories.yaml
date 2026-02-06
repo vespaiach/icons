@@ -100,6 +100,7 @@ repos:
       - name: default
         path: "/icons"        
         colorOn: "stroke"
+        noneColorOn: "fill"
   - owner: "primer"
     name: "octicons"
     ref: "main"

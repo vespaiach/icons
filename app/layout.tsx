@@ -15,6 +15,30 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     title: 'Ficons - Free Icon Collections - stayon.online',
     description: 'A curated list of free icon collections for designers and developers.',
+    keywords: [
+        'svg icons',
+        'free icons',
+        'icon library',
+        'customizable icons',
+        'vector icons',
+        'icon collections',
+        'design resources',
+        'web icons'
+    ],
+    authors: [{ name: 'stayon.online' }],
+    creator: 'stayon.online',
+    publisher: 'stayon.online',
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1
+        }
+    },
     openGraph: {
         title: 'Ficons - Free Icon Collections - stayon.online',
         description: 'A curated list of free icon collections for designers and developers.',
@@ -32,6 +56,9 @@ export const metadata: Metadata = {
         icon: '/icon.svg',
         shortcut: '/icon.svg',
         apple: '/icon.svg'
+    },
+    verification: {
+        google: 'verification_token'
     }
 };
 

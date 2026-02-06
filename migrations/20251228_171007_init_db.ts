@@ -46,6 +46,7 @@ export async function up(sql: any): Promise<void> {
             path VARCHAR(1024) NOT NULL,
             regex VARCHAR(255) NOT NULL DEFAULT '\.svg$',
             color_on TEXT,
+            none_color_on TEXT,
             replacements TEXT[],
             icon_count INTEGER NOT NULL DEFAULT 0,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
@@ -76,8 +77,8 @@ export async function up(sql: any): Promise<void> {
             const repoId = result[0].id;
             for (const dir of repo.variants) {
                 await sql`
-                    INSERT INTO variants (repository_id, name, path, regex, color_on, replacements)
-                    VALUES (${repoId}, ${dir.name}, ${dir.path}, ${dir.regex ?? '.svg$'}, ${dir.colorOn ?? null}, ${dir.replacements ?? null});
+                    INSERT INTO variants (repository_id, name, path, regex, color_on, none_color_on, replacements)
+                    VALUES (${repoId}, ${dir.name}, ${dir.path}, ${dir.regex ?? '.svg$'}, ${dir.colorOn ?? null}, ${dir.noneColorOn ?? null}, ${dir.replacements ?? null});
                 `;
             }
         }

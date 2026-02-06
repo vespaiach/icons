@@ -6,6 +6,7 @@ export const variantUpdateFormSchema = v.object({
     regex: v.pipe(v.string(), v.minLength(1, 'Regex is required')),
     path: v.pipe(v.string(), v.minLength(1, 'Path is required')),
     colorOn: v.optional(v.pipe(v.string(), v.picklist(['fill', 'stroke']))),
+    noneColorOn: v.optional(v.pipe(v.string(), v.picklist(['fill', 'stroke']))),
     replacements: v.optional(
         v.pipe(
             v.string(),
@@ -28,6 +29,7 @@ export const variantCreateFormSchema = v.object({
     regex: v.pipe(v.string(), v.minLength(1, 'Regex is required')),
     path: v.pipe(v.string(), v.minLength(1, 'Path is required')),
     colorOn: v.optional(v.pipe(v.string(), v.picklist(['fill', 'stroke']))),
+    noneColorOn: v.optional(v.pipe(v.string(), v.picklist(['fill', 'stroke']))),
     replacements: v.optional(
         v.pipe(
             v.string(),

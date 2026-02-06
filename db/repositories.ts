@@ -115,6 +115,7 @@ export async function getRepositoryVariantsById(repositoryId: number): Promise<R
                     'name', variants.name,
                     'regex', variants.regex,
                     'colorOn', variants.color_on,
+                    'noneColorOn', variants.none_color_on,
                     'replacements', variants.replacements,
                     'iconCount', variants.icon_count,
                     'createdAt', variants.created_at,

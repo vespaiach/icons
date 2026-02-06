@@ -16,6 +16,7 @@ const initialState: CreateVariantReturn = {
         regex: '',
         path: '',
         colorOn: null,
+        noneColorOn: null,
         replacements: null
     }
 };
@@ -30,6 +31,7 @@ export default function VariantCreateForm({
     const [formState, action, isPending] = useActionState(formAction, initialState);
 
     const [colorOn, setColorOn] = useState<'fill' | 'stroke' | ''>('');
+    const [noneColorOn, setNoneColorOn] = useState<'fill' | 'stroke' | ''>('');
     const [replacements, setReplacements] = useState<string>('');
 
     return (
@@ -160,6 +162,25 @@ export default function VariantCreateForm({
                         </select>
                         <p className="d-label-text-alt mt-2 text-base-content/70">
                             Specifies which SVG attribute should be replaced with user-selected colors
+                        </p>
+                    </div>
+
+                    <div>
+                        <label htmlFor="noneColorOn" className="d-label">
+                            <span className="d-label-text">Apply none color to:</span>
+                        </label>
+                        <select
+                            id="noneColorOn"
+                            name="noneColorOn"
+                            className="d-select d-select-bordered w-full"
+                            value={noneColorOn}
+                            onChange={(e) => setNoneColorOn(e.target.value as 'fill' | 'stroke' | '')}>
+                            <option value="">None</option>
+                            <option value="fill">Fill</option>
+                            <option value="stroke">Stroke</option>
+                        </select>
+                        <p className="d-label-text-alt mt-2 text-base-content/70">
+                            Add fill="none" or stroke="none" to the SVG root element
                         </p>
                     </div>
 

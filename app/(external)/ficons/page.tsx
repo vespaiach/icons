@@ -14,8 +14,32 @@ import { getRepositoriesAction } from './actions';
 export default async function PageIcons() {
     const repositoriesVariants = await getRepositoriesAction();
 
+    const structuredData = {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Ficons - Free Icon Collections',
+        url: 'https://stayon.online/ficons',
+        description:
+            'Explore thousands of customizable SVG icons from popular icon repositories. Adjust colors, sizes, and download for free.',
+        potentialAction: {
+            '@type': 'SearchAction',
+            target: 'https://stayon.online/ficons?search={search_term}',
+            'query-input': 'required name=search_term'
+        },
+        inLanguage: 'en-US',
+        publisher: {
+            '@type': 'Organization',
+            name: 'stayon.online',
+            url: 'https://stayon.online'
+        }
+    };
+
     return (
         <div className="d-drawer">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+            />
             <Provider>
                 <PageContextProvider repositories={repositoriesVariants}>
                     <DrawerToggler />

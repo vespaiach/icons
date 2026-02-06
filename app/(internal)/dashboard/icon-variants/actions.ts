@@ -30,6 +30,7 @@ interface UpdateVariantParams {
         regex: string;
         path: string;
         colorOn: 'fill' | 'stroke' | null;
+        noneColorOn: 'fill' | 'stroke' | null;
         replacements: string[] | null;
     };
 }
@@ -40,7 +41,7 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
         return { ...prevState, errors };
     }
 
-    const { id, regex, path, colorOn, replacements } = payload;
+    const { id, regex, path, colorOn, noneColorOn, replacements } = payload;
 
     const variant = await getVariantById(id);
     if (!variant) {
@@ -52,6 +53,7 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
         regex,
         path,
         colorOn: colorOn ?? null,
+        noneColorOn: noneColorOn ?? null,
         replacements: replacements ?? null
     });
     if (!updatedVariant) {
@@ -64,6 +66,7 @@ export async function updateVariantAction(prevState: UpdateVariantParams, formDa
             regex: updatedVariant.regex,
             path: updatedVariant.path,
             colorOn: updatedVariant.colorOn,
+            noneColorOn: updatedVariant.noneColorOn,
             replacements: updatedVariant.replacements
         },
         errors: {}
@@ -82,6 +85,7 @@ interface CreateVariantParams {
         regex: string;
         path: string;
         colorOn: 'fill' | 'stroke' | null;
+        noneColorOn: 'fill' | 'stroke' | null;
         replacements: string[] | null;
     };
 }
@@ -92,7 +96,7 @@ export async function createVariantAction(prevState: CreateVariantParams, formDa
         return { ...prevState, errors };
     }
 
-    const { repositoryId, name, regex, path, colorOn, replacements } = payload;
+    const { repositoryId, name, regex, path, colorOn, noneColorOn, replacements } = payload;
 
     const newVariant = await createVariant({
         repositoryId,
@@ -100,6 +104,7 @@ export async function createVariantAction(prevState: CreateVariantParams, formDa
         regex,
         path,
         colorOn: colorOn ?? null,
+        noneColorOn: noneColorOn ?? null,
         replacements: replacements ?? null
     });
 

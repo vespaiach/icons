@@ -39,6 +39,25 @@ Uses **postgres.js** ([github.com/porsager/postgres](https://github.com/porsager
 await sql`SELECT * FROM icons WHERE variant_id = ${variantId}`;
 ```
 
+The client is configured with debug mode support:
+
+```typescript
+import postgres from 'postgres';
+
+const DEBUG_QUERIES = Bun.env.DEBUG_QUERIES === 'true';
+
+export const sql = postgres(Bun.env.DATABASE_URL, {
+    debug: DEBUG_QUERIES
+        ? (_connection, query, params, _types) => {
+              console.log('[SQL Query]', query);
+              if (params && params.length > 0) {
+                  console.log('[SQL Params]', params);
+              }
+          }
+        : undefined,
+    onnotice: DEBUG_QUERIES ? (notice) => console.log('[SQL Notice]', notice) : undefined
+});
+```
 
 ### Compact SVG Storage Format
 
@@ -60,15 +79,6 @@ Icons are stored in a **compact text format** instead of JSON AST:
 - Attributes: `vb` (viewBox), `f` (fill), `st` (stroke), `stw` (stroke-width)
 - Values: `cc` (currentColor), `n` (none)
 - Syntax: `element attr1=val1_attr2=val2|:parentId` for hierarchy
-The client is configured with debug mode support:
-
-```typescript
-import postgres from 'postgres';
-const sql = postgres(DATABASE_URL, {
-    debug: DEBUG_QUERIES,
-    onnotice: DEBUG_QUERIES ? (notice) => console.log('[SQL Notice]', notice) : undefined,
-});
-```
 
 ### Migration System
 
@@ -99,11 +109,22 @@ export async function down(sql: any): Promise<void> {
 **Note**: Use `any` type for the `sql` parameter to support both regular queries and transaction contexts.
 
 ### Schema Overview
-compact text format using `svgToTextFormat()` from `converters/svg-to-text-converter.ts`
-5. Batch inserts icons using `PROCESSING_BATCH_SIZE` env var
-6. Cleans up temporary files
 
-SVG parsing utilities in [converters/svg-to-text-converter.ts](../converters/svg-to-text-converter.ts) use `fast-xml-parser` to convert SVG to compact text notation
+Main database tables:
+
+- **repositories**: GitHub repositories
+  - `id`, `owner`, `name`, `ref`, `last_imported_at`, `created_at`
+  - Unique constraint on (`owner`, `name`)
+- **variants**: Icon variants with configuration
+  - `id`, `repository_id`, `path`, `name`, `regex`
+  - `color_on` (TEXT): Which color to adjust (e.g., 'fill', 'stroke', null)
+  - `none_color_on` (TEXT): Which attribute to set to 'none'
+  - `replacements` (TEXT[]): Array of string replacements to apply
+  - `icon_count`, `created_at`, `updated_at`
+- **icons**: Parsed SVG stored as `svg_text` (TEXT) in compact format
+  - `id`, `variant_id`, `name`, `svg_text`, `created_at`, `updated_at`
+- **users**: Admin users
+  - `id`, `name`, `email`, `hashed_password`, `profile_picture_url`, `deleted_at`, `created_at`, `updated_at`
 
 ## Authentication Pattern
 
@@ -123,11 +144,11 @@ Repository imports happen in [app/(internal)/dashboard/icon-repositories/actions
 1. Downloads GitHub repo as ZIP using `codeload.github.com`
 2. Extracts to `/var/tmp` directory using Bun's `$` shell helper
 3. Scans variant directories (defined in database) for SVG files matching the regex pattern
-4. Parses each SVG: converts to AST structure with `svg_ast` containing nodes with id, type, attrs, and children
+4. Parses each SVG: converts to compact text format using `svgToTextFormat()` from `converters/svg-to-text-converter.ts`
 5. Batch inserts icons using `PROCESSING_BATCH_SIZE` env var
 6. Cleans up temporary files
 
-SVG parsing utilities in [utils/svg-helpers.ts](../utils/svg-helpers.ts) use `fast-xml-parser`. The AST structure (`SvgNode`) stores SVG elements recursively with attributes and text content.
+SVG parsing uses `fast-xml-parser` internally within the converters to convert SVG to compact text notation.
 
 ## Validation Pattern
 
@@ -136,21 +157,11 @@ Uses **Valibot** (not Zod). Custom form parser in [utils/validation.helpers.ts](
 ```typescript
 const parseRepositoryForm = buildFormParser(repositoryFormSchema);
 const { success, payload, errors } = await parseRepositoryForm(formData);
-```with stroke/fill/strokeWidth settings:
-  - `id`, `repositoryId`, `path`, `name`, `regex`
-  - `stroke`, `strokeOn` (both/parent/children)
-  - `fill`, `fillOn` (both/parent/children)
-  - `strokeWidth`, `strokeWidthOn` (both/parent/children)
-  - `iconCount`, `createdAt`, `updatedAt`
-- `VariantWithRepository`: Variant with denormalized repository owner/name
-- `SvgNode`: Compact AST node structure (i: id, t: type, a: attrs, c: children) - **deprecated, kept for backward compatibility**
-- `Icon`: Parsed icon (id, name, svgText) - uses compact text format
-- `IconWithRelativeData`: Icon with repositoryId and variantId
-- `User`: Admin user (id, name, email, hashedPassword, profilePictureUrl, deletedAt, createdAt, updatedAt)
-- `Session`: Session data (userId, userName, userProfilePictureUrl)
-- `Adjustment`: Adjustment settings (size, color)
-- `SvgAdjustableAttributes`: SVG attributes (fill, stroke, strokeWidth, height, width)
-- `Favorite`: Favorite icon reference (iconId, svgAst) - **deprecated field**on)
+```
+
+## Code Style
+
+Uses **Biome** for linting and formatting:
 - Single quotes, 4-space indentation, 110 char line width
 - `bun run lint` - Check formatting/linting
 - `bun run format` - Auto-format
@@ -158,7 +169,6 @@ const { success, payload, errors } = await parseRepositoryForm(formData);
   - `suspicious/noUnknownAtRules` - For Tailwind CSS 4 directives
   - `suspicious/noArrayIndexKey` - Allowed for static arrays
   - `correctness/noUnknownProperty` - For DaisyUI plugin syntax
-
 ### Type Definitions
 
 Global types in [global.d.ts](../global.d.ts) - `Repository`, `Icon`, `Variant`, etc. No need to import these types.
@@ -169,13 +179,21 @@ Global types in [global.d.ts](../global.d.ts) - `Repository`, `Icon`, `Variant`,
 - `RepositoryWithIconCount`: Repository with icon count
 - `RepositoryVariants`: Repository with nested variants array
 - `RepositoryVariantsWithIconCount`: Combined with icon count
-- `Variant`: Icon variant configuration (id, repositoryId, path, name, regex, attributesToAdjust)
+- `Variant`: Icon variant configuration
+  - `id`, `repositoryId`, `path`, `name`, `regex`
+  - `colorOn` ('fill' | 'stroke' | null): Which color to adjust
+  - `noneColorOn` ('fill' | 'stroke' | null): Which attribute to set to 'none'
+  - `replacements` (string[] | null): Array of string replacements
+  - `iconCount`, `createdAt`, `updatedAt`
 - `VariantWithRepository`: Variant with denormalized repository owner/name
-- `SvgNode`: AST node structure (id, type, attrs, children)
-- `Icon`: Parsed icon (id, name, svgAst, createdAt)
+- `SvgNode`: AST node structure (i: id, t: type, a: attrs, c: children) - **deprecated, kept for backward compatibility**
+- `Icon`: Parsed icon (id, name, svgText) - uses compact text format
 - `IconWithRelativeData`: Icon with repositoryId and variantId
 - `User`: Admin user (id, name, email, hashedPassword, profilePictureUrl, deletedAt, createdAt, updatedAt)
 - `Session`: Session data (userId, userName, userProfilePictureUrl)
+- `Adjustment`: Adjustment settings (size, color)
+- `SvgAdjustableAttributes`: SVG attributes (fill, stroke, strokeWidth, height, width)
+- `Favorite`: Favorite icon reference (iconId, svgAst) - **deprecated field, kept for backward compatibility**
 
 ## Development Commands
 
@@ -186,10 +204,15 @@ bun run migrate:create   # Generate new migration
 bun run migrate          # Run pending migrations
 ```
 
-**Main Components:****
+## Component Structure
+
+### Main Page Components
+
+**In [app/(external)/ficons/_components/](../app/%28external%29/ficons/_components/):**
 
 - **Drawer.tsx**: Sidebar drawer for repository filtering and favorites management
 - **DrawerToggler.tsx**: Toggle button for drawer
+- **RightDrawer.tsx**: Right-side drawer component
 - **IconModal/**: Modal showing selected icon details
   - **index.tsx**: Main modal component
   - **IconDetails.tsx**: Icon metadata and preview
@@ -201,15 +224,19 @@ bun run migrate          # Run pending migrations
   - **IconButton.tsx**: Individual icon button
   - **SectionBody.tsx**: Grid container for icons
 - **Navbar/**: Top navigation components
+  - **index.tsx**: Main navbar component
+  - **AboutButton.tsx**: About button
+  - **SearchButton.tsx**: Search button
+  - **IconsSectionLinks.tsx**: Links to icon sections
 - **PageContext.tsx**: Jotai state provider and initialization
 - **RepositoryInfo.tsx**: Repository metadata display with GitHub link
 - **RepositoryModal.tsx**: Modal for repository details
 - **SearchModal.tsx**: Modal for icon search functionality
 - **AboutModal.tsx**: About page modal
 - **FavoriteButton.tsx**: Button to add/remove favorites
+- **MenuItem.tsx**: Menu item component
 
-Uses Jotai atoms for state management instead of React Context
-- Fonts: Inclusive Sans (body), Geist Mono (code)
+**Uses Jotai atoms for state management instead of React Context**
 
 ## Common Patterns
 
@@ -223,14 +250,18 @@ return { ...prevState, errors: { field: ['Error message'] } };
 
 ### Client State
 
-Context providers wrap page-level features (see [PageContext.tsx](../app/%28external%29/ficons/_components/PageContext.tsx)). Use `'use client'` only when needed.
+Jotai providers wrap page-level features (see [PageContext.tsx](../app/%28external%29/ficons/_components/PageContext.tsx)). Use `'use client'` only when needed.
 
-### Page Components Structurecompact text format using `textFormatToSvg()` converter and `dangerouslySetInnerHTML`
+### Shared Components
+
+**In [components/](../components/) directory:**
+
 - **ColorAdjuster.tsx**, **FillColorAdjuster.tsx**, **StrokeColorAdjuster.tsx**: Color adjustment controls
 - **SizeAdjuster.tsx**, **StrokeWidthAdjuster.tsx**: Size and stroke width controls
 - **Box.tsx**: Generic container component with optional header
 - **ThemeSwitcher.tsx**: DaisyUI theme toggle component
 - **Footer.tsx**: Site footer component
+- **TextToSvg.tsx**: Renders compact text format using `textFormatToSvg()` converter and `dangerouslySetInnerHTML`
 
 ### Utilities
 
@@ -239,17 +270,14 @@ Server and shared helpers:
 - **utils/string-helpers.ts**: SVG text manipulation
   - `applyAdjustmentColor()`: Replace color placeholders in compact text (cc → actual color)
   - `applyAdjustment2SvgText()`: Apply both color and size adjustments to compact text
-  - `mergeAttributes()`: Merge variant and adjustment attributeb link
-- **SearchModal.tsx**: Modal for icon search functionality
-- **SkeletonIconsContainer.tsx**: Loading skeleton for icon grid
-
-All comGithubStarCount.ts**: Fetches GitHub star count for repositories
-
-External hooks from `@uidotdev/usehooks`:
-
-- `useIsClient()`: Used in [PageContext.tsx](../app/%28external%29/ficons/_components/PageContext.tsx) for client-side logic
-- `useClickAway()`: Used in navbar components
-```
+  - `mergeAttributes()`: Merge variant and adjustment attributes
+- **utils/svg-to-tsx.ts**: Generates React component code from SVG string
+- **utils/common-helpers.ts**: 
+  - `cx()`: Classname merging utility
+  - `nameToId()`: Converts names to URL-safe IDs
+- **utils/assert-helpers.ts**: Type guards and assertion functions
+- **utils/log.helpers.ts**: Logging utility with severity levels
+- **utils/validation.helpers.ts**: Form validation with Valibot
 
 ## Component Architecture
 
@@ -269,19 +297,19 @@ export const searchCountsAtom = atom<Record<number, number | undefined | null>>(
 export const searchKeywordAtom = atom<string>('');
 ```
 
-**Custom Hooks**:
+**Custom Hooks** (defined in PageContext.tsx):
 
 - `useIconAction()`: Returns `[setIcon, clearIcon]` functions
 - `useIconValue()`: Returns current selected icon
-- `useFavoritesAction()`: Returns `[addFavorite, removeFavorite]` functions
-- `useFavoritesValue()`: Returns favorites array
+- `useFavoritesAction()`: Returns `[addFavorite, removeFavorite, clearFavorites]` functions
+- `useFavoritesValue()`: Returns `{ ids: Set<number>, byIds: Record<number, Icon> }` object
 - `useAdjustmentValue(repositoryId)`: Returns color/size adjustments for a repository
-- `useDrawerAction()`: Returns drawer open/close functions
-- `useRepositoryAction()`: Returns repository selection functions
-- `useSearchCountsAction()`: Returns search count management functions
-
-- **string-helpers.ts**: SVG text manipulation utilities for compact format
-- **svg-to-tsx.ts**: Generates React component code from SVG string
+- `useDrawerValue()`: Returns drawer open state
+- `useDrawerAction()`: Returns `[openDrawer, closeDrawer]` functions
+- `useSearchCountAction(variantId)`: Returns search count for a variant
+- `useSetSearchCountAction()`: Returns function to set search count
+- `useSearchKeywordAction()`: Returns function to set search keyword
+- `useSearchKeywordValue()`: Returns current search keyword
 
 ## Converters
 
@@ -300,14 +328,11 @@ Custom SVG format converters in [converters/](../converters/) directory:
   - Supports hierarchical notation (`:parentId` syntax)
 
 - **svg-to-text-converter.test.ts**: Comprehensive test suite with multiple sample files
-Wrap page with `<Provider>` from `jotai` and `<PageContextProvider>` to initialize state
-### Custom Hooks
+
+### External Hooks
 
 Hooks in [hooks/](../hooks/) directory:
 
-- **useReportDefaultAttributeValues.ts**: Manages default variant settings and attributes
-- **useDownloadIconTsx.ts**: Generates and downloads React component code for selected icon
-- **useDownloadRawIcon.ts**: Downloads raw SVG file
 - **useGithubStarCount.ts**: Fetches GitHub star count for repositories
 
 External hooks from `@uidotdev/usehooks`:
@@ -315,30 +340,23 @@ External hooks from `@uidotdev/usehooks`:
 - `useIsClient()`: Used in [PageContext.tsx](../app/%28external%29/ficons/_components/PageContext.tsx) for client-side logic
 - `useClickAway()`: Used in navbar components for dropdown management
 
-### Context Pattern
+### Page Setup Pattern
 
-Page-level context in [app/(external)/ficons/_components/PageContext.tsx](../app/%28external%29/ficons/_components/PageContext.tsx):
+Wrap pages with Jotai `<Provider>` and `<PageContextProvider>` to initialize state:
 
-```typescript
-interface IconContextType {
-    selectedIcon: IconWithRelativeData | null;
-    selectedRepository: Repository | null;
-    variants: ExtendedVariant[];
-    setSelectedIcon: (icon: IconWithRelativeData | null) => void;
-    setSelectedRepository: (repo: Repository | null) => void;
-    setVariants: Dispatch<SetStateAction<ExtendedVariant[]>>;
-    getVariantsByRepositoryId: (repoId: number) => ExtendedVariant[];
-    updatedVariant: (updatedVariant: ExtendedVariant) => void;
+```tsx
+import { Provider } from 'jotai';
+import { PageContextProvider } from './_components/PageContext';
+
+export default async function Page() {
+    const repositories = await getRepositoriesAction();
+    
+    return (
+        <Provider>
+            <PageContextProvider repositories={repositories}>
+                {/* page content */}
+            </PageContextProvider>
+        </Provider>
+    );
 }
 ```
-
-`ExtendedVariant` adds optional `svgAttributes` (fill, stroke, strokeWidth, width, height) to base `Variant` type. Context handles modal state for icon details and adjustable attributes.
-
-## Helper Utilities
-
-- **assert-helpers.ts**: Type guards and assertion functions (`assertNumber`, `assertString`)
-- **common-helpers.ts**: 
-  - `cx()`: Classname merging utility
-  - `nameToId()`: Converts names to URL-safe IDs
-- **log.helpers.ts**: Logging utility with severity levels
-- **validation.helpers.ts**: Form validation with Valibot

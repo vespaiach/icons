@@ -25,7 +25,9 @@ export default function IconButton({
                 onClick={() => {
                     setIcon(icon);
                 }}
-                type="button">
+                type="button"
+                aria-label={`View ${icon.name} icon details`}
+                title={icon.name}>
                 {iconElement}
                 <span>{icon.name}</span>
             </button>

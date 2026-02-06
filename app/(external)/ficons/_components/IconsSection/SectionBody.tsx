@@ -11,7 +11,15 @@ import {
 } from '../PageContext';
 import IconButton from './IconButton';
 
-export default function SectionBody({ variant, active }: { variant: Variant; active: boolean }) {
+export default function SectionBody({
+    variant,
+    repository,
+    active
+}: {
+    variant: Variant;
+    repository: RepositoryVariants & { hash: string };
+    active: boolean;
+}) {
     const [ref, entry] = useIntersectionObserver<HTMLDivElement>({ rootMargin: '200px', threshold: 0 });
 
     const searchCount = useSearchCountAction(variant.id);
@@ -39,7 +47,7 @@ export default function SectionBody({ variant, active }: { variant: Variant; act
     const [_icons, setIcons] = useState<IconWithRelativeData[] | null>(null);
 
     useEffect(() => {
-        fetch(`/ficons/icons?variantId=${variant.id}`)
+        fetch(`/ficons/icons?v=${variant.id}&h=${repository.hash}`)
             .then((res) => res.json())
             .then((data: IconWithRelativeData[]) => {
                 setIcons(data);
@@ -48,7 +56,7 @@ export default function SectionBody({ variant, active }: { variant: Variant; act
                 setIcons([]);
                 // TODO: report error
             });
-    }, [variant.id]);
+    }, [variant.id, repository.hash]);
 
     const q = useSearchKeywordValue();
     const icons = useMemo(() => {

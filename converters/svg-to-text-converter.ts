@@ -4,6 +4,7 @@ import { XMLParser } from 'fast-xml-parser';
  * Default attribute abbreviation map for compact text format
  */
 export const DEFAULT_ATTRIBUTE_MAP: Record<string, string> = {
+    points: 'pts',
     viewBox: 'vb',
     fill: 'f',
     stroke: 'st',
@@ -28,6 +29,7 @@ export const DEFAULT_ATTRIBUTE_MAP: Record<string, string> = {
     y: 'y',
     id: 'id',
     'data-name': 'd-name',
+    mask: 'msk',
     d: '' // Empty string means value-only (no key=value format)
 };
 
@@ -124,22 +126,17 @@ function createConverter(config: SvgToTextConfig) {
     /**
      * Convert SVG attributes to compact text format
      */
-    function convertAttributes(attrs: Record<string, string>, _tagName: string): string {
+    function convertAttributes(attrs: Record<string, string>, _tagName: string, isRootSvg = false): string {
         const parts: string[] = [];
         let dValue: string | null = null;
 
         for (const [key, value] of Object.entries(attrs)) {
-            // Skip excluded attributes
-            if (excludeAttrs.includes(key)) {
+            // Skip excluded attributes only for root SVG element
+            if (isRootSvg && excludeAttrs.includes(key)) {
                 continue;
             }
 
-            const abbrevKey = attributeMap[key];
-            if (abbrevKey === undefined) {
-                // Skip unknown attributes
-                continue;
-            }
-
+            const abbrevKey = attributeMap[key] !== undefined ? attributeMap[key] : key;
             const abbrevValue = abbreviateValue(value);
 
             if (abbrevKey === '') {
@@ -239,7 +236,7 @@ function createConverter(config: SvgToTextConfig) {
 
         for (const node of nodes) {
             const elementType = elementMap[node.type] || node.type;
-            const attrText = convertAttributes(node.attrs, node.type);
+            const attrText = convertAttributes(node.attrs, node.type, false);
 
             // Build hierarchy prefix
             let prefix: string;
@@ -322,8 +319,7 @@ export function svgToTextFormat(svgHtml: string, config: SvgToTextConfig = {}): 
 
     for (const [key, value] of Object.entries(svgAttrs)) {
         if (svgRootExcludeAttrs.includes(key)) continue;
-        const abbrevKey = attributeMap[key];
-        if (abbrevKey === undefined) continue;
+        const abbrevKey = attributeMap[key] !== undefined ? attributeMap[key] : key;
 
         const abbrevValue = valueMap[value as string] || value;
         if (abbrevKey === '') {

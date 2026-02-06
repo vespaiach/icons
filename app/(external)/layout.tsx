@@ -5,6 +5,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     return (
         <>
+            <link rel="canonical" href="https://stayon.online/ficons" />
             {isProduction && <GoogleTagManager gtmId="GTM-WSJZT79T" />}
             {children}
         </>

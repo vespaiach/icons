@@ -21,7 +21,6 @@ export default function TextToSvg({ svgText, adjustment, className }: TextToSvgP
             width={adjustment?.size || 24}
             height={adjustment?.size || 24}
             className={className}
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: we need this to render SVG from text format
             dangerouslySetInnerHTML={{ __html: innerHtml }}
         />
     );

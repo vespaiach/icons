@@ -34,7 +34,17 @@ describe('svg-to-text-converter', () => {
 </svg>`;
             const result = svgToTextFormat(svg);
             expect(result).toBe(
-                's vb=0 0 24 24|:1defs|1:2sl >.cls-1{fill:#fff;opacity:0;}.cls-2{fill:#231f20;}|:3g id=Layer_2_d-name=Layer 2|3:4g id=activity|4:5g id=activity-2_d-name=activity|5:6r cl=cls-1_w=24_h=24_tf=translate(24 0) rotate(90)|5:7p cl=cls-2_M14.33,20h-.21a2,2,0,0,1-1.76-1.58L9.68,6,6.92,12.4A1,1,0,0,1,6,13H3a1,1,0,0,1,0-2H5.34L7.85,5.21a2,2,0,0,1,3.79.38L14.32,18l2.76-6.38A1,1,0,0,1,18,11h3a1,1,0,0,1,0,2H18.66l-2.51,5.79A2,2,0,0,1,14.33,20Z'
+                's vb=0 0 24 24|:1defs|1:2sl >.cls-1{fill:#fff;opacity:0;}.cls-2{fill:#231f20;}|:3g d-name=Layer 2|3:4g|4:5g d-name=activity|5:6r cl=cls-1_w=24_h=24_tf=translate(24 0) rotate(90)|5:7p cl=cls-2_M14.33,20h-.21a2,2,0,0,1-1.76-1.58L9.68,6,6.92,12.4A1,1,0,0,1,6,13H3a1,1,0,0,1,0-2H5.34L7.85,5.21a2,2,0,0,1,3.79.38L14.32,18l2.76-6.38A1,1,0,0,1,18,11h3a1,1,0,0,1,0,2H18.66l-2.51,5.79A2,2,0,0,1,14.33,20Z'
+            );
+        });
+
+        test('should convert simple SVG 4 with path to text format', () => {
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/>
+        </svg>`;
+            const result = svgToTextFormat(svg);
+            expect(result).toBe(
+                's vb=0 0 24 24_f=n_st=cc_stw=2_stlc=round_stlj=round|:1pline pts=17 11 12 6 7 11|:2pline pts=17 18 12 13 7 18'
             );
         });
     });

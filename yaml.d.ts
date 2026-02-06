@@ -8,6 +8,7 @@ declare module '*/icon.repositories.yaml' {
             path: string;
             regex?: string;
             colorOn?: 'fill' | 'stroke';
+            noneColorOn?: 'fill' | 'stroke';
             replacements?: string[];
         }[];
     }

@@ -32,6 +32,7 @@ declare global {
         name: string;
         regex: string;
         colorOn: 'fill' | 'stroke' | null;
+        noneColorOn: 'fill' | 'stroke' | null;
         replacements: string[] | null;
         iconCount: number;
         createdAt: Date;

@@ -11,6 +11,9 @@ export async function POST(req: NextRequest) {
     // Revalidate all external routes
     revalidatePath('/(external)', 'layout');
 
+    // Revalidate icon routes
+    revalidatePath('/ficons/icons', 'page');
+
     return NextResponse.json({
         revalidated: true,
         timestamp: new Date().toISOString()
