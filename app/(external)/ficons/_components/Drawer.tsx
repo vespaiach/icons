@@ -85,7 +85,7 @@ export default function Drawer({ repositories }: { repositories: RepositoryVaria
     return (
         <div className="d-drawer-side">
             <label htmlFor="drawer_toggler" aria-label="close sidebar" className="d-drawer-overlay" />
-            <div className="bg-white dark:bg-base-200 w-80 p-5 min-h-full flex flex-col">
+            <div className="bg-base-100 dark:bg-base-200 w-80 p-5 min-h-full flex flex-col">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-semibold">Favorites</h2>
                     <button

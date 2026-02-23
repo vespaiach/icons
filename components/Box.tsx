@@ -2,7 +2,9 @@ import { cx } from '@/utils/common-helpers';
 
 export default function Box({ children, className }: { children: React.ReactNode; className?: string }) {
     return (
-        <div className={cx('border border-gray-300 rounded-xl bg-white co-p-6', className)}>{children}</div>
+        <div className={cx('border border-gray-300 rounded-xl bg-base-100 co-p-6', className)}>
+            {children}
+        </div>
     );
 }
 

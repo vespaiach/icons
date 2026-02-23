@@ -7,7 +7,6 @@ import {
     PanelRightOpen
 } from 'lucide-react';
 import Image from 'next/image';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { getAuthSession } from '@/utils/session';
 import SignOutForm from './_component/SignOutForm';
 
@@ -18,7 +17,7 @@ export default async function InternalLayout({ children }: { children: React.Rea
         <div className="d-drawer lg:d-drawer-open">
             <input id="my-drawer-4" type="checkbox" className="d-drawer-toggle peer/toggler" />
             <div className="d-drawer-content bg-base-200">
-                <nav className="d-navbar w-full border-b border-b-base-300 bg-white sticky top-0 z-10 flex pr-4 pl-2">
+                <nav className="d-navbar w-full border-b border-b-base-300 bg-base-100 sticky top-0 z-10 flex pr-4 pl-2">
                     <label
                         htmlFor="my-drawer-4"
                         aria-label="open sidebar"
@@ -28,7 +27,6 @@ export default async function InternalLayout({ children }: { children: React.Rea
                     </label>
                     <div className="px-4">Navbar Title</div>
                     <div className="ml-auto flex items-center gap-2">
-                        <ThemeSwitcher />
                         <details className="d-dropdown group cursor-pointer">
                             <summary className="flex items-center gap-1">
                                 {!!session.userProfilePictureUrl && (
@@ -52,7 +50,7 @@ export default async function InternalLayout({ children }: { children: React.Rea
                                 <ChevronDown className="w-5 group-open:hidden" />
                                 <ChevronUp className="w-5 hidden group-open:block" />
                             </summary>
-                            <ul className="d-dropdown-content d-menu d-menu-sm bg-white border border-gray-300 d-rounded-box w-56 right-0 mt-1">
+                            <ul className="d-dropdown-content d-menu d-menu-sm bg-base-100 border border-gray-300 d-rounded-box w-56 right-0 mt-1">
                                 <li>
                                     <SignOutForm />
                                 </li>

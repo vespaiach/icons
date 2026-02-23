@@ -262,7 +262,6 @@ Jotai providers wrap page-level features (see [PageContext.tsx](../app/%28extern
 - **ColorAdjuster.tsx**: Color adjustment control
 - **SizeAdjuster.tsx**: Icon size adjustment control
 - **Box.tsx**: Generic container component with optional header
-- **ThemeSwitcher.tsx**: DaisyUI theme toggle component
 - **Footer.tsx**: Site footer component
 - **TextToSvg.tsx**: Renders compact text format using `textFormatToSvg()` converter and `dangerouslySetInnerHTML`
 
