@@ -43,12 +43,11 @@ export function svgToReactComponent(icon: {
     if (/^\d/.test(componentName)) {
         componentName = `Icon${componentName}`;
     }
-
     // Extract attributes from svg element
     const hasFillColor = icon.svgString.includes('fill="CurrentColor"');
     const hasStrokeColor = icon.svgString.includes('stroke="CurrentColor"');
 
-    const svgAttrs = extractAttributes(svgElement.svg[':@'] || {});
+    const svgAttrs = extractAttributes(svgElement[':@'] || {});
     const attributes: string[] = [];
 
     for (const [key, value] of Object.entries(svgAttrs)) {
@@ -65,7 +64,7 @@ export function svgToReactComponent(icon: {
 
     const title = `${icon.name.replace(/-/g, ' ')} icon`;
 
-    return `import type { SVGProps, ReactNode } from 'react';
+    return `import type { ReactNode, SVGProps  } from 'react';
 
 interface IconProps extends SVGProps<SVGSVGElement> {
     title?: string;
