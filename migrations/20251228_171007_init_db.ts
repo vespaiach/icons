@@ -84,10 +84,10 @@ export async function up(sql: any): Promise<void> {
         }
     }
 
-    const hashedPassword = await Bun.password.hash('LegMeIn1!');
+    const hashedPassword = await Bun.password.hash('LetMeIn1!');
     await sql`
         INSERT INTO users (email, name, hashed_password)
-        VALUES ('nta.toan@gmail.com', 'Toan Nguyen', ${hashedPassword});
+        VALUES ('nta.toan@gmail.com', 'Trinh Nguyen', ${hashedPassword});
     `;
 }
 

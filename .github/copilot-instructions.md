@@ -2,7 +2,7 @@
 
 ## Project Architecture
 
-This is a **Next.js 16 App Router** application for managing and browsing SVG icons from GitHub repositories. Built with Bun runtime, using **Bun's native SQL driver** for PostgreSQL.
+This is a **Next.js 16 App Router** application for managing and browsing SVG icons from GitHub repositories. Built with Bun runtime, using **postgres.js** as the SQL client for PostgreSQL.
 
 ### Route Structure
 
@@ -11,6 +11,7 @@ This is a **Next.js 16 App Router** application for managing and browsing SVG ic
   - `/ficons/icons/route.ts`: GET endpoint for fetching icons by variant ID
 - **(external)/about**: About page
 - **(external)/tou**: Terms of Use page
+- **(internal)/auth**: Public authentication pages (sign-in)
 - **(internal)/dashboard**: Protected admin area with subroutes:
   - `/dashboard/icon-repositories`: Repository management and icon imports
   - `/dashboard/icon-variants`: Variant configuration and editing
@@ -28,6 +29,7 @@ const repositoriesVariants = await getRepositoriesAction();
 API Routes:
 - `POST /ficons/download`: Batch download icons as zip with adjustments
 - `GET /ficons/icons?variantId=X`: Fetch icons by variant ID with caching (revalidate: 86400)
+- `POST /api/revalidate`: Revalidate cached external and icon routes using a shared secret
 
 ## Database Layer
 
@@ -202,6 +204,7 @@ bun run dev              # Start dev server (uses --bun flag)
 bun run build            # Production build
 bun run migrate:create   # Generate new migration
 bun run migrate          # Run pending migrations
+bun test                 # Run unit tests (e.g., converters)
 ```
 
 ## Component Structure
@@ -256,8 +259,8 @@ Jotai providers wrap page-level features (see [PageContext.tsx](../app/%28extern
 
 **In [components/](../components/) directory:**
 
-- **ColorAdjuster.tsx**, **FillColorAdjuster.tsx**, **StrokeColorAdjuster.tsx**: Color adjustment controls
-- **SizeAdjuster.tsx**, **StrokeWidthAdjuster.tsx**: Size and stroke width controls
+- **ColorAdjuster.tsx**: Color adjustment control
+- **SizeAdjuster.tsx**: Icon size adjustment control
 - **Box.tsx**: Generic container component with optional header
 - **ThemeSwitcher.tsx**: DaisyUI theme toggle component
 - **Footer.tsx**: Site footer component
@@ -272,6 +275,7 @@ Server and shared helpers:
   - `applyAdjustment2SvgText()`: Apply both color and size adjustments to compact text
   - `mergeAttributes()`: Merge variant and adjustment attributes
 - **utils/svg-to-tsx.ts**: Generates React component code from SVG string
+- **utils/svg-helpers.ts**: SVG parsing and attribute extraction helpers for client-side tools
 - **utils/common-helpers.ts**: 
   - `cx()`: Classname merging utility
   - `nameToId()`: Converts names to URL-safe IDs
